@@ -132,7 +132,7 @@ public class FlashlightTile extends XposedModPack {
 						boolean persist = (boolean) param.args[1];
 						if (persist) {
 							int level = (int) param.args[0];
-							new Thread(() -> Xprefs.edit().putInt("flashPCT", Math.round((level * 100f) / getMaxFlashLevel())).apply()).start();
+							Xprefs.edit().putInt("flashPCT", Math.round((level * 100f) / getMaxFlashLevel())).apply();
 						}
 					}
 				});
@@ -223,10 +223,10 @@ public class FlashlightTile extends XposedModPack {
 			public void onStopTrackingTouch(Object slider) {
 				float value = (float) callMethod(slider, "getValue");
 
-				new Thread(() -> Xprefs.edit()
+				Xprefs.edit()
 						.putInt("flashPCT",
 								Math.round((value * 100f) / getMaxFlashLevel())
-						).apply()).start();
+						).apply();
 
 				if(!isFlashOn())
 				{

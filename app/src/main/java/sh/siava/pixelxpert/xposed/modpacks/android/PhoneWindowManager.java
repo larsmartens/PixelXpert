@@ -17,7 +17,13 @@ import android.os.UserHandle;
 import android.view.Display;
 import android.view.WindowManager;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import sh.siava.pixelxpert.xposed.Constants;
@@ -36,6 +42,8 @@ public class PhoneWindowManager extends XposedModPack {
 	private String currentPackage = "";
 	private int currentUser = -1;
 	private boolean appProfileSwitchEnabled = true;
+	private final ExecutorService profileExecutor = Executors.newSingleThreadExecutor();
+	private final Map<Integer, Set<String>> packageAvailabilityCache = new ConcurrentHashMap<>();
 
 	public PhoneWindowManager(Context context) {
 		super(context);
@@ -118,9 +126,34 @@ public class PhoneWindowManager extends XposedModPack {
 		}
 	}
 
+	private void invalidatePackageCache() {
+		packageAvailabilityCache.clear();
+	}
+
+	private Set<String> getPackagesForUser(int userId) {
+		return packageAvailabilityCache.computeIfAbsent(userId, uid -> {
+			Set<String> packages = new HashSet<>();
+			try {
+				//noinspection unchecked
+				List<PackageInfo> pkgs = (List<PackageInfo>) callMethod(
+						mContext.getPackageManager(),
+						"getInstalledPackagesAsUser",
+						PackageManager.PackageInfoFlags.of(0),
+						uid);
+				for (PackageInfo pi : pkgs) {
+					if (pi.applicationInfo != null && pi.applicationInfo.enabled) {
+						packages.add(pi.packageName);
+					}
+				}
+			} catch (Throwable ignored) {
+			}
+			return packages;
+		});
+	}
+
 	private boolean isPackageAvailableForUser(String packageName, UserHandle userHandle) {
-		//noinspection unchecked
-		return ((List<PackageInfo>) callMethod(mContext.getPackageManager(), "getInstalledPackagesAsUser", PackageManager.PackageInfoFlags.of(PackageManager.GET_META_DATA), getObjectField(userHandle, "mHandle"))).stream().anyMatch(packageInfo -> packageInfo.packageName.equals(packageName) && packageInfo.applicationInfo.enabled);
+		int userId = (int) getObjectField(userHandle, "mHandle");
+		return getPackagesForUser(userId).contains(packageName);
 	}
 
 	@SuppressLint("WrongConstant")
@@ -128,8 +161,6 @@ public class PhoneWindowManager extends XposedModPack {
 	public void onPackageLoaded(XC_LoadPackage.LoadPackageParam lpParam) throws Throwable {
 		//noinspection unchecked
 		userHandleList = (List<UserHandle>) callMethod(SystemUtils.UserManager(), "getProfiles", true);
-
-//		Collections.addAll(screenshotChords, KEYCODE_POWER, KEYCODE_VOLUME_DOWN);
 
 		if (!broadcastRegistered) {
 			broadcastRegistered = true;
@@ -139,12 +170,23 @@ public class PhoneWindowManager extends XposedModPack {
 			intentFilter.addAction(Constants.ACTION_BACK);
 			intentFilter.addAction(Constants.ACTION_SLEEP);
 			intentFilter.addAction(Constants.ACTION_SWITCH_APP_PROFILE);
-			mContext.registerReceiver(broadcastReceiver, intentFilter, RECEIVER_EXPORTED); //for Android 14, receiver flag is mandatory
+			mContext.registerReceiver(broadcastReceiver, intentFilter, RECEIVER_EXPORTED);
+
+			IntentFilter pkgFilter = new IntentFilter();
+			pkgFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+			pkgFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+			pkgFilter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+			pkgFilter.addDataScheme("package");
+			mContext.registerReceiver(new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					invalidatePackageCache();
+				}
+			}, pkgFilter, RECEIVER_EXPORTED);
 		}
 
 		try {
 			ReflectedClass PhoneWindowManagerClass = ReflectedClass.of("com.android.server.policy.PhoneWindowManager");
-
 
 			PhoneWindowManagerClass
 					.before("onDefaultDisplayFocusChangedLw")
@@ -152,28 +194,31 @@ public class PhoneWindowManager extends XposedModPack {
 						if (param.args[0] == null) return;
 						if (!appProfileSwitchEnabled || userHandleList.size() <= 1) return;
 
-						new Thread(() -> {
-							if (callMethod(param.args[0], "getBaseType").equals(WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW)) {
-								String newPackageName = (String) callMethod(param.args[0], "getOwningPackage");
-								int newUserID = (int) getObjectField(callMethod(param.args[0], "getTask"), "mUserId");
-								if (!newPackageName.equals(currentPackage) || newUserID != currentUser) {
-									currentPackage = newPackageName;
-									currentUser = newUserID;
+						profileExecutor.execute(() -> {
+							try {
+								if (callMethod(param.args[0], "getBaseType").equals(WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW)) {
+									String newPackageName = (String) callMethod(param.args[0], "getOwningPackage");
+									int newUserID = (int) getObjectField(callMethod(param.args[0], "getTask"), "mUserId");
+									if (!newPackageName.equals(currentPackage) || newUserID != currentUser) {
+										currentPackage = newPackageName;
+										currentUser = newUserID;
 
-									boolean availableOnOtherUsers = false;
-									for (UserHandle userHandle : userHandleList) {
-										int thisUserID = (int) getObjectField(userHandle, "mHandle");
-										if (thisUserID != currentUser) {
-											if (isPackageAvailableForUser(currentPackage, userHandle)) {
-												availableOnOtherUsers = true;
-												break;
+										boolean availableOnOtherUsers = false;
+										for (UserHandle userHandle : userHandleList) {
+											int thisUserID = (int) getObjectField(userHandle, "mHandle");
+											if (thisUserID != currentUser) {
+												if (isPackageAvailableForUser(currentPackage, userHandle)) {
+													availableOnOtherUsers = true;
+													break;
+												}
 											}
 										}
+										sendAppProfileSwitchAvailable(availableOnOtherUsers);
 									}
-									sendAppProfileSwitchAvailable(availableOnOtherUsers);
 								}
+							} catch (Throwable ignored) {
 							}
-						}).start();
+						});
 					});
 
 			PhoneWindowManagerClass
@@ -185,12 +230,10 @@ public class PhoneWindowManager extends XposedModPack {
 
 	@SuppressLint("MissingPermission")
 	private void sendAppProfileSwitchAvailable(boolean isAvailable) {
-		new Thread(() -> {
-			Intent broadcast = new Intent();
-			broadcast.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-			broadcast.setAction(Constants.ACTION_PROFILE_SWITCH_AVAILABLE);
-			broadcast.putExtra("available", isAvailable);
-			mContext.sendBroadcast(broadcast);
-		}).start();
+		Intent broadcast = new Intent();
+		broadcast.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+		broadcast.setAction(Constants.ACTION_PROFILE_SWITCH_AVAILABLE);
+		broadcast.putExtra("available", isAvailable);
+		mContext.sendBroadcast(broadcast);
 	}
 }

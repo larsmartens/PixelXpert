@@ -183,10 +183,12 @@ public class DepthWallpaper extends XposedModPack {
 							int yPixelShift = (desiredHeight - displayBounds.height()) / 2;
 
 							Bitmap scaledWallpaperBitmap = Bitmap.createScaledBitmap(wallpaperBitmap, desiredWidth, desiredHeight, true);
+							wallpaperBitmap.recycle();
 
 							//crop to display bounds
-							scaledWallpaperBitmap = Bitmap.createBitmap(scaledWallpaperBitmap, xPixelShift, yPixelShift, displayBounds.width(), displayBounds.height());
-							Bitmap finalScaledWallpaperBitmap = Bitmap.createBitmap(scaledWallpaperBitmap);
+							Bitmap croppedBitmap = Bitmap.createBitmap(scaledWallpaperBitmap, xPixelShift, yPixelShift, displayBounds.width(), displayBounds.height());
+							scaledWallpaperBitmap.recycle();
+							Bitmap finalScaledWallpaperBitmap = croppedBitmap;
 
 							if(!mLayersCreated) {
 								createLayers();

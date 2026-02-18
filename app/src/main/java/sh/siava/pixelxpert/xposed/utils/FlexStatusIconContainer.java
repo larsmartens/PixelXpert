@@ -533,10 +533,8 @@ public class FlexStatusIconContainer extends LinearLayout {
 
 			}
 
-			//handing data to garbage collector, if applicable. we don't need them anyway
 			mMeasureViews.clear();
 			mDotIcon = null;
-			System.gc();
 		} catch (Throwable t) {
 			log("PixelXpert Error - Flex Statusbar Container");
 			log(t);
