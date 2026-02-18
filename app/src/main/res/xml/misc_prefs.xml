@@ -196,6 +196,14 @@
 		search:ignore="true">
 
 		<sh.siava.pixelxpert.ui.preferences.MaterialSwitchPreference
+			android:defaultValue="true"
+			android:key="AppProfileSwitchEnabled"
+			android:summaryOff="@string/general_off"
+			android:summaryOn="@string/general_on"
+			android:title="@string/app_profile_switch_enabled"
+			app:iconSpaceReserved="false" />
+
+		<sh.siava.pixelxpert.ui.preferences.MaterialSwitchPreference
 			android:defaultValue="false"
 			android:key="StatusbarLongpressAppSwitch"
 			android:summaryOff="@string/general_off"

@@ -21,6 +21,7 @@ import java.util.List;
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import sh.siava.pixelxpert.xposed.Constants;
+import sh.siava.pixelxpert.xposed.XPrefs;
 import sh.siava.pixelxpert.xposed.annotations.FrameworkModPack;
 import sh.siava.pixelxpert.xposed.XposedModPack;
 import sh.siava.pixelxpert.xposed.utils.SystemUtils;
@@ -34,13 +35,20 @@ public class PhoneWindowManager extends XposedModPack {
 	private List<UserHandle> userHandleList;
 	private String currentPackage = "";
 	private int currentUser = -1;
+	private boolean appProfileSwitchEnabled = true;
 
 	public PhoneWindowManager(Context context) {
 		super(context);
 	}
 
 	@Override
-	public void onPreferenceUpdated(String... Key) {}
+	public void onPreferenceUpdated(String... Key) {
+		boolean newEnabled = XPrefs.Xprefs.getBoolean("AppProfileSwitchEnabled", true);
+		if (!newEnabled && appProfileSwitchEnabled) {
+			sendAppProfileSwitchAvailable(false);
+		}
+		appProfileSwitchEnabled = newEnabled;
+	}
 
 	final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 		@Override
@@ -142,6 +150,7 @@ public class PhoneWindowManager extends XposedModPack {
 					.before("onDefaultDisplayFocusChangedLw")
 					.run(param -> {
 						if (param.args[0] == null) return;
+						if (!appProfileSwitchEnabled || userHandleList.size() <= 1) return;
 
 						new Thread(() -> {
 							if (callMethod(param.args[0], "getBaseType").equals(WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW)) {
