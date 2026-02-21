@@ -34,7 +34,10 @@
     <string name="update_over_wifi_title">Check updates over WiFi only</string>
     <string name="update_over_wifi_summary">Check for updates in background only when connected to wifi</string>
     <string name="github_repo_title">GitHub repository</string>
-    <string name="github_repo_summary" translatable="false">siavash79/PixelXpert</string>
+    <string name="github_repo_summary" translatable="false">lars-martens/PixelXpert-fork</string>
+    <string name="fork_badge_label" translatable="false">Fork</string>
+    <string name="fork_repo_link" translatable="false">https://github.com/lars-martens/PixelXpert-fork</string>
+    <string name="fork_source_label">Source: </string>
     <string name="telegram_group_title">Telegram channel</string>
     <string name="telegram_group_summary" translatable="false">\@PixelXpert_Github</string>
     <string name="usage_title">Usage</string>

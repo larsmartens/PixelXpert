@@ -187,6 +187,16 @@ public class UpdateFragment extends BaseFragment {
 			getCurrentVersion();
 		}
 
+		View forkLink = view.findViewById(R.id.forkRepoLink);
+		if (forkLink == null) forkLink = view.findViewById(R.id.forkRepoLinkLand);
+		if (forkLink != null) {
+			forkLink.setOnClickListener(v -> {
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+						Uri.parse(getString(R.string.fork_repo_link)));
+				startActivity(browserIntent);
+			});
+		}
+
 		String pendingRebootString = (rebootPending) ? " - " + getString(R.string.reboot_pending) : "";
 		((TextView) view.findViewById(R.id.currentVersionValueID)).setText(String.format("%s (%s)%s", currentVersionName, currentVersionCode, pendingRebootString));
 
