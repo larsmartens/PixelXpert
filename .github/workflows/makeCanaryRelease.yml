@@ -53,10 +53,11 @@ jobs:
       run: |
         for f in latestCanary.json latestVersion.json MagiskModuleUpdate_Xposed.json MagiskModuleUpdate_Full.json; do
           if [ -f "$f" ]; then
-            sed -i 's|siavash79/PixelXpert|lars-martens/PixelXpert-fork|g' "$f"
+            sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/lars-martens/pixelxpert-updates|g' "$f"
+            sed -i 's|github.com/siavash79/PixelXpert|github.com/lars-martens/PixelXpert-fork|g' "$f"
           fi
         done
-        sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/lars-martens/PixelXpert-fork|g' MagiskModBase/module.prop
+        sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/lars-martens/pixelxpert-updates|g' MagiskModBase/module.prop
 
     - name: Upload Xposed Artifact to Actions
       uses: actions/upload-artifact@v4
@@ -75,6 +76,21 @@ jobs:
         replacesArtifacts: true
         draft: false
         artifacts: 'output/*.*'
+
+    - name: Sync manifests to public updates repo
+      run: |
+        git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/lars-martens/pixelxpert-updates.git /tmp/updates
+        cd /tmp/updates
+        git checkout canary
+        cp $GITHUB_WORKSPACE/latestCanary.json .
+        cp $GITHUB_WORKSPACE/MagiskModuleUpdate_Xposed.json .
+        cp $GITHUB_WORKSPACE/MagiskModuleUpdate_Full.json .
+        cp $GITHUB_WORKSPACE/CanaryChangelog.md .
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add -A
+        git diff --cached --quiet || git commit -m "sync: update manifests from fork build"
+        git push origin canary
 
     - name: Version Bump Commit
       uses: github-actions-x/commit@v2.9

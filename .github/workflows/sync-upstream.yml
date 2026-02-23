@@ -50,19 +50,21 @@ jobs:
       - name: Re-apply fork URL overrides
         if: steps.check.outputs.behind != '0'
         run: |
-          # Ensure our fork URLs are always correct after merge
-          # UpdateFragment.java
-          sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/lars-martens/PixelXpert-fork|g' \
+          # UpdateFragment.java - point to public updates repo
+          sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert/stable/latestStable.json|raw.githubusercontent.com/lars-martens/pixelxpert-updates/stable/latestStable.json|g' \
+            app/src/main/java/sh/siava/pixelxpert/ui/fragments/UpdateFragment.java
+          sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert/canary/latestCanary.json|raw.githubusercontent.com/lars-martens/pixelxpert-updates/canary/latestCanary.json|g' \
             app/src/main/java/sh/siava/pixelxpert/ui/fragments/UpdateFragment.java
 
-          # module.prop
-          sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/lars-martens/PixelXpert-fork|g' \
+          # module.prop - point to public updates repo
+          sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/lars-martens/pixelxpert-updates|g' \
             MagiskModBase/module.prop
 
-          # All JSON update manifests
+          # JSON manifests - fix changelog URLs to public updates repo, zipUrls to fork releases
           for f in latestCanary.json latestVersion.json MagiskModuleUpdate_Xposed.json MagiskModuleUpdate_Full.json; do
             if [ -f "$f" ]; then
-              sed -i 's|siavash79/PixelXpert|lars-martens/PixelXpert-fork|g' "$f"
+              sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/lars-martens/pixelxpert-updates|g' "$f"
+              sed -i 's|github.com/siavash79/PixelXpert|github.com/lars-martens/PixelXpert-fork|g' "$f"
             fi
           done
 
@@ -111,10 +113,11 @@ jobs:
         run: |
           for f in latestCanary.json latestVersion.json MagiskModuleUpdate_Xposed.json MagiskModuleUpdate_Full.json; do
             if [ -f "$f" ]; then
-              sed -i 's|siavash79/PixelXpert|lars-martens/PixelXpert-fork|g' "$f"
+              sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/lars-martens/pixelxpert-updates|g' "$f"
+              sed -i 's|github.com/siavash79/PixelXpert|github.com/lars-martens/PixelXpert-fork|g' "$f"
             fi
           done
-          sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/lars-martens/PixelXpert-fork|g' MagiskModBase/module.prop
+          sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/lars-martens/pixelxpert-updates|g' MagiskModBase/module.prop
 
       - name: Commit version bump
         if: steps.check.outputs.behind != '0'
@@ -137,3 +140,19 @@ jobs:
           body: |
             Automated fork build with profile switch toggle patch.
             Synced from upstream siavash79/PixelXpert.
+
+      - name: Sync manifests to public updates repo
+        if: steps.check.outputs.behind != '0'
+        run: |
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/lars-martens/pixelxpert-updates.git /tmp/updates
+          cd /tmp/updates
+          git checkout canary
+          cp $GITHUB_WORKSPACE/latestCanary.json .
+          cp $GITHUB_WORKSPACE/MagiskModuleUpdate_Xposed.json .
+          cp $GITHUB_WORKSPACE/MagiskModuleUpdate_Full.json .
+          cp $GITHUB_WORKSPACE/CanaryChangelog.md .
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "sync: update manifests from fork build"
+          git push origin canary
