@@ -54,7 +54,8 @@ public final class Constants {
 	{
 		return new Intent()
 				.setAction(Constants.ACTION_SWITCH_APP_PROFILE)
-				.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+				.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+				.setPackage(APPLICATION_ID);
 	}
 
 }

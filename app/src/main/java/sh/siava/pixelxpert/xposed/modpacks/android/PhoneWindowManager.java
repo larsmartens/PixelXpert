@@ -234,6 +234,7 @@ public class PhoneWindowManager extends XposedModPack {
 		broadcast.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
 		broadcast.setAction(Constants.ACTION_PROFILE_SWITCH_AVAILABLE);
 		broadcast.putExtra("available", isAvailable);
+		broadcast.setPackage(sh.siava.pixelxpert.BuildConfig.APPLICATION_ID);
 		mContext.sendBroadcast(broadcast);
 	}
 }
