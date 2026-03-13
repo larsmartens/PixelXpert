@@ -34,7 +34,7 @@ public class OwnPrefsFragment extends ControlledPreferenceFragmentCompat {
 				.setOnPreferenceClickListener(preference -> {
 					try {
 						Intent intent = new Intent(Intent.ACTION_VIEW);
-						intent.setData(Uri.parse("https://github.com/larsmartens/PixelXpert-fork"));
+						intent.setData(Uri.parse("https://github.com/lars-martens/PixelXpert-fork"));
 						startActivity(intent);
 					} catch (Exception ignored) {
 						Toast.makeText(getContext(), getString(R.string.browser_not_found), Toast.LENGTH_SHORT).show();

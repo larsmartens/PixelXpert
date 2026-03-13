@@ -1,8 +1,8 @@
 {
-    "version": "canary-488",
-    "versionCode": 488,
+    "version": "canary-489",
+    "versionCode": 489,
     "buildDate": "",
-    "zipUrl_Xposed": "https://github.com/larsmartens/PixelXpert-fork/releases/download/canary_builds/PixelXpert.zip",
-    "zipUrl": "https://github.com/larsmartens/PixelXpert-fork/releases/download/canary_builds/PixelXpert.zip",
-    "changelog": "https://raw.githubusercontent.com/larsmartens/pixelxpert-updates/canary/CanaryChangelog.md"
+    "zipUrl_Xposed": "https://github.com/lars-martens/PixelXpert-fork/releases/download/canary_builds/PixelXpert.zip",
+    "zipUrl": "https://github.com/lars-martens/PixelXpert-fork/releases/download/canary_builds/PixelXpert.zip",
+    "changelog": "https://raw.githubusercontent.com/lars-martens/pixelxpert-updates/canary/CanaryChangelog.md"
 }
