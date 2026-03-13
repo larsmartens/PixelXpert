@@ -52,6 +52,16 @@
 					app:layout_constraintStart_toEndOf="@+id/currentVersionID"
 					app:layout_constraintTop_toTopOf="@+id/currentVersionID" />
 
+				<com.google.android.material.textview.MaterialTextView
+					android:id="@+id/updatedOnValueID"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="2dp"
+					android:textColor="?attr/colorOnSurfaceVariant"
+					android:textSize="12sp"
+					app:layout_constraintStart_toStartOf="parent"
+					app:layout_constraintTop_toBottomOf="@+id/currentVersionID" />
+
 				<LinearLayout
 					android:id="@+id/forkBanner"
 					android:layout_width="0dp"
@@ -63,7 +73,7 @@
 					android:background="@drawable/fork_banner_bg"
 					app:layout_constraintStart_toStartOf="parent"
 					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintTop_toBottomOf="@+id/currentVersionID">
+					app:layout_constraintTop_toBottomOf="@+id/updatedOnValueID">
 
 					<com.google.android.material.textview.MaterialTextView
 						android:layout_width="wrap_content"

@@ -8,16 +8,18 @@
 
   #find the last time we made a changelog
   LASTUPDATE=$(git log -100 | grep -B 4 "Version update: Release" | grep "commit" -m 1 | cut -d " " -f 2)
-  #find commits since - starting with the magic phrase
-  COMMITS=$(git rev-list $LASTUPDATE..HEAD --grep "^CHANGELOG: ")
+  #find all commits since last release
+  COMMITS=$(git rev-list $LASTUPDATE..HEAD)
   #separator is newline
   IFS=$'\n'
   for COMMIT in $COMMITS
   do
-    COMMITMSGS=$(git show $COMMIT --pretty=format:"%s" | grep "^CHANGELOG: " | tr -d '\0')
-      for LINE in $COMMITMSGS
-      do
-        #save in the temp file to be used by next script
-        echo "- "${LINE##*CHANGELOG: }"  " >> changeLog.md
-      done
+    SUBJECT=$(git show $COMMIT --pretty=format:"%s" --no-patch | tr -d '\0')
+    # skip merge commits and version bumps
+    if echo "$SUBJECT" | grep -qE "^(Merge |Version update: )"; then
+      continue
+    fi
+    # strip CHANGELOG: prefix for backwards compat
+    SUBJECT="${SUBJECT##CHANGELOG: }"
+    echo "- ${SUBJECT}  " >> changeLog.md
   done

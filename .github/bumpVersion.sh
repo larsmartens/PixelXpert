@@ -12,6 +12,9 @@ sed -i 's/versionCode=.*/versionCode='$NEWVERCODE'/' MagiskModBase/module.prop
 sed -i 's/"version":.*/"version": "'$NEWVERNAME'",/' latestCanary.json
 sed -i 's/"versionCode":.*/"versionCode": '$NEWVERCODE',/' latestCanary.json
 
+BUILDDATE=$(date -u +"%Y-%m-%d %H:%M UTC")
+sed -i 's/"buildDate":.*/"buildDate": "'"$BUILDDATE"'",/' latestCanary.json
+
 sed -i 's/"version":.*/"version": "'$NEWVERNAME'",/' MagiskModuleUpdate_Xposed.json
 sed -i 's/"versionCode":.*/"versionCode": '$NEWVERCODE',/' MagiskModuleUpdate_Xposed.json
 

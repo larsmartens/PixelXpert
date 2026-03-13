@@ -4,5 +4,5 @@ version=canary-488
 versionCode=488
 author=Pixel Xpert Team
 description=Xposed based module for customizations on Pixel roms. Android 13+
-updateJson=https://raw.githubusercontent.com/lars-martens/pixelxpert-updates/canary/MagiskModuleUpdate_Xposed.json
+updateJson=https://raw.githubusercontent.com/larsmartens/pixelxpert-updates/canary/MagiskModuleUpdate_Xposed.json
 minMagisk=25000

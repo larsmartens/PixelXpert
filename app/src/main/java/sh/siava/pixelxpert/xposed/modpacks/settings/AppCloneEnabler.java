@@ -13,7 +13,9 @@ import android.content.pm.PackageManager;
 import android.view.Menu;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import sh.siava.pixelxpert.R;
@@ -75,20 +77,23 @@ public class AppCloneEnabler extends XposedModPack {
 
 					int cloneUserID = getCloneUserID();
 
-					List<String> clonePackageNames = new ArrayList<>();
+					Set<String> clonePackageNames = new HashSet<>();
 					if (cloneUserID > 0) {
 						//noinspection unchecked
 						List<PackageInfo> cloneUserPackages = (List<PackageInfo>) callMethod(packageManager, "getInstalledPackagesAsUser", PackageManager.GET_ACTIVITIES, cloneUserID);
 
 						cloneUserPackages.forEach(clonePackage -> {
-							if (clonePackage.packageName != null)
+							if (clonePackage.packageName != null && isPackageInstalledForUser(packageManager, clonePackage.packageName, cloneUserID))
 								clonePackageNames.add(clonePackage.packageName);
 						});
 					}
 
 					for (PackageInfo installedPackage : packageManager.getInstalledPackages(PackageManager.GET_ACTIVITIES)) {
 						if (installedPackage.packageName != null && !installedPackage.packageName.isEmpty()) {
-							ApplicationInfo applicationInfo = packageManager.getApplicationInfo(installedPackage.packageName, PackageManager.GET_META_DATA);
+							ApplicationInfo applicationInfo = getApplicationInfoSafely(packageManager, installedPackage.packageName);
+							if (applicationInfo == null) {
+								continue;
+							}
 							//Clone user profile is present and many system apps are auto-cloned. We don't need to display them.
 							// For some reason, some system apps are not auto-cloned. We don't remove them from the list
 							if ((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0 && clonePackageNames.contains(installedPackage.packageName)) {
@@ -127,5 +132,21 @@ public class AppCloneEnabler extends XposedModPack {
 
 	private int getCloneUserID() {
 		return (int) UtilsClass.callStaticMethod("getCloneUserId", mContext);
+	}
+
+	private ApplicationInfo getApplicationInfoSafely(PackageManager packageManager, String packageName) {
+		try {
+			return packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+		} catch (PackageManager.NameNotFoundException ignored) {
+			return null;
+		}
+	}
+
+	private boolean isPackageInstalledForUser(PackageManager packageManager, String packageName, int userId) {
+		try {
+			return callMethod(packageManager, "getApplicationInfoAsUser", packageName, PackageManager.GET_META_DATA, userId) != null;
+		} catch (Throwable ignored) {
+			return false;
+		}
 	}
 }

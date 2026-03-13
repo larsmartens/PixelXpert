@@ -45,8 +45,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.security.auth.callback.Callback;
 
@@ -70,8 +73,8 @@ public class UpdateFragment extends BaseFragment {
 	public static final String MAGISK_MODULES_DIR = "/data/adb/modules";
 	private static final String updateRoot = String.format("%s/%s", MAGISK_UPDATE_DIR, MOD_NAME);
 
-	private static final String stableUpdatesURL = "https://raw.githubusercontent.com/lars-martens/pixelxpert-updates/stable/latestStable.json";
-	private static final String canaryUpdatesURL = "https://raw.githubusercontent.com/lars-martens/pixelxpert-updates/canary/latestCanary.json";
+	private static final String stableUpdatesURL = "https://raw.githubusercontent.com/larsmartens/pixelxpert-updates/stable/latestStable.json";
+	private static final String canaryUpdatesURL = "https://raw.githubusercontent.com/larsmartens/pixelxpert-updates/canary/latestCanary.json";
 	DownloadManager downloadManager;
 	long downloadID = 0; //from download manager
 	static boolean canaryUpdate = BuildConfig.VERSION_NAME.toLowerCase().contains("canary");
@@ -123,6 +126,7 @@ public class UpdateFragment extends BaseFragment {
 	private UpdateFragmentBinding binding;
 	private int currentVersionCode = -1;
 	private String currentVersionName = "";
+	private String deviceUpdatedOn = "";
 	private boolean rebootPending = false;
 	//	private boolean downloadStarted = false;
 
@@ -200,6 +204,10 @@ public class UpdateFragment extends BaseFragment {
 		String pendingRebootString = (rebootPending) ? " - " + getString(R.string.reboot_pending) : "";
 		((TextView) view.findViewById(R.id.currentVersionValueID)).setText(String.format("%s (%s)%s", currentVersionName, currentVersionCode, pendingRebootString));
 
+		if (!deviceUpdatedOn.isEmpty()) {
+			((TextView) view.findViewById(R.id.updatedOnValueID)).setText(getString(R.string.updated_on_device, deviceUpdatedOn));
+		}
+
 		if (rebootPending) {
 			binding.updateBtn.setEnabled(true);
 			binding.updateBtn.setText(R.string.reboot_word);
@@ -249,9 +257,12 @@ public class UpdateFragment extends BaseFragment {
 
 				if (getActivity() != null) {
 					requireActivity().runOnUiThread(() -> {
-						((TextView) view.findViewById(R.id.latestVersionValueID)).setText(
-								String.format("%s (%s)", result.get("version"),
-										result.get("versionCode")));
+						String buildDate = (String) result.get("buildDate");
+						String versionText = String.format("%s (%s)", result.get("version"), result.get("versionCode"));
+						if (buildDate != null && !buildDate.isEmpty()) {
+							versionText += " - Built " + buildDate;
+						}
+						((TextView) view.findViewById(R.id.latestVersionValueID)).setText(versionText);
 						int latestCode;
 						int BtnText = R.string.update_word;
 
@@ -331,6 +342,16 @@ public class UpdateFragment extends BaseFragment {
 			rebootPending = false;
 			currentVersionName = BuildConfig.VERSION_NAME;
 			currentVersionCode = BuildConfig.VERSION_CODE;
+		}
+
+		try {
+			List<String> statResult = Shell.cmd(String.format("stat -c %%Y %s/module.prop", moduleDir)).exec().getOut();
+			if (!statResult.isEmpty()) {
+				long epoch = Long.parseLong(statResult.get(0).trim());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+				deviceUpdatedOn = sdf.format(new Date(epoch * 1000));
+			}
+		} catch (Exception ignored) {
 		}
 	}
 
