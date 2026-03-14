@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Process;
 import android.view.Menu;
 
 import java.util.ArrayList;
@@ -182,10 +183,18 @@ public class AppCloneEnabler extends XposedModPack {
 					"getApplicationInfoAsUser",
 					packageName,
 					flags | PackageManager.MATCH_UNINSTALLED_PACKAGES,
-					mContext.getUserId()
+					getCurrentUserId()
 			);
 		} catch (Throwable ignored) {
 			return null;
+		}
+	}
+
+	private int getCurrentUserId() {
+		try {
+			return (int) callMethod(Process.myUserHandle(), "getIdentifier");
+		} catch (Throwable ignored) {
+			return 0;
 		}
 	}
 
