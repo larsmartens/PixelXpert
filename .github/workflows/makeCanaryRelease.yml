@@ -53,11 +53,13 @@ jobs:
       run: |
         for f in latestCanary.json latestVersion.json MagiskModuleUpdate_Xposed.json MagiskModuleUpdate_Full.json; do
           if [ -f "$f" ]; then
-            sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/larsmartens/pixelxpert-updates|g' "$f"
+            sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert/stable/latestStable.json|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@stable/latestStable.json|g' "$f"
+            sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert/canary/latestCanary.json|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@canary/latestCanary.json|g' "$f"
+            sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@canary|g' "$f"
             sed -i 's|github.com/siavash79/PixelXpert|github.com/larsmartens/PixelXpert-fork|g' "$f"
           fi
         done
-        sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|raw.githubusercontent.com/larsmartens/pixelxpert-updates|g' MagiskModBase/module.prop
+        sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@canary|g' MagiskModBase/module.prop
 
     - name: Upload Xposed Artifact to Actions
       uses: actions/upload-artifact@v4

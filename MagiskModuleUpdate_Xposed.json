@@ -2,5 +2,5 @@
   "version": "canary-489",
   "versionCode": 489,
   "zipUrl": "https://github.com/larsmartens/PixelXpert-fork/releases/download/canary_builds/PixelXpert.zip",
-  "changelog": "https://raw.githubusercontent.com/larsmartens/pixelxpert-updates/canary/CanaryChangelog.md"
+  "changelog": "https://cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@canary/CanaryChangelog.md"
 }
