@@ -142,7 +142,7 @@ jobs:
           draft: false
           artifacts: 'output/*.*'
           body: |
-            Automated fork build with profile switch toggle patch.
+            Automated fork build.
             Synced from upstream siavash79/PixelXpert.
 
       - name: Sync manifests to public updates repo

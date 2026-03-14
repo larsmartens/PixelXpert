@@ -1,3 +1,12 @@
+## Fork Changes
+
+This fork tracks upstream `siavash79/PixelXpert` and keeps a small fork-specific layer on top:
+
+- update metadata and release links point at the public `larsmartens` fork and `larsmartens/pixelxpert-updates`
+- the canary release workflow republishes fork manifests so in-app and Magisk updates resolve against the fork
+- Settings-side compatibility fixes are carried for cloned-app handling and stale retained package records
+- upstream changes are merged automatically by the scheduled sync workflow and built again when new upstream commits land
+
 ### For Pixel Stock Android 12 and 13 (Up to Nov 2022 - AOSP 13R8):  
 [![Latest Release for A12 & A13 up to Nov 2022](https://img.shields.io/badge/Download-v2.4.1-blue)](https://github.com/larsmartens/PixelXpert-fork/releases/tag/v2.4.1)  
 
