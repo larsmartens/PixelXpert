@@ -45,6 +45,7 @@ public class AppCloneEnabler extends XposedModPack {
 
 		ReflectedClass ClonedAppsPreferenceControllerClass = ReflectedClass.of("com.android.settings.applications.ClonedAppsPreferenceController");
 		ReflectedClass AppStateClonedAppsBridgeClass = ReflectedClass.of("com.android.settings.applications.AppStateClonedAppsBridge");
+		ReflectedClass ApplicationPackageManagerClass = ReflectedClass.of("android.app.ApplicationPackageManager");
 		ReflectedClass ManageApplicationsClass = ReflectedClass.of("com.android.settings.applications.manageapplications.ManageApplications");
 		UtilsClass = ReflectedClass.of("com.android.settings.Utils");
 
@@ -69,9 +70,9 @@ public class AppCloneEnabler extends XposedModPack {
 			}
 		});*/
 
-		AppStateClonedAppsBridgeClass
-				.afterConstruction()
-				.run(param -> {
+			AppStateClonedAppsBridgeClass
+					.afterConstruction()
+					.run(param -> {
 					ArrayList<String> packageList = new ArrayList<>();
 					PackageManager packageManager = mContext.getPackageManager();
 
@@ -104,8 +105,32 @@ public class AppCloneEnabler extends XposedModPack {
 						}
 					}
 
-					setObjectField(param.thisObject, "mAllowedApps", packageList);
-				});
+						setObjectField(param.thisObject, "mAllowedApps", packageList);
+					});
+
+			ApplicationPackageManagerClass
+					.after("getApplicationInfo")
+					.run(param -> {
+						Throwable throwable = param.getThrowable();
+						if (!(throwable instanceof PackageManager.NameNotFoundException)) {
+							return;
+						}
+						if (param.args.length < 2 || !(param.args[0] instanceof String)) {
+							return;
+						}
+						if (!isAppInfoStorageLookup()) {
+							return;
+						}
+
+						ApplicationInfo applicationInfo = getApplicationInfoIncludingUninstalled(
+								(PackageManager) param.thisObject,
+								(String) param.args[0],
+								extractFlags(param.args[1])
+						);
+						if (applicationInfo != null) {
+							param.setResult(applicationInfo);
+						}
+					});
 
 		//the way to manually clone the app
 /*		ReflectedClass CloneBackendClass = ReflectedClass.of("com.android.settings.applications.manageapplications.CloneBackend");
@@ -148,5 +173,35 @@ public class AppCloneEnabler extends XposedModPack {
 		} catch (Throwable ignored) {
 			return false;
 		}
+	}
+
+	private ApplicationInfo getApplicationInfoIncludingUninstalled(PackageManager packageManager, String packageName, int flags) {
+		try {
+			return (ApplicationInfo) callMethod(
+					packageManager,
+					"getApplicationInfoAsUser",
+					packageName,
+					flags | PackageManager.MATCH_UNINSTALLED_PACKAGES,
+					mContext.getUserId()
+			);
+		} catch (Throwable ignored) {
+			return null;
+		}
+	}
+
+	private int extractFlags(Object flagsArgument) {
+		if (flagsArgument instanceof Integer) {
+			return (int) flagsArgument;
+		}
+		return 0;
+	}
+
+	private boolean isAppInfoStorageLookup() {
+		for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+			if ("com.android.settings.spa.app.catalyst.AppInfoStorageScreen".equals(stackTraceElement.getClassName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
