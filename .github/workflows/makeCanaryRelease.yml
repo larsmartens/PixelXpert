@@ -80,8 +80,14 @@ jobs:
         artifacts: 'output/*.*'
 
     - name: Sync manifests to public updates repo
+      env:
+        UPDATES_REPO_TOKEN: ${{ secrets.UPDATES_REPO_TOKEN }}
       run: |
-        git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/larsmartens/pixelxpert-updates.git /tmp/updates
+        if [ -z "${UPDATES_REPO_TOKEN}" ]; then
+          echo "UPDATES_REPO_TOKEN is not configured"
+          exit 1
+        fi
+        git clone https://x-access-token:${UPDATES_REPO_TOKEN}@github.com/larsmartens/pixelxpert-updates.git /tmp/updates
         cd /tmp/updates
         git checkout canary
         cp $GITHUB_WORKSPACE/latestCanary.json .
