@@ -1,3 +1,14 @@
+**canary-490**  
+- fix: use repo token for updates sync  
+- chore: trigger fork canary release  
+- docs(fork): document fork maintenance changes  
+- fix(settings): use compatible user id lookup  
+- fix(updates): use larsmartens manifests via jsdelivr  
+- fix(settings): tolerate retained uninstalled app records  
+- chore(fork): repoint updates to public repo  
+- docs(fork): update remaining repository references  
+- fix(fork): refresh updates flow and harden cloned apps  
+  
 **canary-489**  
   
 **canary-488**  
