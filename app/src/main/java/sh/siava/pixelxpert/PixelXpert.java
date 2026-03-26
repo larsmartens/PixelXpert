@@ -12,6 +12,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
 import com.downloader.PRDownloader;
 import com.downloader.PRDownloaderConfig;
 import com.google.android.material.color.DynamicColors;
@@ -24,6 +26,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import dagger.hilt.android.HiltAndroidApp;
+import io.github.libxposed.service.XposedService;
+import io.github.libxposed.service.XposedServiceHelper;
 import sh.siava.pixelxpert.service.RootProvider;
 import sh.siava.pixelxpert.utils.ExtendedSharedPreferences;
 import sh.siava.pixelxpert.utils.PreferenceXMLParser;
@@ -42,6 +46,7 @@ public class PixelXpert extends Application {
 
 	private ServiceConnection mCoreRootServiceConnection;
 	private IRootProviderService mCoreRootService;
+	private XposedService mXposedService;
 
 	public void onCreate() {
 		super.onCreate();
@@ -57,6 +62,23 @@ public class PixelXpert extends Application {
 
 		tryConnectRootService();
 		DynamicColors.applyToActivitiesIfAvailable(this);
+
+		tryConnectXposedService(service -> {});
+	}
+
+	private void tryConnectXposedService(XposedServiceCallback callback) {
+		XposedServiceHelper.registerListener(new XposedServiceHelper.OnServiceListener() {
+			@Override
+			public void onServiceBind(@NonNull XposedService service) {
+				mXposedService = service;
+				callback.serviceReady(service);
+			}
+
+			@Override
+			public void onServiceDied(@NonNull XposedService service) {
+				mXposedService = null;
+			}
+		});
 	}
 
 	public ExtendedSharedPreferences getDefaultPreferences()
@@ -161,4 +183,17 @@ public class PixelXpert extends Application {
 		}
 	}
 
+	public void getXposedService(XposedServiceCallback callback)
+	{
+		if(mXposedService != null) {
+			callback.serviceReady(mXposedService);
+			return;
+		}
+		tryConnectXposedService(callback);
+	}
+
+	public interface XposedServiceCallback
+	{
+		void serviceReady(XposedService service);
+	}
 }
