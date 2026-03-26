@@ -45,17 +45,20 @@ import com.topjohnwu.superuser.ipc.RootService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import io.github.libxposed.service.XposedService;
 import sh.siava.pixelxpert.IRootProviderService;
+import sh.siava.pixelxpert.PixelXpert;
 import sh.siava.pixelxpert.R;
 import sh.siava.pixelxpert.databinding.FragmentHooksBinding;
-import sh.siava.pixelxpert.xposed.Constants;
-import sh.siava.pixelxpert.xposed.XPrefs;
 import sh.siava.pixelxpert.service.RootProvider;
 import sh.siava.pixelxpert.utils.AppUtils;
+import sh.siava.pixelxpert.xposed.Constants;
+import sh.siava.pixelxpert.xposed.XPrefs;
 
 public class HooksFragment extends BaseFragment {
 
@@ -68,6 +71,8 @@ public class HooksFragment extends BaseFragment {
 	private final List<String> hookedPackageList = new ArrayList<>();
 	private List<String> monitorPackageList;
 	private int dotCount = 0;
+	private XposedService mXposedService;
+	private List<String> mActiveScope = new ArrayList<>();
 	/**
 	 * @noinspection FieldCanBeLocal
 	 */
@@ -85,6 +90,22 @@ public class HooksFragment extends BaseFragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		XPrefs.init(requireContext());
+
+		PixelXpert.get().getXposedService(service -> {
+			mXposedService = service;
+			refreshScope();
+		});
+	}
+
+	private void refreshScope() {
+		if(mXposedService != null)
+		{
+			mActiveScope = mXposedService.getScope();
+		}
+		else
+		{
+			mActiveScope = new ArrayList<>();
+		}
 	}
 
 	@Override
@@ -191,6 +212,28 @@ public class HooksFragment extends BaseFragment {
 		}
 	};
 
+	private void requestScopeActivation(String pkgName, XposedService.OnScopeEventListener callback)
+	{
+		if(mXposedService == null)
+		{
+			callback.onScopeRequestFailed(getString(R.string.lsposed_not_found));
+			return;
+		}
+		mXposedService.requestScope(Collections.singletonList(pkgName), new XposedService.OnScopeEventListener() {
+			@Override
+			public void onScopeRequestApproved(@NonNull List<String> approved) {
+				XposedService.OnScopeEventListener.super.onScopeRequestApproved(approved);
+				callback.onScopeRequestApproved(approved);
+			}
+
+			@Override
+			public void onScopeRequestFailed(@NonNull String message) {
+				XposedService.OnScopeEventListener.super.onScopeRequestFailed(message);
+				callback.onScopeRequestFailed(message);
+			}
+		});
+	}
+
 	private void checkHookedPackages() {
 		hookedPackageList.clear();
 
@@ -257,16 +300,26 @@ public class HooksFragment extends BaseFragment {
 			activateInLSPosed.setOnClickListener(view -> {
 				activateInLSPosed.setEnabled(false);
 				try {
-					if (mRootServiceIPC.activateInLSPosed(filteredPack.get(finalI))) {
-						activateInLSPosed.animate().setDuration(300).withEndAction(() -> activateInLSPosed.setVisibility(GONE)).start();
-						Toast.makeText(requireContext(), getText(R.string.package_activated), Toast.LENGTH_SHORT).show();
-						binding.rebootButton.show();
-						rebootPending = true;
-					} else {
-						Toast.makeText(requireContext(), getText(R.string.package_activation_failed), Toast.LENGTH_SHORT).show();
-						activateInLSPosed.setEnabled(true);
-					}
-				} catch (RemoteException e) {
+					requestScopeActivation(filteredPack.get(finalI), new XposedService.OnScopeEventListener() {
+						@Override
+						public void onScopeRequestApproved(@NonNull List<String> approvedPacks) {
+							activateInLSPosed.post(() -> {
+								activateInLSPosed.animate().setDuration(300).withEndAction(() -> activateInLSPosed.setVisibility(GONE)).start();
+								Toast.makeText(requireContext(), getText(R.string.package_activated), Toast.LENGTH_SHORT).show();
+								binding.rebootButton.show();
+								rebootPending = true;
+							});
+						}
+
+						@Override
+						public void onScopeRequestFailed(@NonNull String reason) {
+							activateInLSPosed.post(() -> {
+								Toast.makeText(requireContext(), getText(R.string.package_activation_failed), Toast.LENGTH_SHORT).show();
+								activateInLSPosed.setEnabled(true);
+							});
+						}
+					});
+				} catch (Exception e) {
 					Toast.makeText(requireContext(), getText(R.string.package_activation_failed), Toast.LENGTH_SHORT).show();
 					activateInLSPosed.setEnabled(true);
 					Log.e(TAG, e.toString());
@@ -352,7 +405,7 @@ public class HooksFragment extends BaseFragment {
 				if (!isAppInstalled(pkgName)) {
 					description = getText(R.string.package_not_found).toString();
 					reason = "";
-				} else if (!checkLSPosedDB(pkgName)) {
+				} else if (!isPackageEnabledInScope(pkgName)) {
 					description = getText(R.string.package_not_hook_enabled).toString();
 					reason = getString(R.string.package_not_hook_enabled_info, getString(R.string.activate_in_lsposed));
 				} else if (hasBootLooped(pkgName)) {
@@ -375,13 +428,12 @@ public class HooksFragment extends BaseFragment {
 			if (!reason.isBlank()) {
 				TextView info = list.findViewById(R.id.reason);
 				info.setVisibility(VISIBLE);
-				info.setOnClickListener(view -> {
+				info.setOnClickListener(view ->
 					new MaterialAlertDialogBuilder(requireContext(), R.style.MaterialComponents_MaterialAlertDialog)
-							.setTitle(R.string.whats_wrong)
-							.setMessage(reason)
-							.setPositiveButton(R.string.okay, (dialog, which) -> dialog.dismiss())
-							.show();
-				});
+						.setTitle(R.string.whats_wrong)
+						.setMessage(reason)
+						.setPositiveButton(R.string.okay, (dialog, which) -> dialog.dismiss())
+						.show());
 			}
 		}
 	}
@@ -402,12 +454,9 @@ public class HooksFragment extends BaseFragment {
 		}
 	}
 
-	private boolean checkLSPosedDB(String pkgName) {
-		try {
-			return mRootServiceIPC.checkLSPosedDB(pkgName);
-		} catch (RemoteException e) {
-			return false;
-		}
+	private boolean isPackageEnabledInScope(String pkgName)
+	{
+		return mActiveScope.contains(pkgName);
 	}
 
 	private boolean hasBootLooped(String pkgName) {
@@ -457,12 +506,6 @@ public class HooksFragment extends BaseFragment {
 		if (savedInstanceState != null) {
 			rebootPending = savedInstanceState.getBoolean(reboot_key);
 		}
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		countDownTimer.cancel();
 	}
 
 	@Override
