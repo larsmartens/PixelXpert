@@ -1,3 +1,3 @@
-*canary-494* released in canary channel  
+*canary-495* released in canary channel  
   
 *Changelog:*  
