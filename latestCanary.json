@@ -1,7 +1,7 @@
 {
-    "version": "canary-496",
-    "versionCode": 496,
-    "buildDate": "2026-04-05 07:03 UTC",
+    "version": "canary-497",
+    "versionCode": 497,
+    "buildDate": "2026-04-11 06:59 UTC",
     "zipUrl_Xposed": "https://github.com/lars-martens/PixelXpert-fork/releases/download/canary_builds/PixelXpert.zip",
     "zipUrl": "https://github.com/lars-martens/PixelXpert-fork/releases/download/canary_builds/PixelXpert.zip",
     "changelog": "https://raw.githubusercontent.com/lars-martens/pixelxpert-updates/canary/CanaryChangelog.md"
