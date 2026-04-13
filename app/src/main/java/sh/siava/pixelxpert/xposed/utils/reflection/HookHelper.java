@@ -42,8 +42,16 @@ public class HookHelper {
 					}
 					else
 					{
-						param.result = chain.proceed(param.args);
+						try {
+							param.result = chain.proceed(param.args);
+						} catch (Throwable throwable) {
+							param.throwable = throwable;
+						}
 						callback.run(param);
+
+						if (param.throwable != null) {
+							throw param.throwable;
+						}
 						return param.result;
 					}
 				});
@@ -65,6 +73,7 @@ public class HookHelper {
 		public Executable method;
 		public Object[] args;
 		private Object result;
+		private Throwable throwable;
 		private boolean isResultSet = false;
 		public RunParam(Object thisObject, Executable method, Object[] args)
 		{
@@ -75,11 +84,22 @@ public class HookHelper {
 		public void setResult(Object result)
 		{
 			isResultSet = true;
+			throwable = null;
 			this.result = result;
 		}
 		public Object getResult()
 		{
 			return result;
+		}
+
+		public void setThrowable(Throwable throwable) {
+			isResultSet = false;
+			result = null;
+			this.throwable = throwable;
+		}
+
+		public Throwable getThrowable() {
+			return throwable;
 		}
 
 		@SuppressWarnings({"unchecked"})
