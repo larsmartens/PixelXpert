@@ -6,14 +6,13 @@ import android.content.Context;
 
 import com.crossbowffs.remotepreferences.RemotePreferences;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import sh.siava.rangesliderpreference.RangeSliderPreference;
 
 public class ExtendedRemotePreferences extends RemotePreferences {
-	public List<OnSharedPreferenceChangeListener> mOnSharedPreferenceChangeListeners = Collections.synchronizedList(new ArrayList<>());
+	public List<OnSharedPreferenceChangeListener> mOnSharedPreferenceChangeListeners = new CopyOnWriteArrayList<>();
 	boolean mIsPrefsInitiated;
 
 	//must be declared as field or it will be disposed by GC

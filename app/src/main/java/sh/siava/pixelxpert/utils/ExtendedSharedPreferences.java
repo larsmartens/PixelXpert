@@ -4,18 +4,17 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import sh.siava.rangesliderpreference.RangeSliderPreference;
 
 public class ExtendedSharedPreferences implements SharedPreferences {
 	public static final String IS_PREFS_INITIATED_KEY = "IsPrefsInitiated";
 	private final SharedPreferences prefs;
-	public List<OnSharedPreferenceChangeListener> mOnSharedPreferenceChangeListeners = Collections.synchronizedList(new ArrayList<>());
+	public List<OnSharedPreferenceChangeListener> mOnSharedPreferenceChangeListeners = new CopyOnWriteArrayList<>();
 	boolean mIsPrefsInitiated;
 
 	//must be a field or will be GCed
