@@ -36,6 +36,10 @@ jobs:
           echo "behind=$BEHIND" >> $GITHUB_OUTPUT
           echo "Upstream is $BEHIND commits ahead"
 
+      - name: Capture fork baseline
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Merge upstream
         if: steps.check.outputs.behind != '0'
         run: |
@@ -74,6 +78,15 @@ jobs:
           if ! git diff --quiet; then
             git add -A
             git commit -m "fix: re-apply fork URL overrides after upstream merge"
+          fi
+
+      - name: Restore fork workflows
+        if: steps.check.outputs.behind != '0'
+        run: |
+          git restore --source="${{ steps.base.outputs.sha }}" --staged --worktree .github/workflows || true
+          if ! git diff --quiet -- .github/workflows; then
+            git add .github/workflows
+            git commit -m "chore: preserve fork workflows after upstream sync"
           fi
 
       - name: Push
