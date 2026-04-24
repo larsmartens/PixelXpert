@@ -1,10 +1,11 @@
 #!/bin/bash
 
-NEWVERCODE=$(($(cat app/build.gradle.kts | grep versionCode | tr -s ' ' | cut -d "=" -f 2 | tr -d '\r' | tr -d ' ') + 1 ))
+CURRENTVERCODE=$(sed -n 's/^versionCode=//p' MagiskModBase/module.prop | head -n 1 | tr -d '\r' | tr -d ' ')
+NEWVERCODE=$((CURRENTVERCODE + 1))
 NEWVERNAME="canary-$NEWVERCODE"
 
-sed -i 's/versionCode.*/versionCode = '$NEWVERCODE'/' app/build.gradle.kts
-sed -i 's/versionName.*/versionName = "'$NEWVERNAME'"/' app/build.gradle.kts
+sed -i 's/^[[:space:]]*versionCode = .*/\t\tversionCode = '$NEWVERCODE'/' app/build.gradle.kts
+sed -i 's/^[[:space:]]*versionName = .*/\t\tversionName = "'$NEWVERNAME'"/' app/build.gradle.kts
 
 sed -i 's/version=.*/version='$NEWVERNAME'/' MagiskModBase/module.prop
 sed -i 's/versionCode=.*/versionCode='$NEWVERCODE'/' MagiskModBase/module.prop
