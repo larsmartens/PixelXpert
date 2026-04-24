@@ -1,3 +1,12 @@
+**canary-493**  
+- Fixing kill forground app (by pushing nexus launcher to work the way it should)  
+  
+**canary-492**  
+- Temporary workaround for hooks page not able to connect to Xposed service (until they fix it)  
+  
+**canary-491**  
+- testing the new canary buildscript - no module changes  
+  
 **canary-490**  
 - fix: use repo token for updates sync  
 - chore: trigger fork canary release  
