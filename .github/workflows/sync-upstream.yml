@@ -43,13 +43,13 @@ jobs:
       - name: Merge upstream
         if: steps.check.outputs.behind != '0'
         run: |
-          # Merge upstream, keeping our changes on conflict
-          git merge upstream/canary --no-edit -X ours || {
+          git merge upstream/canary --no-commit -X ours || {
             echo "Merge had conflicts, resolving with ours strategy"
             git checkout --ours .
             git add .
-            git commit --no-edit
           }
+          git restore --source="${{ steps.base.outputs.sha }}" --staged --worktree .github/workflows || true
+          git commit --no-edit
 
       - name: Re-apply fork URL overrides
         if: steps.check.outputs.behind != '0'
@@ -78,15 +78,6 @@ jobs:
           if ! git diff --quiet; then
             git add -A
             git commit -m "fix: re-apply fork URL overrides after upstream merge"
-          fi
-
-      - name: Restore fork workflows
-        if: steps.check.outputs.behind != '0'
-        run: |
-          git restore --source="${{ steps.base.outputs.sha }}" --staged --worktree .github/workflows || true
-          if ! git diff --quiet -- .github/workflows; then
-            git add .github/workflows
-            git commit -m "chore: preserve fork workflows after upstream sync"
           fi
 
       - name: Push
