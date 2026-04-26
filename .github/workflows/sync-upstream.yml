@@ -4,6 +4,17 @@ on:
   schedule:
     - cron: '0 6 * * *'  # Daily at 06:00 UTC
   workflow_dispatch:
+  push:
+    branches:
+      - 'canary'
+    paths-ignore:
+      - 'MagiskModBase/module.prop'
+      - 'app/build.gradle.kts'
+      - 'latestVersion.json'
+      - 'latestCanary.json'
+      - 'MagiskModuleUpdate_Xposed.json'
+      - 'MagiskModuleUpdate_Full.json'
+      - 'CanaryChangelog.md'
 
 jobs:
   sync:
@@ -35,6 +46,24 @@ jobs:
           BEHIND=$(git rev-list HEAD..upstream/canary --count)
           echo "behind=$BEHIND" >> $GITHUB_OUTPUT
           echo "Upstream is $BEHIND commits ahead"
+
+      - name: Decide whether to publish a release
+        id: release
+        run: |
+          SHOULD_RELEASE=false
+          REASON="no-op"
+
+          if [ "${{ github.event_name }}" = "push" ]; then
+            SHOULD_RELEASE=true
+            REASON="fork-push"
+          elif [ "${{ steps.check.outputs.behind }}" != "0" ]; then
+            SHOULD_RELEASE=true
+            REASON="upstream-sync"
+          fi
+
+          echo "should_release=$SHOULD_RELEASE" >> "$GITHUB_OUTPUT"
+          echo "reason=$REASON" >> "$GITHUB_OUTPUT"
+          echo "Release decision: $SHOULD_RELEASE ($REASON)"
 
       - name: Capture fork baseline
         id: base
@@ -85,7 +114,7 @@ jobs:
         run: git push origin canary
 
       - name: Setup JDK 17
-        if: steps.check.outputs.behind != '0'
+        if: steps.release.outputs.should_release == 'true'
         uses: actions/setup-java@v4
         with:
           java-version: '17'
@@ -93,21 +122,21 @@ jobs:
           cache: gradle
 
       - name: Grant permissions
-        if: steps.check.outputs.behind != '0'
+        if: steps.release.outputs.should_release == 'true'
         run: |
           chmod +x gradlew
           chmod +x .github/*.sh
 
       - name: Bump version
-        if: steps.check.outputs.behind != '0'
+        if: steps.release.outputs.should_release == 'true'
         run: .github/bumpVersion.sh ${{ github.run_id }}
 
       - name: Build release APK
-        if: steps.check.outputs.behind != '0'
+        if: steps.release.outputs.should_release == 'true'
         run: ./gradlew assembleDebug
 
       - name: Generate Magisk module zip
-        if: steps.check.outputs.behind != '0'
+        if: steps.release.outputs.should_release == 'true'
         run: |
           mkdir -p output
           cp app/build/outputs/apk/debug/PixelXpert.apk MagiskModBase/system/priv-app/PixelXpert/PixelXpert.apk
@@ -115,7 +144,7 @@ jobs:
           zip -r ../output/PixelXpert.zip *
 
       - name: Ensure fork URLs in bumped manifests
-        if: steps.check.outputs.behind != '0'
+        if: steps.release.outputs.should_release == 'true'
         run: |
           for f in latestCanary.json latestVersion.json MagiskModuleUpdate_Xposed.json MagiskModuleUpdate_Full.json; do
             if [ -f "$f" ]; then
@@ -128,14 +157,14 @@ jobs:
           sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@canary|g' MagiskModBase/module.prop
 
       - name: Commit version bump
-        if: steps.check.outputs.behind != '0'
+        if: steps.release.outputs.should_release == 'true'
         run: |
           git add -A
           git commit -m "Version update: Release (fork)" || true
           git push origin canary
 
       - name: Create/update release
-        if: steps.check.outputs.behind != '0'
+        if: steps.release.outputs.should_release == 'true'
         uses: ncipollo/release-action@v1
         with:
           tag: 'canary_builds'
@@ -147,10 +176,10 @@ jobs:
           artifacts: 'output/*.*'
           body: |
             Automated fork build.
-            Synced from upstream siavash79/PixelXpert.
+            Release reason: ${{ steps.release.outputs.reason }}.
 
       - name: Sync manifests to public updates repo
-        if: steps.check.outputs.behind != '0'
+        if: steps.release.outputs.should_release == 'true'
         env:
           UPDATES_REPO_TOKEN: ${{ secrets.UPDATES_REPO_TOKEN }}
         run: |
