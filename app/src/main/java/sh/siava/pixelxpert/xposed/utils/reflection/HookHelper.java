@@ -2,11 +2,14 @@ package sh.siava.pixelxpert.xposed.utils.reflection;
 
 import androidx.collection.ArraySet;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Set;
 
+import de.robv.android.xposed.XposedHelpers;
 import io.github.libxposed.api.XposedInterface;
 
 public class HookHelper {
@@ -25,6 +28,17 @@ public class HookHelper {
 			result.add(hookMethod(method, callback, runBefore, xposedInterface));
 		}
 		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@CanIgnoreReturnValue
+	public static <T> T callMethod(Object obj, String methodName, Object... args) {
+		return (T) XposedHelpers.callMethod(obj, methodName, args);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getObjectField(Object obj, String fieldName) {
+		return (T) XposedHelpers.getObjectField(obj, fieldName);
 	}
 
 	public static XposedInterface.HookHandle hookMethod(Executable hookMethod, ReflectedClass.ReflectionConsumer callback, boolean runBefore, XposedInterface xposedInterface) {
@@ -81,15 +95,23 @@ public class HookHelper {
 			this.method = method;
 			this.args = args;
 		}
+
 		public void setResult(Object result)
 		{
 			isResultSet = true;
 			throwable = null;
 			this.result = result;
 		}
-		public Object getResult()
+		@SuppressWarnings("unchecked")
+		public <T> T getResult()
 		{
-			return result;
+			return (T) result;
+		}
+
+		@SuppressWarnings("unchecked")
+		public <T> T getThisObject()
+		{
+			return (T) thisObject;
 		}
 
 		public void setThrowable(Throwable throwable) {
