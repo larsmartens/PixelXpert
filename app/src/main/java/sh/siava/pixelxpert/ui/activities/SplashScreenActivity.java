@@ -3,7 +3,6 @@ package sh.siava.pixelxpert.ui.activities;
 import static sh.siava.pixelxpert.utils.MiscUtils.getColorFromAttribute;
 
 import android.annotation.SuppressLint;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -35,9 +34,6 @@ public class SplashScreenActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		//making sure XposedService is bound prior to hook fragment needing it
-		PixelXpert.get().getXposedService(service -> {});
 
 		mBinding = ActivitySplashScreenBinding.inflate(getLayoutInflater());
 		setContentView(mBinding.getRoot());
@@ -92,22 +88,28 @@ public class SplashScreenActivity extends BaseActivity {
 				if (app.mRootServiceConnected.getCount() == 0) {
 					// Start the main activity
 					Intent intent = new Intent(SplashScreenActivity.this, SettingsActivity.class);
-					if (receivedIntent != null && receivedIntent.hasExtra(Intent.EXTRA_COMPONENT_NAME)) {
-						intent.putExtra(Intent.EXTRA_COMPONENT_NAME, receivedIntent.getParcelableExtra(Intent.EXTRA_COMPONENT_NAME, ComponentName.class));
+					Bundle extras = receivedIntent.getExtras();
+					if(extras != null)
+					{
+						intent.putExtras(extras);
 					}
+
 					startActivity(intent);
 					finish();
 				} else {
-					runOnUiThread(() ->
-							new MaterialAlertDialogBuilder(SplashScreenActivity.this, R.style.MaterialComponents_MaterialAlertDialog)
-									.setCancelable(false)
-									.setMessage(getText(R.string.root_service_failed))
-									.setPositiveButton(getText(R.string.exit), (dialog, i) -> System.exit(0))
-									.show());
+					showErrorAndExit(getText(R.string.root_service_failed));
 				}
-			} catch (InterruptedException ignored) {
-			}
+			} catch (InterruptedException ignored) {}
 		}).start();
+	}
+
+	private void showErrorAndExit(CharSequence message) {
+		runOnUiThread(() ->
+				new MaterialAlertDialogBuilder(SplashScreenActivity.this, R.style.MaterialComponents_MaterialAlertDialog)
+						.setCancelable(false)
+						.setMessage(message)
+						.setPositiveButton(getText(R.string.exit), (dialog, i) -> System.exit(0))
+						.show());
 	}
 
 	private void setCheckUIDone(int circularID, int doneImageID, boolean success) {
