@@ -49,6 +49,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
+import java.util.function.Consumer;
 
 import sh.siava.pixelxpert.BuildConfig;
 import sh.siava.pixelxpert.PixelXpert;
