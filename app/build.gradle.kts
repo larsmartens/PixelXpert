@@ -18,11 +18,18 @@ kotlin {
 
 android {
 	namespace = "sh.siava.pixelxpert"
-	compileSdk = 36
+	// compileSdk tracks the newest platform (Android 17 / API 37) so hooks and features can
+	// compile-reference new framework symbols. targetSdk is deliberately kept lower (see below).
+	compileSdk = 37
 
 	defaultConfig {
 		applicationId = "sh.siava.pixelxpert"
 		minSdk = 36
+		// Keep targetSdk at 36 on purpose. Only this APK's own (settings) process is governed by it;
+		// the hooked processes (SystemUI/SystemServer/Launcher) run under the OS's own targetSdk.
+		// Raising it to 37 would opt the settings app into Android 17's static-final-field immutability
+		// and memory limits, which fight the module's in-process reflection for no benefit. Do not bump
+		// without auditing in-process reflection first.
 		targetSdk = 36
 		versionCode = 497
 		versionName = "canary-497"
@@ -92,8 +99,8 @@ androidComponents {
 
 		tasks.named("preBuild").get().doLast {
 			artifactDir.get().asFile.listFiles()
-				.filter { it.name.equals(apkName) }
-				.forEach {
+				?.filter { it.name.equals(apkName) }
+				?.forEach {
 					it.delete()
 				}
 		}
@@ -103,8 +110,8 @@ androidComponents {
 			{
 				doLast {
 					artifactDir.get().asFile.listFiles()
-						.filter { it.extension == "apk" }
-						.forEach {
+						?.filter { it.extension == "apk" }
+						?.forEach {
 							if (it.exists() && !it.name.equals(apkName)) {
 								it.renameTo(File(it.parent, apkName))
 							}
