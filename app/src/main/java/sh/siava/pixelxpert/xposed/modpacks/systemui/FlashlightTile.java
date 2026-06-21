@@ -76,15 +76,15 @@ public class FlashlightTile extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass FlashlightTileClass = ReflectedClass.of("com.android.systemui.qs.tiles.FlashlightTile");
-		ReflectedClass QSTileImplClass = ReflectedClass.of("com.android.systemui.qs.tileimpl.QSTileImpl");
-		ReflectedClass DrawableIconClass = ReflectedClass.of("com.android.systemui.qs.tileimpl.QSTileImpl$DrawableIcon");
-		ReflectedClass FlashlightRepositoryImplClass = ReflectedClass.of("com.android.systemui.flashlight.data.repository.FlashlightRepositoryImpl");
-		ReflectedClass FlashlightTileWithLevelClass = ReflectedClass.of("com.android.systemui.qs.tiles.FlashlightTileWithLevel");
+		ReflectedClass FlashlightTileClass = ReflectedClass.ofIfPossible("com.android.systemui.qs.tiles.FlashlightTile");
+		ReflectedClass QSTileImplClass = ReflectedClass.ofIfPossible("com.android.systemui.qs.tileimpl.QSTileImpl");
+		ReflectedClass DrawableIconClass = ReflectedClass.ofIfPossible("com.android.systemui.qs.tileimpl.QSTileImpl$DrawableIcon");
+		ReflectedClass FlashlightRepositoryImplClass = ReflectedClass.ofIfPossible("com.android.systemui.flashlight.data.repository.FlashlightRepositoryImpl");
+		ReflectedClass FlashlightTileWithLevelClass = ReflectedClass.ofIfPossible("com.android.systemui.qs.tiles.FlashlightTileWithLevel");
 
 		ReflectedClass.of(CameraManager.class)
 				.before("turnOnTorchWithStrengthLevel")
-				.run(param -> {
+				.runSafe(param -> {
 					if(AnimateFlashlight) {
 						int level = (int) param.args[1];
 						SystemUtils.setFlash(true, level, !isFlashOn());
@@ -94,7 +94,7 @@ public class FlashlightTile extends XposedModPack {
 
 		FlashlightTileWithLevelClass
 				.after("handleUpdateState")
-				.run(param -> {
+				.runSafe(param -> {
 					if(leveledFlashTile) {
 						if(mTile == null)
 						{
@@ -115,7 +115,7 @@ public class FlashlightTile extends XposedModPack {
 
 		FlashlightRepositoryImplClass //loading last flash pct upon sysui restart - SystemUI builtin leveled tile
 				.after("loadFlashlightInfo")
-				.run(param -> {
+				.runSafe(param -> {
 					if(leveledFlashTile) {
 						String getCurrentUserIdMethodName = FlashlightRepositoryImplClass.findMethods(Pattern.compile("getCurrentUserId.*", Pattern.CASE_INSENSITIVE)).iterator().next().getName();
 						int currentUserId = (int) callMethod(param.thisObject, getCurrentUserIdMethodName);
@@ -127,7 +127,7 @@ public class FlashlightTile extends XposedModPack {
 				});
 		FlashlightRepositoryImplClass //saving flash level to SystemUI builtin leveled tile
 				.after("setLevel")
-				.run(param -> {
+				.runSafe(param -> {
 					if(leveledFlashTile) {
 						boolean persist = (boolean) param.args[1];
 						if (persist) {
@@ -139,14 +139,14 @@ public class FlashlightTile extends XposedModPack {
 
 		FlashlightTileClass
 				.before("newTileState") //constructor is optimized. this is a good substitute
-				.run(param -> {
+				.runSafe(param -> {
 					if(mTile == null)
 						mTile = param.thisObject;
 				});
 
 		FlashlightTileClass
 				.before("handleClick")
-				.run(param -> {
+				.runSafe(param -> {
 
 					Object state = getObjectField(param.thisObject, "mState");
 					boolean handlesSecondary = (boolean) getObjectField(state, "handlesSecondaryClick");
@@ -162,7 +162,7 @@ public class FlashlightTile extends XposedModPack {
 
 		FlashlightTileClass
 				.after("handleUpdateState")
-				.run(param -> {
+				.runSafe(param -> {
 					Object state = param.args[0];
 
 					setObjectField(state, "handlesSecondaryClick", leveledFlashTile);
@@ -183,7 +183,7 @@ public class FlashlightTile extends XposedModPack {
 
 		QSTileImplClass
 				.before("handleSecondaryClick")
-				.run(param -> {
+				.runSafe(param -> {
 					if(leveledFlashTile && param.thisObject == mTile)
 					{
 						ReflectedMethod
@@ -196,14 +196,14 @@ public class FlashlightTile extends XposedModPack {
 
 		FlashlightTileClass
 				.before("handleLongClick")
-				.run(param -> {
+				.runSafe(param -> {
 					if(leveledFlashTile && handleFlashLongClick())
 						param.setResult(null);
 				});
 
 		FlashlightTileClass
 				.after("newTileState")
-				.run(param ->
+				.runSafe(param ->
 						setObjectField(param.getResult(), "handlesLongClick", true));
 	}
 
