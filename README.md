@@ -4,7 +4,7 @@
 ### For Pixel Stock Android 13 (Dec 2022) to Android 16 (June 2025):  
 [![Latest Release A13 up to A16](https://img.shields.io/badge/Download-v4.3.0-blue)](https://github.com/lars-martens/PixelXpert-fork/releases/tag/v4.3.0)  
 
-### For Pixel Stock Android 16 QPR1 and newer:  
+### For Pixel Stock Android 16 QPR1 and newer (including Android 17):  
 [![Latest Release](https://img.shields.io/github/v/release/lars-martens/PixelXpert-fork?color=green&include_prereleases&label=Download%20Latest%20Stable)](https://github.com/lars-martens/PixelXpert-fork/releases/latest)
 [![Latest Canary Release](https://img.shields.io/badge/Download%20Latest-Canary-blue)](https://github.com/lars-martens/PixelXpert-fork/releases/tag/canary_builds)
 
@@ -39,7 +39,7 @@ Here is the compatibility chart according to different android versions and QPRs
 
 - Android 12/12.1 and 13 (up to Nov 2022): [final version: v2.4.1](https://github.com/lars-martens/PixelXpert-fork/releases/tag/v2.4.1).
 - Android 13 stable QPR3 to Android 16 (June 2022): [final version: v.4.3.0](https://github.com/lars-martens/PixelXpert-fork/releases/tag/v4.3.0).
-- Android 16 stable QPR1 and newer: [latest stable version](https://github.com/lars-martens/PixelXpert-fork/releases/latest)
+- Android 16 stable QPR1 and newer, and Android 17: [latest stable version](https://github.com/lars-martens/PixelXpert-fork/releases/latest)
 <hr>
 
 ### **Prerequisites:**
