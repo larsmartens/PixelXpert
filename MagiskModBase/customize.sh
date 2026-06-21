@@ -1,5 +1,6 @@
 PKGNAME="sh.siava.pixelxpert"
 PKGPATH="/system/priv-app/PixelXpert/PixelXpert.apk"
+MODID="PixelXpert"
 LSPDDBPATH="/data/adb/lspd/config/modules_config.db"
 MAGISKDBPATH="/data/adb/magisk.db"
 
@@ -13,6 +14,29 @@ resolveLspdDb(){
 		fi
 	done
 	return 1
+}
+
+# PixelXpert ships its APK as a system priv-app, so the module's system/ tree must stay mounted for
+# SystemUI to load it. This integrates with the mount layer optimally where possible and otherwise
+# falls back to the root solution's default mounting (which already works for a standard module).
+integrateMount(){
+	for dir in "/data/adb/modules/$MODID" "/data/adb/modules_update/$MODID"; do
+		[ -d "$dir" ] || continue
+		# Clear stale flags that would keep our priv-app unmounted on the next boot.
+		for flag in skip_mount mount_error disable; do
+			[ -f "$dir/$flag" ] && rm -f "$dir/$flag"
+		done
+	done
+
+	# Hybrid-Mount (Full/Lite): register an explicit rule so our priv-app is mounted deterministically
+	# via overlay (its default). Only added if absent, so user settings are never clobbered. When
+	# Hybrid-Mount is not installed this is skipped and standard module mounting applies (fallback).
+	HM_CONFIG="/data/adb/hybrid-mount/config.toml"
+	if [ -f "$HM_CONFIG" ] && [ -w "$HM_CONFIG" ] && ! grep -q "rules.$MODID" "$HM_CONFIG" 2>/dev/null; then
+		cp -f "$HM_CONFIG" "$HM_CONFIG.pxbak" 2>/dev/null
+		printf '\n[rules.%s]\ndefault_mode = "overlay"\n' "$MODID" >> "$HM_CONFIG"
+		ui_print "- Registered PixelXpert with Hybrid-Mount"
+	fi
 }
 
 prepareSQL(){
@@ -172,6 +196,8 @@ assertSupportedRom
 testKernelSU
 
 prepareSQL
+
+integrateMount
 
 ui_print ''
 ui_print ''

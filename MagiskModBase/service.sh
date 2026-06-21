@@ -99,6 +99,16 @@ activateModuleLSPD()
 	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"$PKGNAME\",0);" && runSQL
 } 
  
+# Self-heal: clear stale flags that a previous failed mount could have left behind, so a transient
+# mount failure doesn't keep our priv-app unmounted (and SystemUI without PixelXpert) on every boot.
+selfHealMount(){
+	for flag in skip_mount mount_error; do
+		[ -f "$MODDIR/$flag" ] && rm -f "$MODDIR/$flag"
+	done
+}
+
+selfHealMount
+
 prepareSQL
 
 grantRootApps
