@@ -68,16 +68,16 @@ public class NotificationExpander extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass NotificationStackScrollLayoutClass = ReflectedClass.of("com.android.systemui.statusbar.notification.stack.NotificationStackScrollLayout");
-		ReflectedClass FooterViewButtonClass = ReflectedClass.of("com.android.systemui.statusbar.notification.row.FooterViewButton");
+		ReflectedClass NotificationStackScrollLayoutClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.notification.stack.NotificationStackScrollLayout");
+		ReflectedClass FooterViewButtonClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.notification.row.FooterViewButton");
 		ReflectedClass NotifCollectionClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.notification.collection.NotifCollection");
-		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.of("com.android.systemui.shade.NotificationPanelViewController");
-		ReflectedClass FooterViewClass = ReflectedClass.of("com.android.systemui.statusbar.notification.footer.ui.view.FooterView");
+		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.NotificationPanelViewController");
+		ReflectedClass FooterViewClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.notification.footer.ui.view.FooterView");
 
 		//region default notification state
 		NotificationPanelViewControllerClass
 				.before("notifyExpandingStarted")
-				.run(param -> {
+				.runSafe(param -> {
 					if(notificationDefaultExpansion != DEFAULT)
 						expandAll(notificationDefaultExpansion == EXPAND_ALWAYS);
 				});
@@ -86,11 +86,11 @@ public class NotificationExpander extends XposedModPack {
 		//Notification Footer, where shortcuts should live
 		FooterViewClass
 				.after(Pattern.compile("updateColors.*"))
-				.run(param -> updateFooterBtn());
+				.runSafe(param -> updateFooterBtn());
 
 		FooterViewClass
 				.after("onFinishInflate")
-				.run(param -> {
+				.runSafe(param -> {
 					FooterView = (FrameLayout) param.thisObject;
 
 					FooterView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
@@ -144,19 +144,19 @@ public class NotificationExpander extends XposedModPack {
 		//theme changed
 		FooterViewClass
 				.after("updateColors")
-				.run(param -> updateFooterBtn());
+				.runSafe(param -> updateFooterBtn());
 
 		//grab notification container manager
 		if (NotifCollectionClass.getClazz() != null) {
 			NotifCollectionClass
 					.afterConstruction()
-					.run(param -> NotifCollection = param.thisObject);
+					.runSafe(param -> NotifCollection = param.thisObject);
 		}
 
 		//grab notification scroll page
 		NotificationStackScrollLayoutClass
 				.afterConstruction()
-				.run(param -> Scroller = (View) param.thisObject);
+				.runSafe(param -> Scroller = (View) param.thisObject);
 	}
 
 	private void updateFooterBtn() {

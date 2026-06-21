@@ -50,17 +50,17 @@ public class ClearAllButtonMod extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass OverviewActionsViewClass = ReflectedClass.of("com.android.quickstep.views.OverviewActionsView");
-		ReflectedClass RecentsViewClass = ReflectedClass.of("com.android.quickstep.views.RecentsView");
+		ReflectedClass OverviewActionsViewClass = ReflectedClass.ofIfPossible("com.android.quickstep.views.OverviewActionsView");
+		ReflectedClass RecentsViewClass = ReflectedClass.ofIfPossible("com.android.quickstep.views.RecentsView");
 		Method dismissAllTasksMethod = findMethodBestMatch(RecentsViewClass.getClazz(), "dismissAllTasks", View.class);
 
 		RecentsViewClass
 				.afterConstruction()
-				.run(param -> recentView = param.thisObject);
+				.runSafe(param -> recentView = param.thisObject);
 
 		RecentsViewClass
 				.after("setColorTint")
-				.run(param -> {
+				.runSafe(param -> {
 					if (!RecentClearAllReposition) return;
 
 					clearAllIcon.getDrawable().setTintList(getThemedColor(mContext));
@@ -68,7 +68,7 @@ public class ClearAllButtonMod extends XposedModPack {
 
 		RecentsViewClass
 				.after("setVisibility")
-				.run(param -> {
+				.runSafe(param -> {
 					if (clearAllButton == null) return;
 
 					clearAllButton.setVisibility((Integer) param.args[0]);
@@ -76,7 +76,7 @@ public class ClearAllButtonMod extends XposedModPack {
 
 		OverviewActionsViewClass
 				.before("onFinishInflate")
-				.run(param -> {
+				.runSafe(param -> {
 					if (!RecentClearAllReposition) return;
 
 					clearAllButton = new FrameLayout(mContext);

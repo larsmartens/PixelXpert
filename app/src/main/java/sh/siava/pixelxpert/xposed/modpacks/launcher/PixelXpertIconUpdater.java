@@ -24,12 +24,12 @@ public class PixelXpertIconUpdater extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass LauncherModelClass = ReflectedClass.of("com.android.launcher3.LauncherModel");
-		ReflectedClass BaseActivityClass = ReflectedClass.of("com.android.launcher3.BaseActivity");
+		ReflectedClass LauncherModelClass = ReflectedClass.ofIfPossible("com.android.launcher3.LauncherModel");
+		ReflectedClass BaseActivityClass = ReflectedClass.ofIfPossible("com.android.launcher3.BaseActivity");
 
 		BaseActivityClass
 				.after("onResume")
-				.run(param -> {
+				.runSafe(param -> {
 					try {
 						XposedHelpers.callMethod(LauncherModel, "onAppIconChanged", BuildConfig.APPLICATION_ID, UserHandle.getUserHandleForUid(0));
 					}catch (Throwable ignored){}
@@ -37,6 +37,6 @@ public class PixelXpertIconUpdater extends XposedModPack {
 
 		LauncherModelClass
 				.afterConstruction()
-				.run(param -> LauncherModel = param.thisObject);
+				.runSafe(param -> LauncherModel = param.thisObject);
 	}
 }

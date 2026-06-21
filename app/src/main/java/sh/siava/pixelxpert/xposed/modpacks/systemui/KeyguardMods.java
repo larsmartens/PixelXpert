@@ -151,29 +151,29 @@ public class KeyguardMods extends XposedModPack {
 	@SuppressLint({"DiscouragedApi", "DefaultLocale"})
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass CarrierTextControllerClass = ReflectedClass.of("com.android.keyguard.CarrierTextController");
-		ReflectedClass KeyguardIndicationControllerClass = ReflectedClass.of("com.android.systemui.statusbar.KeyguardIndicationController");
-		ReflectedClass ScrimControllerClass = ReflectedClass.of("com.android.systemui.statusbar.phone.ScrimController");
-		ReflectedClass ScrimStateEnum = ReflectedClass.of("com.android.systemui.statusbar.phone.ScrimState");
-		ReflectedClass KeyguardStatusBarViewClass = ReflectedClass.of("com.android.systemui.statusbar.phone.KeyguardStatusBarView");
-		ReflectedClass CentralSurfacesImplClass = ReflectedClass.of("com.android.systemui.statusbar.phone.CentralSurfacesImpl");
-		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.of("com.android.systemui.shade.NotificationPanelViewController"); //used to launch camera
-		ReflectedClass AmbientDisplayConfigurationClass = ReflectedClass.of("android.hardware.display.AmbientDisplayConfiguration");
-		ReflectedClass DefaultShortcutsSectionClass = ReflectedClass.of("com.android.systemui.keyguard.ui.view.layout.sections.DefaultShortcutsSection");
-		ReflectedClass SmartspaceSectionClass = ReflectedClass.of("com.android.systemui.keyguard.ui.view.layout.sections.SmartspaceSection");
-		ReflectedClass DefaultNotificationStackScrollLayoutSectionClass = ReflectedClass.of("com.android.systemui.keyguard.ui.view.layout.sections.DefaultNotificationStackScrollLayoutSection");
-		ReflectedClass KeyguardIndicationControllerGoogleClass = ReflectedClass.of("com.google.android.systemui.statusbar.KeyguardIndicationControllerGoogle");
+		ReflectedClass CarrierTextControllerClass = ReflectedClass.ofIfPossible("com.android.keyguard.CarrierTextController");
+		ReflectedClass KeyguardIndicationControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.KeyguardIndicationController");
+		ReflectedClass ScrimControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.ScrimController");
+		ReflectedClass ScrimStateEnum = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.ScrimState");
+		ReflectedClass KeyguardStatusBarViewClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.KeyguardStatusBarView");
+		ReflectedClass CentralSurfacesImplClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.CentralSurfacesImpl");
+		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.NotificationPanelViewController"); //used to launch camera
+		ReflectedClass AmbientDisplayConfigurationClass = ReflectedClass.ofIfPossible("android.hardware.display.AmbientDisplayConfiguration");
+		ReflectedClass DefaultShortcutsSectionClass = ReflectedClass.ofIfPossible("com.android.systemui.keyguard.ui.view.layout.sections.DefaultShortcutsSection");
+		ReflectedClass SmartspaceSectionClass = ReflectedClass.ofIfPossible("com.android.systemui.keyguard.ui.view.layout.sections.SmartspaceSection");
+		ReflectedClass DefaultNotificationStackScrollLayoutSectionClass = ReflectedClass.ofIfPossible("com.android.systemui.keyguard.ui.view.layout.sections.DefaultNotificationStackScrollLayoutSection");
+		ReflectedClass KeyguardIndicationControllerGoogleClass = ReflectedClass.ofIfPossible("com.google.android.systemui.statusbar.KeyguardIndicationControllerGoogle");
 
 		ReflectedClass.of(CameraManager.class)
 				.before("setTorchMode")
-				.run(param -> {
+				.runSafe(param -> {
 					SystemUtils.setFlash((Boolean) param.args[1], AnimateFlashlight);
 					param.setResult(null);
 				});
 
 		DefaultShortcutsSectionClass
 				.after("addViews")
-				.run(param -> {
+				.runSafe(param -> {
 					Resources res = mContext.getResources();
 
 					ControlledLaunchableImageViewBackgroundDrawable.captureDrawable(
@@ -191,7 +191,7 @@ public class KeyguardMods extends XposedModPack {
 
 		DefaultNotificationStackScrollLayoutSectionClass
 				.after("applyConstraints")
-				.run(param -> {
+				.runSafe(param -> {
 					Object constraintSet = param.args[0];
 
 					callMethod(constraintSet,
@@ -204,7 +204,7 @@ public class KeyguardMods extends XposedModPack {
 
 		SmartspaceSectionClass
 				.after("addViews")
-				.run(param -> {
+				.runSafe(param -> {
 					try {
 						if(mComposeKGMiddleCustomTextView == null) {
 							mComposeKGMiddleCustomTextView = new TextView(mContext);
@@ -231,7 +231,7 @@ public class KeyguardMods extends XposedModPack {
 
 		AmbientDisplayConfigurationClass
 				.after("alwaysOnEnabled")
-				.run(param -> {
+				.runSafe(param -> {
 					if(ForceAODwCharging) {
 						param.setResult((boolean) param.getResult() || isCharging());
 					}
@@ -239,19 +239,19 @@ public class KeyguardMods extends XposedModPack {
 
 		NotificationPanelViewControllerClass
 				.before("startUnlockHintAnimation")
-				.run(param -> {
+				.runSafe(param -> {
 					if(DisableUnlockHintAnimation) param.setResult(null);
 				});
 
 		//needed to extract wallpaper colors and capabilities. This is a SysUIColorExtractor
 		CentralSurfacesImplClass
 				.afterConstruction()
-				.run(param -> mColorExtractor = getObjectField(param.thisObject, "mColorExtractor"));
+				.runSafe(param -> mColorExtractor = getObjectField(param.thisObject, "mColorExtractor"));
 
 		//region hide user avatar
 		KeyguardStatusBarViewClass
 				.after("updateVisibilities")
-				.run(param -> {
+				.runSafe(param -> {
 					View mMultiUserAvatar = (View) getObjectField(param.thisObject, "mMultiUserAvatar");
 					boolean mIsUserSwitcherEnabled = getBooleanField(param.thisObject, "mIsUserSwitcherEnabled");
 					mMultiUserAvatar.setVisibility(!HideLockScreenUserAvatar && mIsUserSwitcherEnabled
@@ -264,12 +264,12 @@ public class KeyguardMods extends XposedModPack {
 
 		KeyguardIndicationControllerGoogleClass
 				.afterConstruction()
-				.run(param ->
+				.runSafe(param ->
 						KeyguardIndicationController = param.thisObject);
 
 		KeyguardIndicationControllerGoogleClass
 				.after("computePowerIndication")
-				.run(param -> {
+				.runSafe(param -> {
 					if (ShowChargingInfo) {
 						String result = (String) param.getResult();
 
@@ -302,7 +302,7 @@ public class KeyguardMods extends XposedModPack {
 		//region keyguardDimmer
 		ScrimControllerClass
 				.before(Pattern.compile("scheduleUpdate.*"))
-				.run(param -> {
+				.runSafe(param -> {
 					if (KeyGuardDimAmount < 0 || KeyGuardDimAmount > 1) return;
 
 					setObjectField(param.thisObject, "mScrimBehindAlphaKeyguard", KeyGuardDimAmount);
@@ -314,7 +314,7 @@ public class KeyguardMods extends XposedModPack {
 
 		ReflectedClass.of(WallpaperManager.class)
 				.after("getWallpaperDimAmount")
-				.run(param -> {
+				.runSafe(param -> {
 					//noinspection ConstantValue
 					if ((KeyGuardDimAmount < 0 || KeyGuardDimAmount > 1)
 							|| param.getResult().equals(WALLPAPER_DIM_AMOUNT_DIMMED))
@@ -331,13 +331,13 @@ public class KeyguardMods extends XposedModPack {
 
 		CarrierTextControllerClass
 				.after("onInit")
-				.run(param -> {
+				.runSafe(param -> {
 					carrierTextController = param.thisObject;
 					Object carrierTextCallback = getObjectField(carrierTextController, "mCarrierTextCallback");
 					setCarrierText();
 					ReflectedClass.of(carrierTextCallback.getClass())
 							.before("updateCarrierInfo")
-							.run(param1 -> {
+							.runSafe(param1 -> {
 								if (customCarrierTextEnabled)
 									param1.setResult(null);
 							});
@@ -346,7 +346,7 @@ public class KeyguardMods extends XposedModPack {
 		//a way to know when the device goes to AOD/dozing
 		KeyguardIndicationControllerClass
 				.after("updateDeviceEntryIndication")
-				.run(param -> {
+				.runSafe(param -> {
 					if (mDozing != (boolean) getObjectField(param.thisObject, "mDozing")) {
 						mDozing = !mDozing;
 						setMiddleColor();

@@ -76,14 +76,14 @@ public class DepthWallpaper extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass CanvasEngineClass = ReflectedClass.of("com.android.systemui.wallpapers.ImageWallpaper$CanvasEngine");
-		ReflectedClass ScrimViewClass = ReflectedClass.of("com.android.systemui.scrim.ScrimView");
-		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.of("com.android.systemui.shade.NotificationPanelViewController");
-		ReflectedClass AodBurnInSectionClass = ReflectedClass.of("com.android.systemui.keyguard.ui.view.layout.sections.AodBurnInSection");
+		ReflectedClass CanvasEngineClass = ReflectedClass.ofIfPossible("com.android.systemui.wallpapers.ImageWallpaper$CanvasEngine");
+		ReflectedClass ScrimViewClass = ReflectedClass.ofIfPossible("com.android.systemui.scrim.ScrimView");
+		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.NotificationPanelViewController");
+		ReflectedClass AodBurnInSectionClass = ReflectedClass.ofIfPossible("com.android.systemui.keyguard.ui.view.layout.sections.AodBurnInSection");
 
 		AodBurnInSectionClass
 				.after("addViews")
-				.run(param -> {
+				.runSafe(param -> {
 					View entryV = (View) param.args[0];
 
 					if(!DWallpaperEnabled) return;
@@ -108,7 +108,7 @@ public class DepthWallpaper extends XposedModPack {
 
 		ScrimViewClass
 				.before("setViewAlpha")
-				.run(param -> {
+				.runSafe(param -> {
 					if(!mLayersCreated) return;
 
 					setDepthWallpaper();
@@ -136,7 +136,7 @@ public class DepthWallpaper extends XposedModPack {
 
 		CanvasEngineClass
 				.after("onSurfaceDestroyed")
-				.run(param -> {
+				.runSafe(param -> {
 					if(DWallpaperEnabled && isLockScreenWallpaper(param.thisObject))
 					{
 						invalidateLSWSC();
@@ -145,7 +145,7 @@ public class DepthWallpaper extends XposedModPack {
 
 		CanvasEngineClass
 				.after("onCreate")
-				.run(param -> {
+				.runSafe(param -> {
 					if(
 							callMethod(
 									getObjectField(param.thisObject, "mWallpaperManager"),
@@ -160,7 +160,7 @@ public class DepthWallpaper extends XposedModPack {
 
 		CanvasEngineClass
 				.after("drawFrameOnCanvas")
-				.run(param -> {
+				.runSafe(param -> {
 					if(wallpaperProcessorThread[0] != null)
 					{
 						wallpaperProcessorThread[0].interrupt();
@@ -226,7 +226,7 @@ public class DepthWallpaper extends XposedModPack {
 
 		NotificationPanelViewControllerClass
 				.afterConstruction()
-				.run(param -> mScrimController = getObjectField(param.thisObject, "mScrimController"));
+				.runSafe(param -> mScrimController = getObjectField(param.thisObject, "mScrimController"));
 	}
 
 	private void viewAttached(View entryV) {

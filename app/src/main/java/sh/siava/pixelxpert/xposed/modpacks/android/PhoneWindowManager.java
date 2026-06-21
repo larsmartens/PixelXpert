@@ -189,11 +189,11 @@ public class PhoneWindowManager extends XposedModPack {
 		}
 
 		try {
-			ReflectedClass PhoneWindowManagerClass = ReflectedClass.of("com.android.server.policy.PhoneWindowManager");
+			ReflectedClass PhoneWindowManagerClass = ReflectedClass.ofIfPossible("com.android.server.policy.PhoneWindowManager");
 
 			PhoneWindowManagerClass
 					.before("onDefaultDisplayFocusChangedLw")
-					.run(param -> {
+					.runSafe(param -> {
 						if (param.args[0] == null) return;
 						if (!appProfileSwitchEnabled || userHandleList.size() <= 1) return;
 
@@ -226,7 +226,7 @@ public class PhoneWindowManager extends XposedModPack {
 
 			PhoneWindowManagerClass
 					.after("enableScreen")
-					.run(param -> windowMan = param.thisObject);
+					.runSafe(param -> windowMan = param.thisObject);
 		} catch (Throwable ignored) {
 		}
 	}

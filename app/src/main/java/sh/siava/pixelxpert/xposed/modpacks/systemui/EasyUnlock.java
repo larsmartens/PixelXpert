@@ -113,7 +113,7 @@ public class EasyUnlock extends XposedModPack {
 
 		KeyguardAbsKeyInputViewControllerClass
 				.after("onPasswordChecked")
-				.run(param -> {
+				.runSafe(param -> {
 					if (!easyUnlockEnabled) return;
 
 					boolean successful = (boolean) param.args[1];

@@ -27,11 +27,11 @@ public class FingerprintWhileDozing extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass KeyguardUpdateMonitorClass = ReflectedClass.of("com.android.keyguard.KeyguardUpdateMonitor");
+		ReflectedClass KeyguardUpdateMonitorClass = ReflectedClass.ofIfPossible("com.android.keyguard.KeyguardUpdateMonitor");
 
 		KeyguardUpdateMonitorClass
 				.before("shouldListenForFingerprint")
-				.run(param -> {
+				.runSafe(param -> {
 					if (fingerprintWhileDozing) return;
 
 					if(!getBooleanField(param.thisObject, "mDeviceInteractive"))

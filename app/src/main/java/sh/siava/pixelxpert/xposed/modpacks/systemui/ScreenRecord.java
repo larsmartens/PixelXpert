@@ -31,7 +31,7 @@ public class ScreenRecord extends XposedModPack {
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		ReflectedClass.of(MediaProjection.class)
 				.before("createVirtualDisplay")
-				.run(param -> {
+				.runSafe(param -> {
 					if(InsecureScreenRecord
 							&& ((Method) param.method).getParameterCount() == 8)
 					{

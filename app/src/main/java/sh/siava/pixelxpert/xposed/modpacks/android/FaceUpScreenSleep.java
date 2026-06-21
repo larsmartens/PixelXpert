@@ -56,13 +56,13 @@ public class FaceUpScreenSleep extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass FaceDownDetectorClass = ReflectedClass.of("com.android.server.power.FaceDownDetector");
-		ReflectedClass PowerManagerServiceClass = ReflectedClass.of("com.android.server.power.PowerManagerService");
+		ReflectedClass FaceDownDetectorClass = ReflectedClass.ofIfPossible("com.android.server.power.FaceDownDetector");
+		ReflectedClass PowerManagerServiceClass = ReflectedClass.ofIfPossible("com.android.server.power.PowerManagerService");
 
 		List<Set<XposedInterface.HookHandle>> unHooks = new ArrayList<>();
 		unHooks.add(PowerManagerServiceClass
 				.after("updatePowerStateLocked")
-				.run(param -> {
+				.runSafe(param -> {
 					mPowerManagerServiceInstance = param.thisObject;
 					unHooks.get(0).forEach(XposedInterface.HookHandle::unhook);
 					unHooks.clear();
@@ -70,7 +70,7 @@ public class FaceUpScreenSleep extends XposedModPack {
 
 		FaceDownDetectorClass
 				.after("onSensorChanged")
-				.run(param -> {
+				.runSafe(param -> {
 					//noinspection ConstantValue
 					if(!SleepOnFlatScreen || getBooleanField(param.thisObject, "mFaceDown")) return; //device is already facing down or feature not enabled
 
@@ -135,7 +135,7 @@ public class FaceUpScreenSleep extends XposedModPack {
 		if(mGroupIDs != null)
 			return mGroupIDs;
 
-		ReflectedClass IntArrayClass = ReflectedClass.of("android.util.IntArray");
+		ReflectedClass IntArrayClass = ReflectedClass.ofIfPossible("android.util.IntArray");
 		mGroupIDs = IntArrayClass.getClazz().getConstructor().newInstance();
 
 		SparseArray<?> mPowerGroups = (SparseArray<?>) getObjectField(mPowerManagerServiceInstance, "mPowerGroups");

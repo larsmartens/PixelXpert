@@ -57,13 +57,13 @@ public class VolumeTile extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass CustomTileClass = ReflectedClass.of("com.android.systemui.qs.external.CustomTile");
-		ReflectedClass QSFactoryImplClass = ReflectedClass.of("com.android.systemui.qs.tileimpl.QSFactoryImpl");
-		ReflectedClass QSTileImplClass = ReflectedClass.of("com.android.systemui.qs.tileimpl.QSTileImpl");
+		ReflectedClass CustomTileClass = ReflectedClass.ofIfPossible("com.android.systemui.qs.external.CustomTile");
+		ReflectedClass QSFactoryImplClass = ReflectedClass.ofIfPossible("com.android.systemui.qs.tileimpl.QSFactoryImpl");
+		ReflectedClass QSTileImplClass = ReflectedClass.ofIfPossible("com.android.systemui.qs.tileimpl.QSTileImpl");
 
 		QSFactoryImplClass
 				.before("createTile")
-				.run(param -> {
+				.runSafe(param -> {
 					String arg = param.getArg(0);
 					if(arg.contains(VolumeTileService.class.getSimpleName())) {
 						mNextTileIsVolume = true;
@@ -72,7 +72,7 @@ public class VolumeTile extends XposedModPack {
 
 		QSFactoryImplClass
 				.after("createTile")
-				.run(param -> {
+				.runSafe(param -> {
 					String arg = (String) param.args[0];
 					if(arg.contains(VolumeTileService.class.getSimpleName()))
 					{
@@ -111,7 +111,7 @@ public class VolumeTile extends XposedModPack {
 
 		CustomTileClass
 				.after("newTileState")
-				.run(param -> {
+				.runSafe(param -> {
 					if(mNextTileIsVolume)
 					{
 						Object state = param.getResult();
@@ -121,7 +121,7 @@ public class VolumeTile extends XposedModPack {
 
 		CustomTileClass
 				.after("handleClick")
-				.run(param -> {
+				.runSafe(param -> {
 					if(param.thisObject == mTile)
 					{
 						handleVolumeLongClick();
@@ -130,7 +130,7 @@ public class VolumeTile extends XposedModPack {
 
 		QSTileImplClass
 				.before("handleSecondaryClick")
-				.run(param -> {
+				.runSafe(param -> {
 					if(param.thisObject == mTile)
 					{
 						SystemUtils.toggleMute();
@@ -141,7 +141,7 @@ public class VolumeTile extends XposedModPack {
 
 		CustomTileClass
 				.before("getLongClickIntent")
-				.run(param -> {
+				.runSafe(param -> {
 					if(param.thisObject == mTile)
 					{
 						if(handleVolumeLongClick())

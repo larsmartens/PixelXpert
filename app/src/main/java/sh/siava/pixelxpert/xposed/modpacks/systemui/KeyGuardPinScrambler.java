@@ -40,7 +40,7 @@ public class KeyGuardPinScrambler extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass KeyguardPinBasedInputViewClass = ReflectedClass.of("com.android.keyguard.KeyguardPinBasedInputView");
+		ReflectedClass KeyguardPinBasedInputViewClass = ReflectedClass.ofIfPossible("com.android.keyguard.KeyguardPinBasedInputView");
 
 		ReflectionConsumer pinShuffleHook = param -> {
 			if (!shufflePinEnabled) return;
@@ -62,7 +62,7 @@ public class KeyGuardPinScrambler extends XposedModPack {
 		};
 
 
-		KeyguardPinBasedInputViewClass.after("onFinishInflate").run(pinShuffleHook);
-		KeyguardPinBasedInputViewClass.after("resetPasswordText").run(pinShuffleHook);
+		KeyguardPinBasedInputViewClass.after("onFinishInflate").runSafe(pinShuffleHook);
+		KeyguardPinBasedInputViewClass.after("resetPasswordText").runSafe(pinShuffleHook);
 	}
 }

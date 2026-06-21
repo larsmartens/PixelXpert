@@ -42,11 +42,11 @@ public class BrightnessRange extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		try { //framework
-			ReflectedClass DisplayPowerControllerClass = ReflectedClass.of("com.android.server.display.DisplayPowerController");
+			ReflectedClass DisplayPowerControllerClass = ReflectedClass.ofIfPossible("com.android.server.display.DisplayPowerController");
 
 			DisplayPowerControllerClass
 					.before("clampScreenBrightness")
-					.run(param -> {
+					.runSafe(param -> {
 						if (minimumBrightnessLevel == 0f && maximumBrightnessLevel == 1f) return;
 
 						param.args[0] = Math.min(
@@ -60,11 +60,11 @@ public class BrightnessRange extends XposedModPack {
 		}
 
 		try { //SystemUI
-			ReflectedClass BrightnessInfoClass = ReflectedClass.of("android.hardware.display.BrightnessInfo");
+			ReflectedClass BrightnessInfoClass = ReflectedClass.ofIfPossible("android.hardware.display.BrightnessInfo");
 
 			BrightnessInfoClass
 					.afterConstruction()
-					.run(param -> {
+					.runSafe(param -> {
 						if (minimumBrightnessLevel > 0f) {
 							setObjectField(param.thisObject, "brightnessMinimum", minimumBrightnessLevel);
 						}

@@ -71,14 +71,14 @@ public class StatusbarGestures extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.of("com.android.systemui.shade.NotificationPanelViewController");
-		ReflectedClass PhoneStatusBarViewClass = ReflectedClass.of("com.android.systemui.statusbar.phone.PhoneStatusBarView");
+		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.NotificationPanelViewController");
+		ReflectedClass PhoneStatusBarViewClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.PhoneStatusBarView");
 
 		mGestureDetector = new GestureDetector(mContext, getPullDownLPListener());
 
 		PhoneStatusBarViewClass
 				.after("onTouchEvent")
-				.run(param -> {
+				.runSafe(param -> {
 					if (!oneFingerPulldownEnabled) return;
 
 					MotionEvent event =
@@ -96,7 +96,7 @@ public class StatusbarGestures extends XposedModPack {
 
 		NotificationPanelViewControllerClass
 				.before("onStatusBarLongPress")
-				.run(param -> {
+				.runSafe(param -> {
 					if (StatusbarLongpressAppSwitch) {
 						sendAppSwitchBroadcast();
 						param.setResult(null);
@@ -105,12 +105,12 @@ public class StatusbarGestures extends XposedModPack {
 
 		NotificationPanelViewControllerClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					NotificationPanelViewController = param.thisObject;
 					Object mTouchHandler = getObjectField(param.thisObject, "mTouchHandler");
 					ReflectedClass.of(mTouchHandler.getClass())
 							.before("onTouchEvent")
-							.run(param2 -> {
+							.runSafe(param2 -> {
 								MotionEvent motionEvent = (MotionEvent) param2.args[0];
 
 								if (oneFingerPullupEnabled

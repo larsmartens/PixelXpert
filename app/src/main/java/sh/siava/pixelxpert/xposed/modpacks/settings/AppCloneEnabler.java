@@ -43,14 +43,14 @@ public class AppCloneEnabler extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 
-		ReflectedClass ClonedAppsPreferenceControllerClass = ReflectedClass.of("com.android.settings.applications.ClonedAppsPreferenceController");
-		ReflectedClass AppStateClonedAppsBridgeClass = ReflectedClass.of("com.android.settings.applications.AppStateClonedAppsBridge");
-		ReflectedClass ManageApplicationsClass = ReflectedClass.of("com.android.settings.applications.manageapplications.ManageApplications");
-		UtilsClass = ReflectedClass.of("com.android.settings.Utils");
+		ReflectedClass ClonedAppsPreferenceControllerClass = ReflectedClass.ofIfPossible("com.android.settings.applications.ClonedAppsPreferenceController");
+		ReflectedClass AppStateClonedAppsBridgeClass = ReflectedClass.ofIfPossible("com.android.settings.applications.AppStateClonedAppsBridge");
+		ReflectedClass ManageApplicationsClass = ReflectedClass.ofIfPossible("com.android.settings.applications.manageapplications.ManageApplications");
+		UtilsClass = ReflectedClass.ofIfPossible("com.android.settings.Utils");
 
 		ManageApplicationsClass
 				.after("updateOptionsMenu")
-				.run(param -> {
+				.runSafe(param -> {
 					if (getObjectField(param.thisObject, "mListType").equals(LIST_TYPE_CLONED_APPS) && getCloneUserID() > 0) {
 						Menu mOptionsMenu = (Menu) getObjectField(param.thisObject, "mOptionsMenu");
 						if (mOptionsMenu != null) {
@@ -60,7 +60,7 @@ public class AppCloneEnabler extends XposedModPack {
 				});
 
 		/* Private Space
-		ReflectedClass FlagsClass = ReflectedClass.of("android.os.Flags");
+		ReflectedClass FlagsClass = ReflectedClass.ofIfPossible("android.os.Flags");
 
 		hookAllMethods(FlagsClass, "allowPrivateProfile", new XC_MethodHook() {
 			@Override
@@ -71,7 +71,7 @@ public class AppCloneEnabler extends XposedModPack {
 
 		AppStateClonedAppsBridgeClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					ArrayList<String> packageList = new ArrayList<>();
 					PackageManager packageManager = mContext.getPackageManager();
 
@@ -108,7 +108,7 @@ public class AppCloneEnabler extends XposedModPack {
 				});
 
 		//the way to manually clone the app
-/*		ReflectedClass CloneBackendClass = ReflectedClass.of("com.android.settings.applications.manageapplications.CloneBackend");
+/*		ReflectedClass CloneBackendClass = ReflectedClass.ofIfPossible("com.android.settings.applications.manageapplications.CloneBackend");
 
 		Object cb = callStaticMethod(CloneBackendClass, "getInstance", mContext);
 		callMethod(cb, "installCloneApp", "com.whatsapp");*/
@@ -116,11 +116,11 @@ public class AppCloneEnabler extends XposedModPack {
 		//Adding the menu to settings app
 		ClonedAppsPreferenceControllerClass
 				.before("getAvailabilityStatus")
-				.run(param -> param.setResult(AVAILABLE));
+				.runSafe(param -> param.setResult(AVAILABLE));
 
 		ClonedAppsPreferenceControllerClass
 				.after("updateSummary")
-				.run(param -> {
+				.runSafe(param -> {
 					callMethod(
 							getObjectField(param.thisObject, "mPreference"),
 							"setSummary",

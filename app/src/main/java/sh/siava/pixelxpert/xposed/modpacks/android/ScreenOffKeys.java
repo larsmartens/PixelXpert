@@ -114,13 +114,13 @@ public class ScreenOffKeys extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		try {
-			ReflectedClass PhoneWindowManagerClass = ReflectedClass.of("com.android.server.policy.PhoneWindowManager");
-			ReflectedClass PowerKeyRuleClass = ReflectedClass.of("com.android.server.policy.PhoneWindowManager$PowerKeyRule");
-			ReflectedClass GestureLauncherServiceClass = ReflectedClass.of("com.android.server.GestureLauncherService");
+			ReflectedClass PhoneWindowManagerClass = ReflectedClass.ofIfPossible("com.android.server.policy.PhoneWindowManager");
+			ReflectedClass PowerKeyRuleClass = ReflectedClass.ofIfPossible("com.android.server.policy.PhoneWindowManager$PowerKeyRule");
+			ReflectedClass GestureLauncherServiceClass = ReflectedClass.ofIfPossible("com.android.server.GestureLauncherService");
 
 			launchAssistActionMethod = ReflectedMethod.ofName(PhoneWindowManagerClass, "launchAssistAction");
 
-			GestureLauncherServiceClass.before("handleCameraGesture").run(param -> {
+			GestureLauncherServiceClass.before("handleCameraGesture").runSafe(param -> {
 				boolean screenIsOn = screenIsOn();
 
 				boolean handled = launchAction(resolveAction(KEYCODE_CAMERA, screenIsOn),
@@ -133,7 +133,7 @@ public class ScreenOffKeys extends XposedModPack {
 
 			PhoneWindowManagerClass
 					.after("enableScreen")
-					.run(param -> {
+					.runSafe(param -> {
 						windowMan = param.thisObject;
 
 						setObjectField(getObjectField(param.thisObject, "mGestureLauncherService"),
@@ -143,7 +143,7 @@ public class ScreenOffKeys extends XposedModPack {
 
 			PowerKeyRuleClass
 					.before("onLongPress")
-					.run(param -> {
+					.runSafe(param -> {
 						try { //TODO: no need to try/catch once QPR1 stable is released
 							if ((int) callMethod(
 									param.args[0],
@@ -162,7 +162,7 @@ public class ScreenOffKeys extends XposedModPack {
 
 					PhoneWindowManagerClass
 							.before("startedWakingUp")
-							.run(param -> {
+							.runSafe(param -> {
 								if ((int) param.args[param.args.length - 1] == WAKE_REASON_POWER_BUTTON) {
 									mWakeTime = SystemClock.uptimeMillis();
 								}
@@ -170,7 +170,7 @@ public class ScreenOffKeys extends XposedModPack {
 
 			PhoneWindowManagerClass
 					.before("interceptKeyBeforeQueueing")
-					.run(param -> {
+					.runSafe(param -> {
 						try {
 							KeyEvent event = (KeyEvent) param.args[0];
 							int keyCode = event.getKeyCode();

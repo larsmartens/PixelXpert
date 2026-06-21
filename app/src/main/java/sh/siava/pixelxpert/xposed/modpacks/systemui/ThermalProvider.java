@@ -43,11 +43,11 @@ public class ThermalProvider extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass PowerUIClass = ReflectedClass.of("com.android.systemui.power.PowerUI");
+		ReflectedClass PowerUIClass = ReflectedClass.ofIfPossible("com.android.systemui.power.PowerUI");
 
 		PowerUIClass
 				.after("start")
-				.run(param -> thermalService = getObjectField(param.thisObject, "mThermalService"));
+				.runSafe(param -> thermalService = getObjectField(param.thisObject, "mThermalService"));
 	}
 
 	public static float getTemperatureMaxFloat(int type)

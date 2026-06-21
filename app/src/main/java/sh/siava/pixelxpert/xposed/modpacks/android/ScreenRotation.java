@@ -35,11 +35,11 @@ public class ScreenRotation extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		try {
-			ReflectedClass DisplayRotationClass = ReflectedClass.of("com.android.server.wm.DisplayRotation");
+			ReflectedClass DisplayRotationClass = ReflectedClass.ofIfPossible("com.android.server.wm.DisplayRotation");
 
 			DisplayRotationClass
 					.before("rotationForOrientation")
-					.run(param -> {
+					.runSafe(param -> {
 						try {
 							if (!allScreenRotations) return;
 

@@ -49,11 +49,11 @@ public class StatusIconTuner extends XposedModPack {
 		{
 			IconManagerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.StatusBarIconController$IconManager");
 		}
-//		ReflectedClass StatusIconContainerClass = ReflectedClass.of("com.android.systemui.statusbar.phone.StatusIconContainer");
+//		ReflectedClass StatusIconContainerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.StatusIconContainer");
 
 		IconManagerClass
 				.beforeConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					try {
 						View iconContainer = (View) param.args[0];
 

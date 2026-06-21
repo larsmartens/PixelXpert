@@ -217,6 +217,9 @@ public class ReflectedClass
 			try
 			{
 				consumer.run(param);
+				// Reset on success so only *consecutive* failures (a genuinely broken hook, e.g. a
+				// field renamed on a newer build) trip the threshold; rare transient failures don't.
+				if(failures.get() != 0) failures.set(0);
 			}
 			catch (Throwable t)
 			{
@@ -231,7 +234,7 @@ public class ReflectedClass
 						{
 							try { handle.unhook(); } catch (Throwable ignored) {}
 						}
-						log("Quarantined failing hook after " + count + " errors: " + siteId);
+						log("Quarantined failing hook after " + count + " consecutive errors: " + siteId);
 					}
 				}
 			}

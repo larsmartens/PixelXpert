@@ -90,16 +90,16 @@ public class ScreenGestures extends XposedModPack {
 			}
 		});
 
-		ReflectedClass NotificationShadeWindowViewControllerClass = ReflectedClass.of("com.android.systemui.shade.NotificationShadeWindowViewController");
-		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.of("com.android.systemui.shade.NotificationPanelViewController");
-		ReflectedClass DozeTriggersClass = ReflectedClass.of("com.android.systemui.doze.DozeTriggers");
-		ReflectedClass PhoneStatusBarViewClass = ReflectedClass.of("com.android.systemui.statusbar.phone.PhoneStatusBarView");
-		ReflectedClass TriggerSensorClass = ReflectedClass.of("com.android.systemui.doze.DozeSensors$TriggerSensor");
-		ReflectedClass DefaultSettingsPopupMenuSectionClass = ReflectedClass.of("com.android.systemui.keyguard.ui.view.layout.sections.DefaultSettingsPopupMenuSection");
+		ReflectedClass NotificationShadeWindowViewControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.NotificationShadeWindowViewController");
+		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.NotificationPanelViewController");
+		ReflectedClass DozeTriggersClass = ReflectedClass.ofIfPossible("com.android.systemui.doze.DozeTriggers");
+		ReflectedClass PhoneStatusBarViewClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.PhoneStatusBarView");
+		ReflectedClass TriggerSensorClass = ReflectedClass.ofIfPossible("com.android.systemui.doze.DozeSensors$TriggerSensor");
+		ReflectedClass DefaultSettingsPopupMenuSectionClass = ReflectedClass.ofIfPossible("com.android.systemui.keyguard.ui.view.layout.sections.DefaultSettingsPopupMenuSection");
 
 		PhoneStatusBarViewClass
 				.before("onTouchEvent")
-				.run(param -> {
+				.runSafe(param -> {
 					if (!doubleTapToSleepStatusbarEnabled) return;
 
 					//double tap to sleep, statusbar only
@@ -113,7 +113,7 @@ public class ScreenGestures extends XposedModPack {
 
 		TriggerSensorClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if(getObjectField(param.thisObject, "mPulseReason").equals(REASON_SENSOR_TAP))
 					{
 						mDozeTouchTrigger = param.thisObject;
@@ -124,7 +124,7 @@ public class ScreenGestures extends XposedModPack {
 		//double tap detector for screen off AOD disabled sensor
 		DozeTriggersClass
 				.before("onSensor")
-				.run(param -> {
+				.runSafe(param -> {
 					if ((TapToShowAmbient && !doubleTapToWake && param.args[0].equals(REASON_SENSOR_TAP)) ||
 							(PickToShowAmbient && param.args[0].equals(REASON_SENSOR_PICKUP))) {
 						showAmbientDisplay(param.thisObject);
@@ -158,7 +158,7 @@ public class ScreenGestures extends XposedModPack {
 
 		DefaultSettingsPopupMenuSectionClass
 				.before("bindData") //we prevent binding to happen in the first place. otherwise, very hard to control
-				.run(param -> {
+				.runSafe(param -> {
 					if(DisableLockScreenPill) {
 						param.setResult(null);
 					}
@@ -166,14 +166,14 @@ public class ScreenGestures extends XposedModPack {
 
 		NotificationShadeWindowViewControllerClass
 				.afterConstruction()
-				.run(param -> new Thread(() -> {
+				.runSafe(param -> new Thread(() -> {
 					SystemUtils.threadSleep(5000); //for some reason lsposed doesn't find methods in the class. so we'll hook to constructor and wait a bit!
 					setHooks(param);
 				}).start());
 
 		NotificationPanelViewControllerClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					NotificationPanelViewController = param.thisObject;
 
 					mStatusBarKeyguardViewManager = getObjectField(param.thisObject, "mStatusBarKeyguardViewManager");
@@ -181,7 +181,7 @@ public class ScreenGestures extends XposedModPack {
 
 		NotificationPanelViewControllerClass
 				.after("createTouchHandler")
-				.run(param -> NotificationPanelViewController = param.thisObject);
+				.runSafe(param -> NotificationPanelViewController = param.thisObject);
 	}
 
 	private void showAmbientDisplay(Object dozeTrigger) {
@@ -204,7 +204,7 @@ public class ScreenGestures extends XposedModPack {
 
 		listenerClass
 				.before("onSingleTapUp")
-				.run(param3 -> {
+				.runSafe(param3 -> {
 					if (doubleTapToWake)
 						param3.setResult(false);
 				}); //A13 R18
@@ -215,7 +215,7 @@ public class ScreenGestures extends XposedModPack {
 
 		listenerClass2
 				.before("onDoubleTapEvent")
-				.run(param2 -> {
+				.runSafe(param2 -> {
 					if (isQSExpanded() || getBooleanField(NotificationPanelViewController, "mBouncerShowing")) {
 						return;
 					}
@@ -228,7 +228,7 @@ public class ScreenGestures extends XposedModPack {
 		//detect hold event for TTT and DTS on lockscreen
 		ReflectedClass.of(mPulsingWakeupGestureHandler.getClass())
 				.before("onTouchEvent")
-				.run(param1 -> {
+				.runSafe(param1 -> {
 					if (keyguardNotShowing(mStatusBarKeyguardViewManager)) {
 						return;
 					}
