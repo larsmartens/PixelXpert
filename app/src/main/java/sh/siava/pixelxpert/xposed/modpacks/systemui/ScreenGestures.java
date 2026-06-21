@@ -29,6 +29,7 @@ import io.github.libxposed.api.XposedModuleInterface;
 import sh.siava.pixelxpert.xposed.XposedModPack;
 import sh.siava.pixelxpert.xposed.annotations.SystemUIModPack;
 import sh.siava.pixelxpert.xposed.utils.reflection.HookHelper;
+import sh.siava.pixelxpert.xposed.utils.Scheduler;
 import sh.siava.pixelxpert.xposed.utils.SystemUtils;
 import sh.siava.pixelxpert.xposed.utils.reflection.ReflectedClass;
 
@@ -219,12 +220,7 @@ public class ScreenGestures extends XposedModPack {
 						return;
 					}
 					doubleTap = true;
-					new Timer().schedule(new TimerTask() {
-						@Override
-						public void run() {
-							doubleTap = false;
-						}
-					}, HOLD_DURATION * 2);
+					Scheduler.scheduleOnce(() -> doubleTap = false, HOLD_DURATION * 2);
 
 					isDozing = (boolean) callMethod(mStatusBarStateController, "isDozing");
 				}); //A13 R18

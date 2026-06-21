@@ -8,8 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import sh.siava.pixelxpert.xposed.utils.Scheduler;
 
 import io.github.libxposed.api.XposedModuleInterface;
 import sh.siava.pixelxpert.BuildConfig;
@@ -46,13 +45,7 @@ public class PackageManager extends XposedModPack {
 			if (Key.length == 0) {
 				disablePMMods();
 			} else if (Key[0].equals(ALLOW_SIGNATURE_PREF) || Key[0].equals(ALLOW_DOWNGRADE_PREF)) {
-				new Timer().schedule(new TimerTask() {
-										 @Override
-										 public void run() {
-											 disablePMMods();
-										 }
-									 },
-						AUTO_DISABLE_MINUTES * 60000);
+				Scheduler.scheduleOnce(this::disablePMMods, AUTO_DISABLE_MINUTES * 60000L);
 			}
 		}
 	}

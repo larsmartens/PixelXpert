@@ -56,8 +56,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executor;
 
 import javax.security.auth.callback.Callback;
@@ -69,6 +67,7 @@ import sh.siava.pixelxpert.xposed.Constants;
 import sh.siava.pixelxpert.xposed.XposedModPack;
 import sh.siava.pixelxpert.xposed.annotations.SystemUIModPack;
 import sh.siava.pixelxpert.xposed.utils.NetworkTraffic;
+import sh.siava.pixelxpert.xposed.utils.Scheduler;
 import sh.siava.pixelxpert.xposed.utils.ShyLinearLayout;
 import sh.siava.pixelxpert.xposed.utils.StringFormatter;
 import sh.siava.pixelxpert.xposed.utils.StringFormatter.FormattedStringCallback;
@@ -607,12 +606,9 @@ public class StatusbarMods extends XposedModPack {
 		//update statusbar
 		PhoneStatusBarViewClass
 				.after("onConfigurationChanged")
-				.run(param -> new Timer().schedule(new TimerTask() {
-					@Override
-					public void run() {
-						if (BatteryBarView.hasInstance()) {
-							BatteryBarView.getInstance().post(() -> refreshBatteryBar(BatteryBarView.getInstance()));
-						}
+				.run(param -> Scheduler.scheduleOnce(() -> {
+					if (BatteryBarView.hasInstance()) {
+						BatteryBarView.getInstance().post(() -> refreshBatteryBar(BatteryBarView.getInstance()));
 					}
 				}, 2000));
 
