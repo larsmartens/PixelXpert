@@ -22,10 +22,6 @@
 # AndroidX
 -keepnames class androidx.compose.ui.**
 
-#pytorch library
--keep class org.pytorch.** { *; }
--keep class com.facebook.** { *; }
-
 # Keep the ConstraintLayout Motion class
 -keep,allowoptimization,allowobfuscation class androidx.constraintlayout.motion.widget.** { *; }
 
