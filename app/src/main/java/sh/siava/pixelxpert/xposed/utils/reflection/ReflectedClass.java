@@ -15,7 +15,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
@@ -44,14 +46,30 @@ public class ReflectedClass
 		return new ReflectedClass(clazz);
 	}
 
+	// Resolved classes are cached by name + classloader. Statics are per-process, so a name resolves
+	// to the same class for a given loader; this avoids repeated classloader scans on hot paths
+	// (e.g. classes resolved inside hook callbacks).
+	private static final Map<String, Class<?>> classCache = new ConcurrentHashMap<>();
+
+	private static String cacheKey(String name, ClassLoader loader)
+	{
+		return name + "@" + (loader == null ? "0" : Integer.toHexString(System.identityHashCode(loader)));
+	}
+
 	public static ReflectedClass of(String name, ClassLoader loader) {
+		Class<?> cached = classCache.get(cacheKey(name, loader));
+		if(cached != null) return new ReflectedClass(cached);
+
+		Class<?> result;
 		try {
-			return new ReflectedClass(findClass(name, loader));
+			result = findClass(name, loader);
 		}
 		catch (Throwable ignored)
 		{
-			return new ReflectedClass(findClass(name, frameworkClassloader));
+			result = findClass(name, frameworkClassloader);
 		}
+		if(result != null) classCache.put(cacheKey(name, loader), result);
+		return new ReflectedClass(result);
 	}
 
 	public static ReflectedClass of(String name) {
@@ -120,11 +138,15 @@ public class ReflectedClass
 
 	public static ReflectedClass ofIfPossible(String name, ClassLoader loader)
 	{
+		Class<?> cached = classCache.get(cacheKey(name, loader));
+		if(cached != null) return new ReflectedClass(cached);
+
 		Class<?> result = findClassIfExists(name, loader);
 		if(result == null && frameworkClassloader != null)
 		{
 			result = findClassIfExists(name, frameworkClassloader);
 		}
+		if(result != null) classCache.put(cacheKey(name, loader), result);
 		return new ReflectedClass(result);
 	}
 

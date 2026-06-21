@@ -46,19 +46,21 @@ public class ScreenshotManager extends XposedModPack {
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		ReflectedClass NewCaptureArgsClass = ReflectedClass.ofIfPossible("android.window.ScreenCaptureInternal.CaptureArgs"); //A16QPR2
 		ReflectedClass CaptureArgsClass = ReflectedClass.ofIfPossible("android.window.ScreenCapture.CaptureArgs"); //A16QPR1
-		ReflectedClass TakeScreenshotExecutorImplClass = ReflectedClass.of("com.android.systemui.screenshot.TakeScreenshotExecutorImpl");
+		ReflectedClass TakeScreenshotExecutorImplClass = ReflectedClass.ofIfPossible("com.android.systemui.screenshot.TakeScreenshotExecutorImpl");
 		ReflectedClass ScreenshotSoundControllerImplClass = ReflectedClass.ofIfPossible("com.android.systemui.screenshot.ScreenshotSoundControllerImpl");
+		// Resolve the no-op dispatcher class once instead of inside every hook invocation.
+		ReflectedClass ExecutorCoroutineDispatcherImplClass = ReflectedClass.ofIfPossible("kotlinx.coroutines.ExecutorCoroutineDispatcherImpl");
 
 		ReflectedClass.of(UserManager.class)
 				.before("getUserInfo")
-				.run(param -> param.args[0] = 0);
+				.runSafe(param -> param.args[0] = 0);
 
 		ReflectedClass ScreenshotPolicyImplClass = ReflectedClass.ofIfPossible("com.android.systemui.screenshot.ScreenshotPolicyImpl");
 
 		if(ScreenshotPolicyImplClass.getClazz() != null) {
 			ScreenshotPolicyImplClass
 					.before(Pattern.compile(".*isManagedProfile.*"))
-					.run(param -> {
+					.runSafe(param -> {
 						if (ScreenshotChordInsecure)
 							param.setResult(false);
 					});
@@ -66,7 +68,7 @@ public class ScreenshotManager extends XposedModPack {
 
 		NewCaptureArgsClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if(ScreenshotChordInsecure) {
 						setObjectField(param.thisObject, "mSecureContentPolicy", 1); //No source available. but apparently 1 works.
 					}
@@ -74,7 +76,7 @@ public class ScreenshotManager extends XposedModPack {
 
 		CaptureArgsClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if(ScreenshotChordInsecure) {
 						setObjectField(param.thisObject, "mCaptureSecureLayers", true);
 					}
@@ -84,7 +86,7 @@ public class ScreenshotManager extends XposedModPack {
 		//17 - much easier approach: killing mediaplayer totally
 		ReflectedClass.of(MediaPlayer.class)
 				.before("start")
-				.run(param -> {
+				.runSafe(param -> {
 					if(disableScreenshotSound)
 						param.setResult(null);
 				});
@@ -92,23 +94,23 @@ public class ScreenshotManager extends XposedModPack {
 		//16 qpr2
 		TakeScreenshotExecutorImplClass
 				.after("getScreenshotController")
-				.run(param -> {
-					if(disableScreenshotSound) {
+				.runSafe(param -> {
+					if(disableScreenshotSound && ExecutorCoroutineDispatcherImplClass.getClazz() != null) {
 						setObjectField(
 								getObjectField(param.getResult(), "screenshotSoundController"),
 								"bgDispatcher",
-								ReflectedClass.of("kotlinx.coroutines.ExecutorCoroutineDispatcherImpl").getClazz().getConstructors()[0].newInstance(new NoExecutor()));
+								ExecutorCoroutineDispatcherImplClass.getClazz().getConstructors()[0].newInstance(new NoExecutor()));
 					}
 				});
 
 		//16 qpr1
 		ScreenshotSoundControllerImplClass
 				.beforeConstruction()
-				.run(param -> {
-					if(disableScreenshotSound) {
+				.runSafe(param -> {
+					if(disableScreenshotSound && ExecutorCoroutineDispatcherImplClass.getClazz() != null) {
 						for (int i = 0; i < param.args.length; i++) {
 							if (param.args[i].getClass().getName().toLowerCase().contains("dispatcher")) {
-								param.args[i] = ReflectedClass.of("kotlinx.coroutines.ExecutorCoroutineDispatcherImpl").getClazz().getConstructors()[0].newInstance(new NoExecutor());
+								param.args[i] = ExecutorCoroutineDispatcherImplClass.getClazz().getConstructors()[0].newInstance(new NoExecutor());
 							}
 						}
 					}
