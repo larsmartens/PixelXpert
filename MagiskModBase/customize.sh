@@ -3,6 +3,18 @@ PKGPATH="/system/priv-app/PixelXpert/PixelXpert.apk"
 LSPDDBPATH="/data/adb/lspd/config/modules_config.db"
 MAGISKDBPATH="/data/adb/magisk.db"
 
+# Locate the LSPosed/Vector config DB. The manager was renamed (LSPosed -> Vector) and may live
+# under a differently named directory, so fall back to a glob instead of a single hardcoded path.
+resolveLspdDb(){
+	for candidate in /data/adb/lspd/config/modules_config.db /data/adb/*lsp*/config/modules_config.db; do
+		if [ -f "$candidate" ]; then
+			LSPDDBPATH="$candidate"
+			return 0
+		fi
+	done
+	return 1
+}
+
 prepareSQL(){
 	unzip $ZIPFILE sqlite3 -d $TMPDIR/ > /dev/null
 	chmod +x $TMPDIR/sqlite3
@@ -95,16 +107,26 @@ activateModuleLSPD()
 
 testKernelSU()
 {
-	if [[ $(ksud -V 2>&1 | grep "not found" | wc -c) -eq 0 ]]; then #KSU installed
+	# Detect KernelSU / KernelSU-Next, by binary or by installed manager package.
+	KSU_FOUND=0
+	if [ "$(ksud -V 2>&1 | grep "not found" | wc -c)" -eq 0 ]; then KSU_FOUND=1; fi
+	if [ "$(pm list packages 2>/dev/null | grep -e "com.rifsxd.ksunext" -e "me.weishu.kernelsu" | wc -c)" -ne 0 ]; then KSU_FOUND=1; fi
+
+	if [ "$KSU_FOUND" -eq 1 ]; then #KSU installed
     	if [[ $(pm list packages | grep $PKGNAME | wc -c) -eq 0 ]]; then #PixelXpert NOT installed yet
     		ui_print ''
     		ui_print '*******************************'
-    		ui_print 'KernelSU binaries found!'
+    		ui_print 'KernelSU / KernelSU-Next found!'
     		ui_print ''
     		ui_print '                CAUTION!:'
-    		ui_print 'Before installation, you MUST disable'
-    		ui_print '"Umount modules by default"'
-    		ui_print 'Otherwise, your device will fall into BOOTLOOP!'
+    		ui_print 'PixelXpert ships as a system priv-app and must'
+    		ui_print 'stay mounted for SystemUI to load it. Before'
+    		ui_print 'installing you MUST make sure this module is NOT'
+    		ui_print 'unmounted from the system:'
+    		ui_print '  - disable "Umount modules by default", and'
+    		ui_print '  - on SUSFS, exclude PixelXpert from try_umount.'
+    		ui_print 'This also applies with OverlayFS / Hybrid-Mount.'
+    		ui_print 'Otherwise, your device may fall into a BOOTLOOP!'
     		ui_print ''
     		ui_print 'Do you wish to continue?'
     		ui_print 'Volume Up: Continue'
@@ -129,9 +151,11 @@ assertPixelRom()
   fi
 }
 
-assert16QPR()
+assertSupportedRom()
 {
-	if [ -z $(getprop ro.build.id | grep -e "[BC][DP][1-5]") ]; then
+	# Pixel build ids start with a per-release letter: A15 = A*, A16 = B*, A17 = C*.
+	# Accept Android 16 and 17 (any QPR); reject Android 15 and older.
+	if [ -z "$(getprop ro.build.id | grep -e '^[BC][DP][0-9]')" ]; then
 		ui_print 'This build is not compatible with'
     ui_print 'your ROM. Please install the stable'
     ui_print 'version 4.3.x instead'
@@ -143,7 +167,7 @@ assert16QPR()
 
 assertPixelRom
 
-assert16QPR
+assertSupportedRom
 
 testKernelSU
 
@@ -154,7 +178,7 @@ ui_print ''
 
 grantRootApps
 
-if [ $(ls $LSPDDBPATH) = $LSPDDBPATH ]; then
+if resolveLspdDb; then
 	ui_print ''
 	ui_print ''
 

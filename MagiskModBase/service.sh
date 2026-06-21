@@ -1,8 +1,19 @@
 PKGNAME="sh.siava.pixelxpert"
 PKGPATH="/system/priv-app/PixelXpert/PixelXpert.apk"
-LSPDDBPATH="/data/adb/lspd/config/modules_config.db" 
-MAGISKDBPATH="/data/adb/magisk.db" 
-MODDIR=${0%/*} 
+LSPDDBPATH="/data/adb/lspd/config/modules_config.db"
+MAGISKDBPATH="/data/adb/magisk.db"
+MODDIR=${0%/*}
+
+# Locate the LSPosed/Vector config DB (the manager may live under a renamed directory).
+resolveLspdDb(){
+	for candidate in /data/adb/lspd/config/modules_config.db /data/adb/*lsp*/config/modules_config.db; do
+		if [ -f "$candidate" ]; then
+			LSPDDBPATH="$candidate"
+			return 0
+		fi
+	done
+	return 1
+}
  
 prepareSQL(){ 
 	chmod +x $MODDIR/sqlite3
@@ -88,10 +99,10 @@ activateModuleLSPD()
 	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"$PKGNAME\",0);" && runSQL
 } 
  
-prepareSQL 
- 
-grantRootApps 
- 
-if [ $(ls $LSPDDBPATH) = $LSPDDBPATH ]; then 
-	activateModuleLSPD 
+prepareSQL
+
+grantRootApps
+
+if resolveLspdDb; then
+	activateModuleLSPD
 fi

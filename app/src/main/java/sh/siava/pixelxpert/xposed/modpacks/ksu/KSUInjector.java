@@ -48,9 +48,14 @@ public class KSUInjector extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		String packageName = PRParam.getPackageName(); // Can be KSU or KSU Next
-		ReflectedClass MainActivityClass = ReflectedClass.of(packageName + ".ui.MainActivity");
-		NativesClass = ReflectedClass.of(packageName + ".Natives");
-		ProfileClass = ReflectedClass.of(packageName + ".Natives$Profile");
+		ReflectedClass MainActivityClass = ReflectedClass.ofIfPossible(packageName + ".ui.MainActivity");
+		NativesClass = ReflectedClass.ofIfPossible(packageName + ".Natives");
+		ProfileClass = ReflectedClass.ofIfPossible(packageName + ".Natives$Profile");
+
+		if (NativesClass.getClazz() == null || ProfileClass.getClazz() == null) {
+			log("KSUInjector: KSU Natives/Profile classes not found in " + packageName + "; cannot auto-grant root.");
+			return;
+		}
 
 		BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 			@Override
@@ -62,14 +67,16 @@ public class KSUInjector extends XposedModPack {
 		//In case ksu is running already, it won't understand the onCreate intent we send. broadcast it is then
 		mContext.registerReceiver(broadcastReceiver, new IntentFilter(Constants.PX_ROOT_EXTRA), RECEIVER_EXPORTED);
 
-		MainActivityClass
-				.after("onCreate")
-				.run(param -> {
-					Intent launchIntent = ((Activity) param.thisObject).getIntent();
-					if (launchIntent.hasExtra(Constants.PX_ROOT_EXTRA)) {
-						grantRootToPX(launchIntent);
-					}
-				});
+		if (MainActivityClass.getClazz() != null) {
+			MainActivityClass
+					.after("onCreate")
+					.runSafe(param -> {
+						Intent launchIntent = ((Activity) param.thisObject).getIntent();
+						if (launchIntent.hasExtra(Constants.PX_ROOT_EXTRA)) {
+							grantRootToPX(launchIntent);
+						}
+					});
+		}
 	}
 
 	private void grantRootToPX(Intent launchIntent) {
@@ -84,8 +91,11 @@ public class KSUInjector extends XposedModPack {
 				boolean haveRoot = Arrays.stream(rootUIDs).anyMatch(uid -> uid == ownUID);
 
 				if (!haveRoot) {
-					Object ownRootProfile = ProfileClass.getClazz().getConstructor(String.class, int.class, boolean.class, boolean.class, String.class, int.class, int.class, List.class, List.class, String.class, int.class, boolean.class, boolean.class, String.class)
-							.newInstance(BuildConfig.APPLICATION_ID, ownUID, true, true, null, 0, 0, new ArrayList<>(), new ArrayList<>(), "u:r:su:s0", 0, true, true, "");
+					Object ownRootProfile = buildOwnRootProfile(ownUID);
+					if (ownRootProfile == null) {
+						// KSU/KSU-Next changed the Profile signature; leave it to the user to grant manually.
+						return;
+					}
 
 					callMethod(nativeObject, "setAppProfile", ownRootProfile);
 
@@ -93,9 +103,28 @@ public class KSUInjector extends XposedModPack {
 				}
 				Thread.sleep(2000);
 				SystemUtils.killSelf();
-			} catch (Throwable ignored) {
+			} catch (Throwable t) {
+				log("KSUInjector: failed to grant root to PixelXpert", t);
 			}
 		}).start();
+	}
+
+	/**
+	 * Builds the KSU/KSU-Next root {@code Natives$Profile} for PixelXpert. The constructor signature
+	 * has been stable across both managers, but if a manager version changes it this returns null
+	 * (instead of crashing) so the user can grant root manually in the KSU app.
+	 */
+	private Object buildOwnRootProfile(int ownUID) {
+		try {
+			return ProfileClass.getClazz().getConstructor(String.class, int.class, boolean.class, boolean.class, String.class, int.class, int.class, List.class, List.class, String.class, int.class, boolean.class, boolean.class, String.class)
+					.newInstance(BuildConfig.APPLICATION_ID, ownUID, true, true, null, 0, 0, new ArrayList<>(), new ArrayList<>(), "u:r:su:s0", 0, true, true, "");
+		} catch (NoSuchMethodException signatureChanged) {
+			log("KSUInjector: KSU Profile constructor signature changed (" + ProfileClass.getClazz().getName() + "); please grant root to PixelXpert manually in the KSU manager.");
+			return null;
+		} catch (Throwable t) {
+			log("KSUInjector: could not build KSU root profile", t);
+			return null;
+		}
 	}
 
 	private void restartPX(boolean launch) throws InterruptedException {

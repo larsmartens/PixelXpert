@@ -11,6 +11,7 @@ import com.topjohnwu.superuser.Shell;
 import com.topjohnwu.superuser.ipc.RootService;
 import com.topjohnwu.superuser.nio.FileSystemManager;
 
+import java.io.File;
 import java.util.List;
 
 import sh.siava.pixelxpert.BuildConfig;
@@ -21,8 +22,40 @@ public class RootProvider extends RootService {
 	/** @noinspection unused*/
 	String TAG = getClass().getSimpleName();
 
-	static final String LSPD_DB_PATH = "/data/adb/lspd/config/modules_config.db";
+	static final String LSPD_DB_DEFAULT_PATH = "/data/adb/lspd/config/modules_config.db";
 	static final String SQLITE_BIN = "/data/adb/modules/PixelXpert/sqlite3";
+
+	private static String resolvedLspdDbPath = null;
+
+	/**
+	 * Resolves the LSPosed/Vector config DB. The manager was renamed (LSPosed -> Vector) and may
+	 * live under a differently named directory, so fall back to scanning /data/adb for an
+	 * {@code *lsp*} folder before giving up on the canonical path.
+	 */
+	static String lspdDbPath() {
+		if (resolvedLspdDbPath != null) return resolvedLspdDbPath;
+
+		if (new File(LSPD_DB_DEFAULT_PATH).exists()) {
+			resolvedLspdDbPath = LSPD_DB_DEFAULT_PATH;
+			return resolvedLspdDbPath;
+		}
+
+		File[] dirs = new File("/data/adb").listFiles();
+		if (dirs != null) {
+			for (File dir : dirs) {
+				if (dir.isDirectory() && dir.getName().toLowerCase().contains("lsp")) {
+					File db = new File(dir, "config/modules_config.db");
+					if (db.exists()) {
+						resolvedLspdDbPath = db.getAbsolutePath();
+						return resolvedLspdDbPath;
+					}
+				}
+			}
+		}
+
+		resolvedLspdDbPath = LSPD_DB_DEFAULT_PATH;
+		return resolvedLspdDbPath;
+	}
 
 	@Override
 	public IBinder onBind(@NonNull Intent intent) {
@@ -112,7 +145,7 @@ public class RootProvider extends RootService {
 
 		private List<String> runLSposedSQLiteQuery(String command)
 		{
-			return Shell.cmd(String.format("%s %s \"%s\"", SQLITE_BIN, LSPD_DB_PATH, command)).exec().getOut();
+			return Shell.cmd(String.format("%s %s \"%s\"", SQLITE_BIN, lspdDbPath(), command)).exec().getOut();
 		}
 
 		@Override
