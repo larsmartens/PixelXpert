@@ -24,6 +24,23 @@ prepareSQL(){
 runSQL(){ 
 	SQLRESULT=$($SQLITEPATH $DBPATH "$CMD") 
 } 
+
+waitForMountedPackage(){
+	echo "- 	Waiting for $PKGNAME package mount..."
+	i=0
+	while [ $i -lt 60 ]; do
+		PMPATH=$(pm path $PKGNAME 2>/dev/null | sed 's/package://g' | head -1)
+		if [ "$PMPATH" = "$PKGPATH" ] && [ -f "$PKGPATH" ]; then
+			echo "- 	Package mount verified at $PKGPATH"
+			return 0
+		fi
+		i=$((i + 1))
+		sleep 1
+	done
+
+	echo "! 	$PKGNAME is not available at $PKGPATH; skipping LSPosed activation"
+	return 1
+}
  
 #grant silent root access to given UID 
 grantRootUID(){ 
@@ -42,6 +59,10 @@ grantRootUID(){
 grantRootPkg(){ 
 	echo "- 	Granting root access to $1..." 
 	UID=$(pm list packages -U $1 --user 0 | grep ":$1 " | awk -F 'uid:' '{ print $2 }' | cut -d ',' -f 1)
+	if [ -z "$UID" ]; then
+		echo "! 	Package $1 is not installed for user 0; skipping root policy"
+		return
+	fi
  
 	grantRootUID $UID $1 
 } 
@@ -57,6 +78,22 @@ activateModuleLSPD()
 	DBPATH=$LSPDDBPATH 
 	 
 	echo '- Trying to activate the module in Lsposed...'	 
+
+	if ! waitForMountedPackage; then
+		return
+	fi
+
+	CMD="PRAGMA table_info(modules);" && runSQL
+	if echo "$SQLRESULT" | grep -q "|mid|"; then
+		activateModuleLSPDOld
+	else
+		activateModuleLSPDVector
+	fi
+}
+
+activateModuleLSPDOld()
+{
+	DBPATH=$LSPDDBPATH
 	 
 	CMD="select mid from modules where module_pkg_name like \"$PKGNAME\";" && runSQL 
 	OLDMID=$(echo $SQLRESULT | xargs)
@@ -97,7 +134,19 @@ activateModuleLSPD()
 	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"com.rifsxd.ksunext\",0);" && runSQL
 
 	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"$PKGNAME\",0);" && runSQL
-} 
+}
+
+activateModuleLSPDVector()
+{
+	DBPATH=$LSPDDBPATH
+
+	CMD="insert or replace into modules (module_pkg_name, apk_path) values (\"$PKGNAME\",\"$PKGPATH\");" && runSQL
+	CMD="insert or replace into modules_state (module_pkg_name, user_id, enabled, scope_request_blocked) values (\"$PKGNAME\",0,1,0);" && runSQL
+
+	for scope in android system com.android.systemui com.google.android.apps.nexuslauncher com.google.android.dialer com.android.phone com.android.settings me.weishu.kernelsu com.rifsxd.ksunext $PKGNAME; do
+		CMD="insert or ignore into scope (module_pkg_name, app_pkg_name, user_id) values (\"$PKGNAME\", \"$scope\", 0);" && runSQL
+	done
+}
  
 # Self-heal: clear stale flags that a previous failed mount could have left behind, so a transient
 # mount failure doesn't keep our priv-app unmounted (and SystemUI without PixelXpert) on every boot.

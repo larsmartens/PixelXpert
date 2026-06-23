@@ -22,8 +22,8 @@ resolveLspdDb(){
 integrateMount(){
 	for dir in "/data/adb/modules/$MODID" "/data/adb/modules_update/$MODID"; do
 		[ -d "$dir" ] || continue
-		# Clear stale flags that would keep our priv-app unmounted on the next boot.
-		for flag in skip_mount mount_error disable; do
+		# Clear transient mount errors only. A disable marker is the durable rollback control.
+		for flag in skip_mount mount_error; do
 			[ -f "$dir/$flag" ] && rm -f "$dir/$flag"
 		done
 	done
@@ -37,6 +37,23 @@ integrateMount(){
 		printf '\n[rules.%s]\ndefault_mode = "overlay"\n' "$MODID" >> "$HM_CONFIG"
 		ui_print "- Registered PixelXpert with Hybrid-Mount"
 	fi
+}
+
+waitForMountedPackage(){
+	ui_print "- 	Waiting for $PKGNAME package mount..."
+	i=0
+	while [ $i -lt 60 ]; do
+		PMPATH=$(pm path $PKGNAME 2>/dev/null | sed 's/package://g' | head -1)
+		if [ "$PMPATH" = "$PKGPATH" ] && [ -f "$PKGPATH" ]; then
+			ui_print "- 	Package mount verified at $PKGPATH"
+			return 0
+		fi
+		i=$((i + 1))
+		sleep 1
+	done
+
+	ui_print "! 	$PKGNAME is not available at $PKGPATH; skipping activation until next boot"
+	return 1
 }
 
 prepareSQL(){
@@ -68,6 +85,10 @@ grantRootUID(){
 grantRootPkg(){
 	ui_print "- 	Granting root access to $1..."
 	UID=$(pm list packages -U $1 --user 0 | grep ":$1 " | awk -F 'uid:' '{ print $2 }' | cut -d ',' -f 1)
+	if [ -z "$UID" ]; then
+		ui_print "! 	Package $1 is not installed for user 0; skipping root policy"
+		return
+	fi
 
 	grantRootUID $UID $1
 }
@@ -85,9 +106,25 @@ migratePrefs(){
 activateModuleLSPD()
 {	
 	DBPATH=$LSPDDBPATH
-	
+		
 	ui_print '- Trying to activate the module in Lsposed...'	
-	
+
+	if ! waitForMountedPackage; then
+		return
+	fi
+
+	CMD="PRAGMA table_info(modules);" && runSQL
+	if echo "$SQLRESULT" | grep -q "|mid|"; then
+		activateModuleLSPDOld
+	else
+		activateModuleLSPDVector
+	fi
+}
+
+activateModuleLSPDOld()
+{
+	DBPATH=$LSPDDBPATH
+		
 	CMD="select mid from modules where module_pkg_name like \"$PKGNAME\";" && runSQL
 	OLDMID=$(echo $SQLRESULT | xargs)
 
@@ -127,6 +164,18 @@ activateModuleLSPD()
 	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"com.rifsxd.ksunext\",0);" && runSQL
 
 	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"$PKGNAME\",0);" && runSQL
+}
+
+activateModuleLSPDVector()
+{
+	DBPATH=$LSPDDBPATH
+
+	CMD="insert or replace into modules (module_pkg_name, apk_path) values (\"$PKGNAME\",\"$PKGPATH\");" && runSQL
+	CMD="insert or replace into modules_state (module_pkg_name, user_id, enabled, scope_request_blocked) values (\"$PKGNAME\",0,1,0);" && runSQL
+
+	for scope in android system com.android.systemui com.google.android.apps.nexuslauncher com.google.android.dialer com.android.phone com.android.settings me.weishu.kernelsu com.rifsxd.ksunext $PKGNAME; do
+		CMD="insert or ignore into scope (module_pkg_name, app_pkg_name, user_id) values (\"$PKGNAME\", \"$scope\", 0);" && runSQL
+	done
 }
 
 testKernelSU()
