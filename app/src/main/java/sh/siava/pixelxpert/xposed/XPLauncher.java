@@ -143,7 +143,7 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 		// synchronously) even when prefs were ready almost immediately. Poll on a tight interval
 		// instead, and give up after a bounded time rather than spinning forever.
 		final int pollIntervalMs = 50;
-		final int maxWaitMs = 60000;
+		final int maxWaitMs = 5000;
 		int waited = 0;
 		while (true) {
 			try {
