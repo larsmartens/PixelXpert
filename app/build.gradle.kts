@@ -29,8 +29,8 @@ android {
 		// and memory limits, which fight the module's in-process reflection for no benefit. Do not bump
 		// without auditing in-process reflection first.
 		targetSdk = 36
-		versionCode = 510
-		versionName = "canary-510"
+		versionCode = 511
+		versionName = "canary-511"
 		ndk {
 			//noinspection ChromeOsAbiSupport
 			abiFilters.add("arm64-v8a")
