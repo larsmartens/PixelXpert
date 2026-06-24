@@ -7,5 +7,6 @@ interface IRootProviderService {
 	boolean checkLSPosedDB(String packageName);
 	boolean isPackageInstalled(String packageName);
 	boolean activateInLSPosed(String packageName);
+	String buildDiagnosticsReport();
 	IBinder getFileSystemService();
 }

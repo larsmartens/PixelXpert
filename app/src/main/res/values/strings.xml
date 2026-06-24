@@ -368,6 +368,11 @@
     <string name="sync_ntp_time_now_title">Sync now</string>
     <string name="sync_ntp_successful">Time synced successfully</string>
     <string name="sync_ntp_failed">NTP server connection error!</string>
+    <string name="diagnostics_category_title" translatable="false">Diagnostics</string>
+    <string name="diagnostics_report_title" translatable="false">Export diagnostics report</string>
+    <string name="diagnostics_report_summary" translatable="false">Share root stack, module, LSPosed, mount, and failure pointers</string>
+    <string name="diagnostics_report_generating" translatable="false">Generating diagnostics report</string>
+    <string name="diagnostics_report_share_title" translatable="false">Share diagnostics report</string>
 
     <!-- Volume panel -->
     <string name="volume_panel_category">Volume panel</string>
