@@ -37,7 +37,7 @@
     <string name="github_repo_summary" translatable="false">larsmartens/PixelXpert-fork</string>
     <string name="fork_badge_label" translatable="false">Fork</string>
     <string name="fork_repo_link" translatable="false">https://github.com/larsmartens/PixelXpert-fork</string>
-    <string name="fork_source_label">Source: </string>
+    <string name="fork_source_label" translatable="false">Source: </string>
     <string name="telegram_group_title">Telegram channel</string>
     <string name="telegram_group_summary" translatable="false">\@PixelXpert_Github</string>
     <string name="usage_title">Usage</string>
@@ -374,7 +374,7 @@
 
     <!-- Work/Clone profile -->
     <string name="work_clone_profile_header">Work/Clone Profile</string>
-    <string name="app_profile_switch_enabled">Enable profile switch detection</string>
+    <string name="app_profile_switch_enabled" translatable="false">Enable profile switch detection</string>
     <string name="statusbar_long_press_app_switch">Long press statusbar to switch profile</string>
     <string name="statusbar_app_switch_icon">Show an icon on statusbar when switching is available</string>
 
@@ -489,7 +489,7 @@
     <string name="switch_branches">Switch branch</string>
     <string name="reinstall_word">Reinstall</string>
     <string name="changelog_title">Recent commits</string>
-    <string name="updated_on_device">Updated: %s</string>
+    <string name="updated_on_device" translatable="false">Updated: %s</string>
 
     <string name="own_prefs_header">Settings</string>
     <string name="language_title">Language</string>
@@ -603,10 +603,10 @@
     <string name="watts">Watts</string>
     <string name="fast_charging_threshold_title">Fast charging threshold</string>
 
-    <string name="trace_capture_tile_title">Capture system trace</string>
-    <string name="trace_capture_started">Capturing system trace…</string>
-    <string name="trace_capture_done">System trace saved: %1$s</string>
-    <string name="trace_capture_failed">System trace failed: %1$s</string>
-    <string name="trace_capture_unavailable">System tracing is not available on this device</string>
+    <string name="trace_capture_tile_title" translatable="false">Capture system trace</string>
+    <string name="trace_capture_started" translatable="false">Capturing system trace…</string>
+    <string name="trace_capture_done" translatable="false">System trace saved: %1$s</string>
+    <string name="trace_capture_failed" translatable="false">System trace failed: %1$s</string>
+    <string name="trace_capture_unavailable" translatable="false">System tracing is not available on this device</string>
 
 </resources>
