@@ -48,6 +48,10 @@ updates:
           - "version-update:semver-major"
           - "version-update:semver-minor"
           - "version-update:semver-patch"
+      - dependency-name: "androidx.appcompat:appcompat"
+      - dependency-name: "androidx.test.ext:junit"
+      - dependency-name: "androidx.test.espresso:espresso-core"
+      - dependency-name: "com.google.android.material:material"
     labels:
       - "dependencies"
 
