@@ -186,6 +186,7 @@ dependencies {
 	implementation(libs.androidx.localbroadcastmanager)
 
 	implementation(libs.hilt.android)
+	annotationProcessor(libs.hilt.android.compiler)
 	ksp(libs.hilt.android.compiler)
 
 	compileOnly(libs.lsposed.api)

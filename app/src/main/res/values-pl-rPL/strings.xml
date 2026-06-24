@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Zmień profil aplikacji</string>
     <string name="hide_default">Ukryj (domyślnie)</string>
-    <string name="percent_of_default_size">%domyślnego rozmiaru</string>
+    <string name="percent_of_default_size">% domyślnego rozmiaru</string>
     <string name="overlay_none_title">(Domyślna)</string>
     <string name="general_section">Opcje ogólne</string>
     <string name="general_on">Na</string>
