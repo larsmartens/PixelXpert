@@ -1,3 +1,3 @@
-*canary-506* released in canary channel  
+*canary-507* released in canary channel  
   
 *Changelog:*  
