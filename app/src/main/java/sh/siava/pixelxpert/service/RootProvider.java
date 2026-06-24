@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -30,6 +31,20 @@ public class RootProvider extends RootService {
 
 	static final String LSPD_DB_DEFAULT_PATH = "/data/adb/lspd/config/modules_config.db";
 	static final String SQLITE_BIN = "/data/adb/modules/PixelXpert/sqlite3";
+	static final String MODULE_PATH = "/data/adb/modules/PixelXpert";
+	static final String MAGISK_PACKAGE = "com.topjohnwu.magisk";
+	static final String APATCH_PACKAGE = "me.bmax.apatch";
+	static final String LSPOSED_PACKAGE = "org.lsposed.manager";
+	static final String VECTOR_PACKAGE = "io.github.vvb2060.mahoshojo";
+	static final String[] HYBRID_MOUNT_CONFIG_PATHS = {
+			"/data/adb/hybrid-mount/config.toml",
+			"/data/adb/hybrid-mount/kasumi.toml"
+	};
+	static final String[] HYBRID_MOUNT_BINARY_PATHS = {
+			"/data/adb/modules/hybrid_mount/bin/hybrid-mount",
+			"/data/adb/modules/ksu_overlayfs/bin/hybrid-mount",
+			"/data/adb/modules/magic_overlayfs/bin/hybrid-mount"
+	};
 
 	private static String resolvedLspdDbPath = null;
 
@@ -152,25 +167,27 @@ public class RootProvider extends RootService {
 			appendCommand(report, "build fingerprint", "getprop ro.build.fingerprint");
 			appendCommand(report, "boot completed", "getprop sys.boot_completed");
 
+			appendEnvironmentSummary(report);
+
 			appendSection(report, "Managers");
-			appendPackageStatus(report, "Magisk", "com.topjohnwu.magisk");
+			appendPackageStatus(report, "Magisk", MAGISK_PACKAGE);
 			appendPackageStatus(report, "KernelSU", Constants.KSU_PACKAGE);
 			appendPackageStatus(report, "KSU-Next", Constants.KSU_NEXT_PACKAGE);
-			appendPackageStatus(report, "APatch", "me.bmax.apatch");
-			appendPackageStatus(report, "LSPosed", "org.lsposed.manager");
-			appendPackageStatus(report, "Vector", "io.github.vvb2060.mahoshojo");
+			appendPackageStatus(report, "APatch", APATCH_PACKAGE);
+			appendPackageStatus(report, "LSPosed", LSPOSED_PACKAGE);
+			appendPackageStatus(report, "Vector", VECTOR_PACKAGE);
 
 			appendSection(report, "Module Layout");
-			appendPathStatus(report, "PixelXpert module", "/data/adb/modules/PixelXpert");
-			appendPathStatus(report, "disable marker", "/data/adb/modules/PixelXpert/disable");
-			appendPathStatus(report, "remove marker", "/data/adb/modules/PixelXpert/remove");
-			appendPathStatus(report, "skip_mount marker", "/data/adb/modules/PixelXpert/skip_mount");
-			appendPathStatus(report, "mount_error marker", "/data/adb/modules/PixelXpert/mount_error");
-			appendPathStatus(report, "module.prop", "/data/adb/modules/PixelXpert/module.prop");
-			appendPathStatus(report, "service.sh", "/data/adb/modules/PixelXpert/service.sh");
-			appendPathStatus(report, "customize.sh", "/data/adb/modules/PixelXpert/customize.sh");
-			appendPathStatus(report, "priv-app APK", "/data/adb/modules/PixelXpert/system/priv-app/PixelXpert/PixelXpert.apk");
-			appendFilePreview(report, "/data/adb/modules/PixelXpert/module.prop", 20);
+			appendPathStatus(report, "PixelXpert module", MODULE_PATH);
+			appendPathStatus(report, "disable marker", MODULE_PATH + "/disable");
+			appendPathStatus(report, "remove marker", MODULE_PATH + "/remove");
+			appendPathStatus(report, "skip_mount marker", MODULE_PATH + "/skip_mount");
+			appendPathStatus(report, "mount_error marker", MODULE_PATH + "/mount_error");
+			appendPathStatus(report, "module.prop", MODULE_PATH + "/module.prop");
+			appendPathStatus(report, "service.sh", MODULE_PATH + "/service.sh");
+			appendPathStatus(report, "customize.sh", MODULE_PATH + "/customize.sh");
+			appendPathStatus(report, "priv-app APK", MODULE_PATH + "/system/priv-app/PixelXpert/PixelXpert.apk");
+			appendFilePreview(report, MODULE_PATH + "/module.prop", 20);
 
 			appendSection(report, "Root Stack Files");
 			appendPathStatus(report, "Magisk DB", "/data/adb/magisk.db");
@@ -186,14 +203,14 @@ public class RootProvider extends RootService {
 			appendCommand(report, "zygisk modules", "ls -1 /data/adb/modules 2>/dev/null | grep -Ei 'zygisk|neo|lsposed|vector' || true");
 
 			appendSection(report, "Hybrid-Mount");
-			appendPathStatus(report, "config", "/data/adb/hybrid-mount/config.toml");
-			appendPathStatus(report, "kasumi config", "/data/adb/hybrid-mount/kasumi.toml");
+			appendPathStatus(report, "config", HYBRID_MOUNT_CONFIG_PATHS[0]);
+			appendPathStatus(report, "kasumi config", HYBRID_MOUNT_CONFIG_PATHS[1]);
 			appendCommand(report, "hybrid-mount binaries", "find /data/adb -maxdepth 5 -type f -name hybrid-mount 2>/dev/null | head -10");
 			appendCommand(report, "hybrid-mount modules", "ls -1 /data/adb/modules 2>/dev/null | grep -Ei 'hybrid|mount|overlay|magic|meta' || true");
 			appendCommand(report, "hybrid-mount version", "hybrid-mount api version 2>/dev/null || /data/adb/modules/hybrid_mount/bin/hybrid-mount api version 2>/dev/null || true");
 			appendCommand(report, "hybrid-mount config", "hybrid-mount api config-get 2>/dev/null || /data/adb/modules/hybrid_mount/bin/hybrid-mount api config-get 2>/dev/null || true");
-			appendFilePreview(report, "/data/adb/hybrid-mount/config.toml", 80);
-			appendFilePreview(report, "/data/adb/hybrid-mount/kasumi.toml", 80);
+			appendFilePreview(report, HYBRID_MOUNT_CONFIG_PATHS[0], 80);
+			appendFilePreview(report, HYBRID_MOUNT_CONFIG_PATHS[1], 80);
 
 			appendSection(report, "Mount State");
 			appendCommand(report, "PixelXpert mountinfo", "grep -i PixelXpert /proc/self/mountinfo 2>/dev/null || true");
@@ -229,6 +246,45 @@ public class RootProvider extends RootService {
 			return Shell.cmd(String.format("%s %s \"%s\"", SQLITE_BIN, lspdDbPath(), command)).exec().getOut();
 		}
 
+		private void appendEnvironmentSummary(StringBuilder report) {
+			appendSection(report, "Environment Summary");
+
+			List<String> neoZygiskModules = matchingModuleNames("neozygisk", "neo_zygisk");
+			List<String> zygiskNextModules = matchingModuleNames("zygisknext", "zygisk_next", "zygisksu");
+			List<String> hybridMountModules = matchingModuleNames("hybrid", "overlayfs", "magic_mount", "magicmount", "mountify");
+
+			appendDetection(report, "KSU-Next",
+					isPackageInstalledQuiet(Constants.KSU_NEXT_PACKAGE),
+					"package " + Constants.KSU_NEXT_PACKAGE);
+			appendDetection(report, "KernelSU",
+					isPackageInstalledQuiet(Constants.KSU_PACKAGE) || pathExists("/data/adb/ksu"),
+					"package " + Constants.KSU_PACKAGE + "; /data/adb/ksu=" + status(pathExists("/data/adb/ksu")));
+			appendDetection(report, "Magisk",
+					isPackageInstalledQuiet(MAGISK_PACKAGE) || anyPathExists("/data/adb/magisk.db", "/data/adb/magisk"),
+					"package " + MAGISK_PACKAGE + "; magisk.db=" + status(pathExists("/data/adb/magisk.db")));
+			appendDetection(report, "APatch",
+					isPackageInstalledQuiet(APATCH_PACKAGE) || anyPathExists("/data/adb/ap", "/data/adb/apatch"),
+					"package " + APATCH_PACKAGE + "; /data/adb/ap=" + status(pathExists("/data/adb/ap")));
+			appendDetection(report, "NeoZygisk",
+					!neoZygiskModules.isEmpty(),
+					"modules=" + joinOrNone(neoZygiskModules));
+			appendDetection(report, "ZygiskNext",
+					!zygiskNextModules.isEmpty(),
+					"modules=" + joinOrNone(zygiskNextModules));
+			appendDetection(report, "LSPosed/Vector",
+					pathExists(lspdDbPath()) || isPackageInstalledQuiet(LSPOSED_PACKAGE) || isPackageInstalledQuiet(VECTOR_PACKAGE),
+					"db=" + lspdDbPath() + " " + status(pathExists(lspdDbPath()))
+							+ "; managers=" + installedManagers(LSPOSED_PACKAGE, VECTOR_PACKAGE));
+			appendDetection(report, "Hybrid-Mount",
+					anyPathExists(HYBRID_MOUNT_CONFIG_PATHS) || anyPathExists(HYBRID_MOUNT_BINARY_PATHS) || !hybridMountModules.isEmpty(),
+					"config=" + firstPresentPath(HYBRID_MOUNT_CONFIG_PATHS)
+							+ "; binary=" + firstPresentPath(HYBRID_MOUNT_BINARY_PATHS)
+							+ "; modules=" + joinOrNone(hybridMountModules));
+			appendDetection(report, "PixelXpert rollback marker",
+					pathExists(MODULE_PATH + "/disable"),
+					MODULE_PATH + "/disable");
+		}
+
 		private void appendLSPosedState(StringBuilder report) {
 			try {
 				getModuleMID();
@@ -251,12 +307,88 @@ public class RootProvider extends RootService {
 			}
 		}
 
+		private void appendDetection(StringBuilder report, String label, boolean detected, String evidence) {
+			appendLine(report, label + ": " + (detected ? "detected" : "not detected") + " (" + evidence + ")");
+		}
+
 		private void appendPackageStatus(StringBuilder report, String label, String packageName) {
 			try {
 				appendLine(report, label + " (" + packageName + "): " + (isPackageInstalled(packageName) ? "installed/enabled" : "not installed or disabled"));
 			} catch (Throwable t) {
 				appendLine(report, label + " (" + packageName + "): unavailable (" + t.getClass().getSimpleName() + ")");
 			}
+		}
+
+		private boolean isPackageInstalledQuiet(String packageName) {
+			try {
+				return isPackageInstalled(packageName);
+			} catch (Throwable ignored) {
+				return false;
+			}
+		}
+
+		private boolean anyPathExists(String... paths) {
+			for (String path : paths) {
+				if (pathExists(path)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private boolean pathExists(String path) {
+			return new File(path).exists();
+		}
+
+		private String firstPresentPath(String... paths) {
+			for (String path : paths) {
+				if (pathExists(path)) {
+					return path;
+				}
+			}
+			return "none";
+		}
+
+		private String installedManagers(String... packageNames) {
+			List<String> installed = new ArrayList<>();
+			for (String packageName : packageNames) {
+				if (isPackageInstalledQuiet(packageName)) {
+					installed.add(packageName);
+				}
+			}
+			return joinOrNone(installed);
+		}
+
+		private List<String> matchingModuleNames(String... nameFragments) {
+			List<String> matches = new ArrayList<>();
+			File modulesDir = new File("/data/adb/modules");
+			File[] moduleDirs = modulesDir.listFiles();
+			if (moduleDirs == null) {
+				return matches;
+			}
+
+			for (File moduleDir : moduleDirs) {
+				if (!moduleDir.isDirectory()) {
+					continue;
+				}
+
+				String moduleName = moduleDir.getName().toLowerCase(Locale.US);
+				for (String nameFragment : nameFragments) {
+					if (moduleName.contains(nameFragment)) {
+						matches.add(moduleDir.getName());
+						break;
+					}
+				}
+			}
+			return matches;
+		}
+
+		private String joinOrNone(List<String> values) {
+			return values.isEmpty() ? "none" : String.join(", ", values);
+		}
+
+		private String status(boolean present) {
+			return present ? "present" : "missing";
 		}
 
 		private void appendPathStatus(StringBuilder report, String label, String path) {
