@@ -124,16 +124,6 @@ public class HookHelper {
 			return throwable;
 		}
 
-		public void setThrowable(Throwable throwable) {
-			isResultSet = false;
-			result = null;
-			this.throwable = throwable;
-		}
-
-		public Throwable getThrowable() {
-			return throwable;
-		}
-
 		@SuppressWarnings({"unchecked"})
 		public <T> T getArg(int index) {
 			return (T) args[index];

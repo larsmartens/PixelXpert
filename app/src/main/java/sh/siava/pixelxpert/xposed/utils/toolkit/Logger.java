@@ -35,7 +35,7 @@ public class Logger {
 	 */
 	public static synchronized void log(String text, Throwable t) {
 		try {
-			xposedInterface.log(XposedInterface.PRIORITY_ERROR, TAG, text + "\n" + Log.getStackTraceString(t));
+			xposedInterface.log(XposedInterface.PRIORITY_DEFAULT, TAG, text + "\n" + Log.getStackTraceString(t));
 		} catch (Throwable ignored) {
 			Log.e(TAG, text, t);
 		}

@@ -27,7 +27,7 @@ import sh.siava.pixelxpert.annotations.ChildProcessModPack;
 import sh.siava.pixelxpert.annotations.MainProcessModPack;
 import sh.siava.pixelxpert.annotations.ModPackPriority;
 
-@SupportedAnnotationTypes("sh.siava.pixelxpert.annotations.BaseModPack")
+@SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class AnnotationProcessor extends AbstractProcessor {
 
