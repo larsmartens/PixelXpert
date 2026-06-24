@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Hiển thị ngày trong tuần cạnh đồng hồ</string>
     <string name="sbc_advanced_cat">Nâng cao (sẽ thay thế cài đặt trên!)</string>
     <string name="sbc_custom_date_before">Văn bản tùy chỉnh trước đồng hồ</string>
-    <string name="sbc_date_small">Nhỏ hơn (70%)</string>
+    <string name="sbc_date_small" formatted="false">Nhỏ hơn (70%)</string>
     <string name="sbc_custom_date_after">Văn bản tùy chỉnh sau đồng hồ</string>
     <string name="sbc_header">Tùy chỉnh đồng hồ trên thanh trạng thái</string>
     <string name="sbc_clock_color_category">Tùy chọn màu sắc</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Trung tâm</string>
     <string name="clock_right">Phải</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% kích thước của đồng hồ</string>
-    <string name="am_pm_small">70% kích thước của đồng hồ</string>
+    <string name="am_pm_normal" formatted="false">100% kích thước của đồng hồ</string>
+    <string name="am_pm_small" formatted="false">70% kích thước của đồng hồ</string>
     <!-- Date position -->
-    <string name="date_before">Trước đồng hồ (100%)</string>
-    <string name="date_before_small">Trước đồng hồ (70%)</string>
-    <string name="date_after">Sau đồng hồ (100%)</string>
-    <string name="date_after_small">Sau đồng hồ (kích cỡ nhỏ hơn)</string>
+    <string name="date_before" formatted="false">Trước đồng hồ (100%)</string>
+    <string name="date_before_small" formatted="false">Trước đồng hồ (70%)</string>
+    <string name="date_after" formatted="false">Sau đồng hồ (100%)</string>
+    <string name="date_after_small" formatted="false">Sau đồng hồ (kích cỡ nhỏ hơn)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Mặc định hệ thống</string>
     <string name="fourg_lte_lte">Biểu tượng LTE</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Vuốt lên trên để tắt ứng dụng</string>
     <string name="gesture_nav_left_swipe_up_title">Vuốt lên từ bên trái thanh điều hướng</string>
     <string name="gesture_nav_right_swipe_up_title">Vuốt lên từ bên phải thanh điều hướng</string>
-    <string name="gesture_nav_left_swipe_up_percent">Chiều rộng vùng vuốt lên bên trái (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Chiều rộng vùng vuốt lên bên phải (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Chiều rộng vùng vuốt lên bên trái (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Chiều rộng vùng vuốt lên bên phải (%)</string>
     <string name="gesture_nav_two_finger_title">Vuốt lên bằng hai ngón tay</string>
     <string name="gesture_nav_swipe_up_height">Chiều cao vuốt lên tối thiểu</string>
     <string name="none">Trống</string>

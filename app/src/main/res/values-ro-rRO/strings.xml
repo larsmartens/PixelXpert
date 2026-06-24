@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Arată ziua săptămânii cu ceasul</string>
     <string name="sbc_advanced_cat">Avansat (se va suprapune peste setare!)</string>
     <string name="sbc_custom_date_before">Text personalizat înainte de ceas</string>
-    <string name="sbc_date_small">Dimensiune mai mică (70%)</string>
+    <string name="sbc_date_small" formatted="false">Dimensiune mai mică (70%)</string>
     <string name="sbc_custom_date_after">Text personalizat după ceas</string>
     <string name="sbc_header">Personalizare ceas în bara de stare</string>
     <string name="sbc_clock_color_category">Opțiuni culoare</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Centru</string>
     <string name="clock_right">Dreapta</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">Mărimea 100% a ceasului</string>
-    <string name="am_pm_small">Mărimea 70% a ceasului</string>
+    <string name="am_pm_normal" formatted="false">Mărimea 100% a ceasului</string>
+    <string name="am_pm_small" formatted="false">Mărimea 70% a ceasului</string>
     <!-- Date position -->
-    <string name="date_before">Înainte de ceas (100%)</string>
-    <string name="date_before_small">Înainte de ceas (70%)</string>
-    <string name="date_after">După ceas (100%)</string>
-    <string name="date_after_small">După ceas (70%)</string>
+    <string name="date_before" formatted="false">Înainte de ceas (100%)</string>
+    <string name="date_before_small" formatted="false">Înainte de ceas (70%)</string>
+    <string name="date_after" formatted="false">După ceas (100%)</string>
+    <string name="date_after_small" formatted="false">După ceas (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Implicit sistem</string>
     <string name="fourg_lte_lte">Forțează pictograma LTE</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Glisează în partea de sus a ecranului pentru a închide aplicația din prim-plan</string>
     <string name="gesture_nav_left_swipe_up_title">Glisare în sus din stânga barei de navigare</string>
     <string name="gesture_nav_right_swipe_up_title">Glisare în sus din dreapta barei de navigare</string>
-    <string name="gesture_nav_left_swipe_up_percent">Lățimea zonei din stânga glisare în sus (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Lățimea zonei din dreapta glisare în sus (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Lățimea zonei din stânga glisare în sus (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Lățimea zonei din dreapta glisare în sus (%)</string>
     <string name="gesture_nav_two_finger_title">Acțiune de glisare în sus cu două degete</string>
     <string name="gesture_nav_swipe_up_height">Înălțimea minimă a declanșatorului la acțiunea de glisare în sus</string>
     <string name="none">Nimic</string>

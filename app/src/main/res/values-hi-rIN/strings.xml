@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">सप्ताह का दिन घड़ी के साथ दिखाएं</string>
     <string name="sbc_advanced_cat">विस्तारित तिथि (उपरोक्त सेटिंग को बदल देता है!)</string>
     <string name="sbc_custom_date_before">घड़ी के सामने कस्टम दिनांक स्वरूप</string>
-    <string name="sbc_date_small">छोटे (70%)</string>
+    <string name="sbc_date_small" formatted="false">छोटे (70%)</string>
     <string name="sbc_custom_date_after">घड़ी के बाद कस्टम दिनांक स्वरूप</string>
     <string name="sbc_header">स्थिति पट्टी घड़ी अनुकूलन</string>
     <string name="sbc_clock_color_category">रंग विकल्प</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">केंद्रित</string>
     <string name="clock_right">दाएँ</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% घड़ी का आकार</string>
-    <string name="am_pm_small">70% घड़ी का आकार</string>
+    <string name="am_pm_normal" formatted="false">100% घड़ी का आकार</string>
+    <string name="am_pm_small" formatted="false">70% घड़ी का आकार</string>
     <!-- Date position -->
-    <string name="date_before">घड़ी से पहले (100%)</string>
-    <string name="date_before_small">घड़ी से पहले (70%)</string>
-    <string name="date_after">घड़ी के बाद (100%)</string>
-    <string name="date_after_small">घड़ी के बाद (70%)</string>
+    <string name="date_before" formatted="false">घड़ी से पहले (100%)</string>
+    <string name="date_before_small" formatted="false">घड़ी से पहले (70%)</string>
+    <string name="date_after" formatted="false">घड़ी के बाद (100%)</string>
+    <string name="date_after_small" formatted="false">घड़ी के बाद (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">सिस्टम डिफ़ॉल्ट</string>
     <string name="fourg_lte_lte">फोर्स LTE सिंबल</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">अग्रभूमि ऐप से बाहर निकलने के लिए स्क्रीन के शीर्ष पर स्वाइप करें</string>
     <string name="gesture_nav_left_swipe_up_title">नेवबार में बाईं ओर से ऊपर की ओर स्वाइप करें</string>
     <string name="gesture_nav_right_swipe_up_title">नेवबार में दाईं ओर से ऊपर की ओर स्वाइप करें</string>
-    <string name="gesture_nav_left_swipe_up_percent">ऊपर की ओर बाएं स्वाइप करने वाले क्षेत्र की चौड़ाई (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">दाएं स्वाइप अप क्षेत्र की चौड़ाई (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">ऊपर की ओर बाएं स्वाइप करने वाले क्षेत्र की चौड़ाई (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">दाएं स्वाइप अप क्षेत्र की चौड़ाई (%)</string>
     <string name="gesture_nav_two_finger_title">दो अंगुलियों को ऊपर की ओर स्वाइप करें</string>
     <string name="gesture_nav_swipe_up_height">कार्रवाइयों को न्यूनतम ट्रिगर ऊंचाई पर स्वाइप करें</string>
     <string name="none">कोई नहीं</string>

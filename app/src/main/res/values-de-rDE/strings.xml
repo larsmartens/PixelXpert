@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Zeige den Wochentag mit der Uhr</string>
     <string name="sbc_advanced_cat">Erweitertes Datum (ersetzt obige Einstellung!)</string>
     <string name="sbc_custom_date_before">Benutzerdefiniertes Datumsformat vor der Uhr</string>
-    <string name="sbc_date_small">Kleiner (70%)</string>
+    <string name="sbc_date_small" formatted="false">Kleiner (70%)</string>
     <string name="sbc_custom_date_after">Benutzerdefiniertes Datumsformat nach der Uhr</string>
     <string name="sbc_header">Statusleisten Uhr Anpassung</string>
     <string name="sbc_clock_color_category">Farboptionen</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">zentriert</string>
     <string name="clock_right">rechts</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% Größe der Uhr</string>
-    <string name="am_pm_small">70% Größe der Uhr</string>
+    <string name="am_pm_normal" formatted="false">100% Größe der Uhr</string>
+    <string name="am_pm_small" formatted="false">70% Größe der Uhr</string>
     <!-- Date position -->
-    <string name="date_before">Vor der Uhr (100%)</string>
-    <string name="date_before_small">Vor der Uhr (70%)</string>
-    <string name="date_after">Nach der Uhr (100%)</string>
-    <string name="date_after_small">Nach der Uhr (70%)</string>
+    <string name="date_before" formatted="false">Vor der Uhr (100%)</string>
+    <string name="date_before_small" formatted="false">Vor der Uhr (70%)</string>
+    <string name="date_after" formatted="false">Nach der Uhr (100%)</string>
+    <string name="date_after_small" formatted="false">Nach der Uhr (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Systemstandart</string>
     <string name="fourg_lte_lte">Erzwinge LTE Symbol</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Streichen Sie zum oberen Bildschirmrand, um die Vordergrund-App zu beenden</string>
     <string name="gesture_nav_left_swipe_up_title">Aktion von links in der Navbar nach oben wischen</string>
     <string name="gesture_nav_right_swipe_up_title">Aktion von rechts in der Navbar nach oben wischen</string>
-    <string name="gesture_nav_left_swipe_up_percent">Breite des linken Swipe-up-Bereichs (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Breite des rechten Swipe-up-Bereichs (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Breite des linken Swipe-up-Bereichs (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Breite des rechten Swipe-up-Bereichs (%)</string>
     <string name="gesture_nav_two_finger_title">Wischen mit zwei Fingern nach oben</string>
     <string name="gesture_nav_swipe_up_height">Swipe-up-Aktionen minimale Triggerhöhe</string>
     <string name="none">Keiner</string>

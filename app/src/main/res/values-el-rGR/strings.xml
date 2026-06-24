@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Εμφάνιση ημέρας της εβδομάδας με ρολόι</string>
     <string name="sbc_advanced_cat">Για προχωρημένους (θα αντικαταστήσει την παραπάνω ρύθμιση!)</string>
     <string name="sbc_custom_date_before">Προσαρμοσμένο κείμενο πριν από το ρολόι</string>
-    <string name="sbc_date_small">Μικρότερο μέγεθος (70%)</string>
+    <string name="sbc_date_small" formatted="false">Μικρότερο μέγεθος (70%)</string>
     <string name="sbc_custom_date_after">Προσαρμοσμένο κείμενο μετά το ρολόι</string>
     <string name="sbc_header">Προσαρμογή ρολογιού γραμμής κατάστασης</string>
     <string name="sbc_clock_color_category">Επιλογές χρώματος</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Κέντρο</string>
     <string name="clock_right">σωστά</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% μέγεθος του ρολογιού</string>
-    <string name="am_pm_small">70% μέγεθος του ρολογιού</string>
+    <string name="am_pm_normal" formatted="false">100% μέγεθος του ρολογιού</string>
+    <string name="am_pm_small" formatted="false">70% μέγεθος του ρολογιού</string>
     <!-- Date position -->
-    <string name="date_before">Πριν από το ρολόι (100%)</string>
-    <string name="date_before_small">Πριν από το ρολόι (70%)</string>
-    <string name="date_after">Μετά το ρολόι (100%)</string>
-    <string name="date_after_small">Μετά το ρολόι (70%)</string>
+    <string name="date_before" formatted="false">Πριν από το ρολόι (100%)</string>
+    <string name="date_before_small" formatted="false">Πριν από το ρολόι (70%)</string>
+    <string name="date_after" formatted="false">Μετά το ρολόι (100%)</string>
+    <string name="date_after_small" formatted="false">Μετά το ρολόι (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Προεπιλογή συστήματος</string>
     <string name="fourg_lte_lte">Εικονίδιο Force LTE</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Σύρετε στο επάνω μέρος της οθόνης για να σκοτώσετε την εφαρμογή στο προσκήνιο</string>
     <string name="gesture_nav_left_swipe_up_title">Ενέργεια ολίσθησης προς τα επάνω από τα αριστερά του Navbar</string>
     <string name="gesture_nav_right_swipe_up_title">Ενέργεια ολίσθησης προς τα επάνω από τα δεξιά του Navbar</string>
-    <string name="gesture_nav_left_swipe_up_percent">Αριστερά πλάτος περιοχής ολίσθησης προς τα επάνω (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Πλάτος περιοχής ολίσθησης προς τα δεξιά (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Αριστερά πλάτος περιοχής ολίσθησης προς τα επάνω (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Πλάτος περιοχής ολίσθησης προς τα δεξιά (%)</string>
     <string name="gesture_nav_two_finger_title">Δράση σάρωσης με δύο δάχτυλα προς τα επάνω</string>
     <string name="gesture_nav_swipe_up_height">Ενέργειες ολίσθησης προς τα πάνω ελάχιστο ύψος σκανδάλης</string>
     <string name="none">Κανένας</string>

@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Zobrazit den v týdnu s hodinami</string>
     <string name="sbc_advanced_cat">Pokročilé (nahradí výše uvedené nastavení!)</string>
     <string name="sbc_custom_date_before">Vlastní text před hodinami</string>
-    <string name="sbc_date_small">Menší velikost (70 %)</string>
+    <string name="sbc_date_small" formatted="false">Menší velikost (70 %)</string>
     <string name="sbc_custom_date_after">Vlastní text po hodinách</string>
     <string name="sbc_header">Přizpůsobení hodin stavového řádku</string>
     <string name="sbc_clock_color_category">Barevné možnosti</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Centrum</string>
     <string name="clock_right">Že jo</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% velikost hodin</string>
-    <string name="am_pm_small">70% velikosti hodin</string>
+    <string name="am_pm_normal" formatted="false">100% velikost hodin</string>
+    <string name="am_pm_small" formatted="false">70% velikosti hodin</string>
     <!-- Date position -->
-    <string name="date_before">Před hodinami (100 %)</string>
-    <string name="date_before_small">Před hodinami (70 %)</string>
-    <string name="date_after">Po hodině (100 %)</string>
-    <string name="date_after_small">Po hodině (70 %)</string>
+    <string name="date_before" formatted="false">Před hodinami (100 %)</string>
+    <string name="date_before_small" formatted="false">Před hodinami (70 %)</string>
+    <string name="date_after" formatted="false">Po hodině (100 %)</string>
+    <string name="date_after_small" formatted="false">Po hodině (70 %)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Výchozí nastavení systému</string>
     <string name="fourg_lte_lte">Vynutit ikonu LTE</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Přejetím do horní části obrazovky ukončíte aplikaci v popředí</string>
     <string name="gesture_nav_left_swipe_up_title">Přejetím prstem nahoru zleva od navigační lišty</string>
     <string name="gesture_nav_right_swipe_up_title">Přejetím prstem nahoru z pravé části navigační lišty</string>
-    <string name="gesture_nav_left_swipe_up_percent">Šířka oblasti po přejetí vlevo (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Šířka oblasti pro přejetí prstem doprava (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Šířka oblasti po přejetí vlevo (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Šířka oblasti pro přejetí prstem doprava (%)</string>
     <string name="gesture_nav_two_finger_title">Přejetí dvěma prsty nahoru</string>
     <string name="gesture_nav_swipe_up_height">Akce přejetí prstem nahoru minimální výška spouště</string>
     <string name="none">Žádný</string>

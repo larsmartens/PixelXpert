@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">نمایش روز هفته با ساعت</string>
     <string name="sbc_advanced_cat">پیشرفته (جایگزین تنظیمات بالا خواهد شد!)</string>
     <string name="sbc_custom_date_before">متن دلخواه قبل از ساعت</string>
-    <string name="sbc_date_small">کوچکتر (70%)</string>
+    <string name="sbc_date_small" formatted="false">کوچکتر (70%)</string>
     <string name="sbc_custom_date_after">متن دلخواه بعد از ساعت</string>
     <string name="sbc_header">تنظیمات ساعت</string>
     <string name="sbc_clock_color_category">تنظیمات رنگ</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">مرکز</string>
     <string name="clock_right">راست</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">اندازه 100% ساعت</string>
-    <string name="am_pm_small">اندازه 70% ساعت</string>
+    <string name="am_pm_normal" formatted="false">اندازه 100% ساعت</string>
+    <string name="am_pm_small" formatted="false">اندازه 70% ساعت</string>
     <!-- Date position -->
-    <string name="date_before">قبل از ساعت (100%)</string>
-    <string name="date_before_small">قبل از ساعت (70%)</string>
-    <string name="date_after">بعد از ساعت (100%)</string>
-    <string name="date_after_small">بعد از ساعت (70%)</string>
+    <string name="date_before" formatted="false">قبل از ساعت (100%)</string>
+    <string name="date_before_small" formatted="false">قبل از ساعت (70%)</string>
+    <string name="date_after" formatted="false">بعد از ساعت (100%)</string>
+    <string name="date_after_small" formatted="false">بعد از ساعت (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">پیش فرض سیستم</string>
     <string name="fourg_lte_lte">از LTE استفاده شود</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">بستن برنامه با کشیدن بالا از پایین تا بالای صفحه</string>
     <string name="gesture_nav_left_swipe_up_title">کشیدن بالا از سمت چپ پایین</string>
     <string name="gesture_nav_right_swipe_up_title">کشیدن بالا از سمت راست پایین</string>
-    <string name="gesture_nav_left_swipe_up_percent">پهنای حساس به کشیدن به بالا - چپ</string>
-    <string name="gesture_nav_right_swipe_up_percent">پهنای حساس به کشیدن به بالا - راست</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">پهنای حساس به کشیدن به بالا - چپ</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">پهنای حساس به کشیدن به بالا - راست</string>
     <string name="gesture_nav_two_finger_title">کشیدن به بالا با دو انگشت</string>
     <string name="gesture_nav_swipe_up_height">حداقل ارتفاع کشیدن به بالا</string>
     <string name="none">هیچ</string>

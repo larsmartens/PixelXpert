@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Pokaż dzień tygodnia z zegarem</string>
     <string name="sbc_advanced_cat">Zaawansowane (zastąpi powyższe ustawienie!)</string>
     <string name="sbc_custom_date_before">Własny tekst przed zegarem</string>
-    <string name="sbc_date_small">Mniejszy rozmiar (70%)</string>
+    <string name="sbc_date_small" formatted="false">Mniejszy rozmiar (70%)</string>
     <string name="sbc_custom_date_after">Niestandardowy tekst po zegarze</string>
     <string name="sbc_header">Dostosowanie zegara paska stanu</string>
     <string name="sbc_clock_color_category">Opcje kolorów</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Środek</string>
     <string name="clock_right">Prawa strona</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% rozmiaru zegara</string>
-    <string name="am_pm_small">70% rozmiaru zegara</string>
+    <string name="am_pm_normal" formatted="false">100% rozmiaru zegara</string>
+    <string name="am_pm_small" formatted="false">70% rozmiaru zegara</string>
     <!-- Date position -->
-    <string name="date_before">Przed zegarem (100%)</string>
-    <string name="date_before_small">Przed zegarem (70%)</string>
-    <string name="date_after">Po zegarze (100%)</string>
-    <string name="date_after_small">Po zegarze (70%)</string>
+    <string name="date_before" formatted="false">Przed zegarem (100%)</string>
+    <string name="date_before_small" formatted="false">Przed zegarem (70%)</string>
+    <string name="date_after" formatted="false">Po zegarze (100%)</string>
+    <string name="date_after_small" formatted="false">Po zegarze (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Domyślne ustawienia systemowe</string>
     <string name="fourg_lte_lte">Pokazyj ikonę LTE</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Przesuń palcem w górę ekranu, aby zabić aplikację na pierwszym planie</string>
     <string name="gesture_nav_left_swipe_up_title">Przesuń w górę akcję z lewej strony paska nawigacyjnego</string>
     <string name="gesture_nav_right_swipe_up_title">Przesuń w górę akcję z prawej strony paska nawigacyjnego</string>
-    <string name="gesture_nav_left_swipe_up_percent">Szerokość obszaru przesuwania w lewo (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Szerokość obszaru przesuwania w prawo (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Szerokość obszaru przesuwania w lewo (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Szerokość obszaru przesuwania w prawo (%)</string>
     <string name="gesture_nav_two_finger_title">Przesunięcie dwoma palcami w górę</string>
     <string name="gesture_nav_swipe_up_height">Minimalna wysokość wyzwalania akcji przesuwania</string>
     <string name="none">Nic</string>

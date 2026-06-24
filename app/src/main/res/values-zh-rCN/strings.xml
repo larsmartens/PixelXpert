@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">显示日期</string>
     <string name="sbc_advanced_cat">日期进阶选项 (将取代上方设置!)</string>
     <string name="sbc_custom_date_before">自定义时钟左侧格式</string>
-    <string name="sbc_date_small">较小的尺寸 (70%)</string>
+    <string name="sbc_date_small" formatted="false">较小的尺寸 (70%)</string>
     <string name="sbc_custom_date_after">自定义时钟右侧格式</string>
     <string name="sbc_header">状态栏时钟定制</string>
     <string name="sbc_clock_color_category">颜色选项</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">中间</string>
     <string name="clock_right">右侧</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100%</string>
-    <string name="am_pm_small">70%</string>
+    <string name="am_pm_normal" formatted="false">100%</string>
+    <string name="am_pm_small" formatted="false">70%</string>
     <!-- Date position -->
-    <string name="date_before">时间前 (100%)</string>
-    <string name="date_before_small">时间前 (70%)</string>
-    <string name="date_after">时间后 (100%)</string>
-    <string name="date_after_small">时间后 (70%)</string>
+    <string name="date_before" formatted="false">时间前 (100%)</string>
+    <string name="date_before_small" formatted="false">时间前 (70%)</string>
+    <string name="date_after" formatted="false">时间后 (100%)</string>
+    <string name="date_after_small" formatted="false">时间后 (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">系统默认</string>
     <string name="fourg_lte_lte">使用 LTE 图标</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">上滑至屏幕顶部杀死前台APP</string>
     <string name="gesture_nav_left_swipe_up_title">左侧上滑动作</string>
     <string name="gesture_nav_right_swipe_up_title">右侧上滑动作</string>
-    <string name="gesture_nav_left_swipe_up_percent">左侧上滑区域 (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">右侧上滑区域 (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">左侧上滑区域 (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">右侧上滑区域 (%)</string>
     <string name="gesture_nav_two_finger_title">双指上滑动作</string>
     <string name="gesture_nav_swipe_up_height">上滑动作触发最低高度</string>
     <string name="none">无</string>

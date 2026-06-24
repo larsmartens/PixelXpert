@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Montrer le jour de la semaine</string>
     <string name="sbc_advanced_cat">Paramètres avancés (remplace les autres paramètres)</string>
     <string name="sbc_custom_date_before">Texte personnalisé avant l’holorge</string>
-    <string name="sbc_date_small">Plus petite police (70%)</string>
+    <string name="sbc_date_small" formatted="false">Plus petite police (70%)</string>
     <string name="sbc_custom_date_after">Texte personnalisé après l’horloge</string>
     <string name="sbc_header">Personnalisation de l’horloge de la barre d’état</string>
     <string name="sbc_clock_color_category">Options de couleur</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Centre</string>
     <string name="clock_right">Droit</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">Même taille que l’horloge</string>
-    <string name="am_pm_small">70% de la taille de l’horloge</string>
+    <string name="am_pm_normal" formatted="false">Même taille que l’horloge</string>
+    <string name="am_pm_small" formatted="false">70% de la taille de l’horloge</string>
     <!-- Date position -->
-    <string name="date_before">Avant l’horloge (100%)</string>
-    <string name="date_before_small">Avant l’horloge (70%)</string>
-    <string name="date_after">Après l’horloge (100%)</string>
-    <string name="date_after_small">Après l’horloge (70%)</string>
+    <string name="date_before" formatted="false">Avant l’horloge (100%)</string>
+    <string name="date_before_small" formatted="false">Avant l’horloge (70%)</string>
+    <string name="date_after" formatted="false">Après l’horloge (100%)</string>
+    <string name="date_after_small" formatted="false">Après l’horloge (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Selon les paramètres de l’appareil</string>
     <string name="fourg_lte_lte">Forcer l’icône LTE</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Balayer vers le haut pour forcer l’arrêt de l’application au premier plan</string>
     <string name="gesture_nav_left_swipe_up_title">Balayage depuis la gauche de la barre de navigation</string>
     <string name="gesture_nav_right_swipe_up_title">Balayage depuis la droite de la barre de navigation</string>
-    <string name="gesture_nav_left_swipe_up_percent">Largeur de la zone de balayage gauche (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Largeur de la zone de balayage droit (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Largeur de la zone de balayage gauche (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Largeur de la zone de balayage droit (%)</string>
     <string name="gesture_nav_two_finger_title">Balayage avec deux doigts</string>
     <string name="gesture_nav_swipe_up_height">Hauteur de déclenchement minimale des actions de balayage vers le haut</string>
     <string name="none">Rien</string>

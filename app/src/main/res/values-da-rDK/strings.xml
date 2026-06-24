@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Vis ugedag med ur</string>
     <string name="sbc_advanced_cat">Avanceret (vil erstatte ovenstående indstilling!)</string>
     <string name="sbc_custom_date_before">Brugerdefineret tekst før ur</string>
-    <string name="sbc_date_small">Mindre størrelse (70 %)</string>
+    <string name="sbc_date_small" formatted="false">Mindre størrelse (70 %)</string>
     <string name="sbc_custom_date_after">Brugerdefineret tekst efter ur</string>
     <string name="sbc_header">Tilpasning af statuslinjens ur</string>
     <string name="sbc_clock_color_category">Farvemuligheder</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Centrum</string>
     <string name="clock_right">Højre</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% størrelse af uret</string>
-    <string name="am_pm_small">70% størrelse af uret</string>
+    <string name="am_pm_normal" formatted="false">100% størrelse af uret</string>
+    <string name="am_pm_small" formatted="false">70% størrelse af uret</string>
     <!-- Date position -->
-    <string name="date_before">Før ur (100 %)</string>
-    <string name="date_before_small">Før ur (70 %)</string>
-    <string name="date_after">Efter ur (100 %)</string>
-    <string name="date_after_small">Efter ur (70 %)</string>
+    <string name="date_before" formatted="false">Før ur (100 %)</string>
+    <string name="date_before_small" formatted="false">Før ur (70 %)</string>
+    <string name="date_after" formatted="false">Efter ur (100 %)</string>
+    <string name="date_after_small" formatted="false">Efter ur (70 %)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Systemstandard</string>
     <string name="fourg_lte_lte">Tving LTE-ikonet</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Stryg til toppen af skærmen for at dræbe forgrundsappen</string>
     <string name="gesture_nav_left_swipe_up_title">Stryg handlingen op fra venstre for Navbar</string>
     <string name="gesture_nav_right_swipe_up_title">Stryg handlingen op fra højre for Navbar</string>
-    <string name="gesture_nav_left_swipe_up_percent">Venstre swipe-op område bredde (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Højre swipe-op-områdebredde (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Venstre swipe-op område bredde (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Højre swipe-op-områdebredde (%)</string>
     <string name="gesture_nav_two_finger_title">Swipe-op-handling med to fingre</string>
     <string name="gesture_nav_swipe_up_height">Swipe-op-handlinger minimum triggerhøjde</string>
     <string name="none">Ingen</string>

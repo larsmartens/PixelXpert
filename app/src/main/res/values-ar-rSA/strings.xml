@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">إظهار اليوم من الأسبوع مع الساعة</string>
     <string name="sbc_advanced_cat">متقدم (سيتم تجاوز الإعدادات!)</string>
     <string name="sbc_custom_date_before">نص مخصص قبل الساعة</string>
-    <string name="sbc_date_small">حجم أصغر (70%)</string>
+    <string name="sbc_date_small" formatted="false">حجم أصغر (70%)</string>
     <string name="sbc_custom_date_after">نص مخصص بعد الساعة</string>
     <string name="sbc_header">تخصيص ساعة شريط الحالة</string>
     <string name="sbc_clock_color_category">خيارات اللون</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">الوسط</string>
     <string name="clock_right">يمين</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">حجم 100% من الساعة</string>
-    <string name="am_pm_small">70% حجم الساعة</string>
+    <string name="am_pm_normal" formatted="false">حجم 100% من الساعة</string>
+    <string name="am_pm_small" formatted="false">70% حجم الساعة</string>
     <!-- Date position -->
-    <string name="date_before">قبل الساعة (100%)</string>
-    <string name="date_before_small">قبل الساعة (70%)</string>
-    <string name="date_after">بعد الساعة (100%)</string>
-    <string name="date_after_small">بعد الساعة (70%)</string>
+    <string name="date_before" formatted="false">قبل الساعة (100%)</string>
+    <string name="date_before_small" formatted="false">قبل الساعة (70%)</string>
+    <string name="date_after" formatted="false">بعد الساعة (100%)</string>
+    <string name="date_after_small" formatted="false">بعد الساعة (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">النظام الافتراضي</string>
     <string name="fourg_lte_lte">فرض أيقونة LTE</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">اسحب لأعلى الشاشة لإيقاف التطبيق في المقدمة</string>
     <string name="gesture_nav_left_swipe_up_title">إجراء السحب لأعلى من يسار شريط التنقل</string>
     <string name="gesture_nav_right_swipe_up_title">إجراء السحب لأعلى من يمين شريط التنقل</string>
-    <string name="gesture_nav_left_swipe_up_percent">عرض التمرير لليسار (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">عرض التمرير الأيمن (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">عرض التمرير لليسار (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">عرض التمرير الأيمن (%)</string>
     <string name="gesture_nav_two_finger_title">إجراء السحب بأصبعين</string>
     <string name="gesture_nav_swipe_up_height">إجراءات السحب للأعلى الحد الأدنى لارتفاع المشغل</string>
     <string name="none">لا</string>

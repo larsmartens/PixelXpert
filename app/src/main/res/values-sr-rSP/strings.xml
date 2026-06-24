@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Прикажи дан у недељи са сатом</string>
     <string name="sbc_advanced_cat">Напредно (замениће горњу поставку!)</string>
     <string name="sbc_custom_date_before">Прилагођени текст пре сата</string>
-    <string name="sbc_date_small">Мања величина (70%)</string>
+    <string name="sbc_date_small" formatted="false">Мања величина (70%)</string>
     <string name="sbc_custom_date_after">Прилагођени текст после сата</string>
     <string name="sbc_header">Прилагођавање сата статусне траке</string>
     <string name="sbc_clock_color_category">Опције боја</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Средина</string>
     <string name="clock_right">Десно</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% величина сата</string>
-    <string name="am_pm_small">70% величине сата</string>
+    <string name="am_pm_normal" formatted="false">100% величина сата</string>
+    <string name="am_pm_small" formatted="false">70% величине сата</string>
     <!-- Date position -->
-    <string name="date_before">Пре сата (100%)</string>
-    <string name="date_before_small">Пре сата (70%)</string>
-    <string name="date_after">После сата (100%)</string>
-    <string name="date_after_small">После сата (70%)</string>
+    <string name="date_before" formatted="false">Пре сата (100%)</string>
+    <string name="date_before_small" formatted="false">Пре сата (70%)</string>
+    <string name="date_after" formatted="false">После сата (100%)</string>
+    <string name="date_after_small" formatted="false">После сата (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Систем подразумевани</string>
     <string name="fourg_lte_lte">Форце ЛТЕ икона</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Превуците до врха екрана да бисте принудно зауставили апликацију</string>
     <string name="gesture_nav_left_swipe_up_title">Превлачење нагоре с леве стране траке за навигацију</string>
     <string name="gesture_nav_right_swipe_up_title">Превлачење нагоре с десне стране траке за навигацију</string>
-    <string name="gesture_nav_left_swipe_up_percent">Ширина зоне за превлачење слева</string>
-    <string name="gesture_nav_right_swipe_up_percent">Ширина зоне за превлачење здесна</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Ширина зоне за превлачење слева</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Ширина зоне за превлачење здесна</string>
     <string name="gesture_nav_two_finger_title">Превлачење нагоре са два прста</string>
     <string name="gesture_nav_swipe_up_height">Минимална висина за активацију покрета</string>
     <string name="none">Ништа</string>

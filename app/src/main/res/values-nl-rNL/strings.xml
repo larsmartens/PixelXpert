@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Dag van de week weergeven met klok</string>
     <string name="sbc_advanced_cat">Geavanceerd (vervangt bovenstaande instelling!)</string>
     <string name="sbc_custom_date_before">Aangepaste tekst vóór de klok</string>
-    <string name="sbc_date_small">Kleiner formaat (70%)</string>
+    <string name="sbc_date_small" formatted="false">Kleiner formaat (70%)</string>
     <string name="sbc_custom_date_after">Aangepaste tekst na klok</string>
     <string name="sbc_header">Aanpassing van de statusbalkklok</string>
     <string name="sbc_clock_color_category">Kleur opties</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Centrum</string>
     <string name="clock_right">Rechts</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% grootte van de klok</string>
-    <string name="am_pm_small">70% grootte van de klok</string>
+    <string name="am_pm_normal" formatted="false">100% grootte van de klok</string>
+    <string name="am_pm_small" formatted="false">70% grootte van de klok</string>
     <!-- Date position -->
-    <string name="date_before">Voor de klok (100%)</string>
-    <string name="date_before_small">Voor de klok (70%)</string>
-    <string name="date_after">Na klok (100%)</string>
-    <string name="date_after_small">Na klok (70%)</string>
+    <string name="date_before" formatted="false">Voor de klok (100%)</string>
+    <string name="date_before_small" formatted="false">Voor de klok (70%)</string>
+    <string name="date_after" formatted="false">Na klok (100%)</string>
+    <string name="date_after_small" formatted="false">Na klok (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Systeem standaard</string>
     <string name="fourg_lte_lte">LTE-pictogram forceren</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Veeg naar de bovenkant van het scherm om de app op de voorgrond te sluiten</string>
     <string name="gesture_nav_left_swipe_up_title">Veeg actie omhoog vanaf de linkerkant van de navigatiebalk</string>
     <string name="gesture_nav_right_swipe_up_title">Veeg actie omhoog vanaf de rechterkant van de navigatiebalk</string>
-    <string name="gesture_nav_left_swipe_up_percent">Breedte van gebied naar links omhoog vegen (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Gebiedsbreedte rechts omhoog vegen (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Breedte van gebied naar links omhoog vegen (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Gebiedsbreedte rechts omhoog vegen (%)</string>
     <string name="gesture_nav_two_finger_title">Veegbeweging met twee vingers omhoog</string>
     <string name="gesture_nav_swipe_up_height">Veeg acties minimale triggerhoogte uit</string>
     <string name="none">Geen</string>

@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Visa veckodag med klocka</string>
     <string name="sbc_advanced_cat">Avancerat (kommer att ersätta ovanstående inställning!)</string>
     <string name="sbc_custom_date_before">Anpassad text före klockan</string>
-    <string name="sbc_date_small">Mindre storlek (70 %)</string>
+    <string name="sbc_date_small" formatted="false">Mindre storlek (70 %)</string>
     <string name="sbc_custom_date_after">Anpassad text efter klockan</string>
     <string name="sbc_header">Statusfältsklockanpassning</string>
     <string name="sbc_clock_color_category">Färgalternativ</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Centrum</string>
     <string name="clock_right">Höger</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% storlek på klockan</string>
-    <string name="am_pm_small">70% storlek på klockan</string>
+    <string name="am_pm_normal" formatted="false">100% storlek på klockan</string>
+    <string name="am_pm_small" formatted="false">70% storlek på klockan</string>
     <!-- Date position -->
-    <string name="date_before">Före klockan (100 %)</string>
-    <string name="date_before_small">Före klockan (70 %)</string>
-    <string name="date_after">Efter klockan (100 %)</string>
-    <string name="date_after_small">After Clock (70 %)</string>
+    <string name="date_before" formatted="false">Före klockan (100 %)</string>
+    <string name="date_before_small" formatted="false">Före klockan (70 %)</string>
+    <string name="date_after" formatted="false">Efter klockan (100 %)</string>
+    <string name="date_after_small" formatted="false">After Clock (70 %)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Systemfel</string>
     <string name="fourg_lte_lte">Tvinga LTE-ikonen</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Svep till toppen av skärmen för att döda förgrundsappen</string>
     <string name="gesture_nav_left_swipe_up_title">Svep uppåt från vänster om Navbar</string>
     <string name="gesture_nav_right_swipe_up_title">Svep uppåt från höger om Navbar</string>
-    <string name="gesture_nav_left_swipe_up_percent">Vänster svep upp områdets bredd (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Svep uppåt för höger områdes bredd (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Vänster svep upp områdets bredd (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Svep uppåt för höger områdes bredd (%)</string>
     <string name="gesture_nav_two_finger_title">Svep uppåt med två fingrar</string>
     <string name="gesture_nav_swipe_up_height">Svep uppåts lägsta triggerhöjd</string>
     <string name="none">Ingen</string>

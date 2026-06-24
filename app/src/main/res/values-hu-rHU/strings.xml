@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Mutasd a hét napját órával</string>
     <string name="sbc_advanced_cat">Speciális (felváltja a fenti beállítást!)</string>
     <string name="sbc_custom_date_before">Egyedi szöveg óra előtt</string>
-    <string name="sbc_date_small">Kisebb méret (70%)</string>
+    <string name="sbc_date_small" formatted="false">Kisebb méret (70%)</string>
     <string name="sbc_custom_date_after">Egyedi szöveg óra után</string>
     <string name="sbc_header">Állapotsor óra testreszabása</string>
     <string name="sbc_clock_color_category">Szín lehetőségek</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Központ</string>
     <string name="clock_right">Jobb</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100%-os az óra mérete</string>
-    <string name="am_pm_small">Az óra mérete 70%-a</string>
+    <string name="am_pm_normal" formatted="false">100%-os az óra mérete</string>
+    <string name="am_pm_small" formatted="false">Az óra mérete 70%-a</string>
     <!-- Date position -->
-    <string name="date_before">Óra előtt (100%)</string>
-    <string name="date_before_small">Óra előtt (70%)</string>
-    <string name="date_after">Óra után (100%)</string>
-    <string name="date_after_small">Óra után (70%)</string>
+    <string name="date_before" formatted="false">Óra előtt (100%)</string>
+    <string name="date_before_small" formatted="false">Óra előtt (70%)</string>
+    <string name="date_after" formatted="false">Óra után (100%)</string>
+    <string name="date_after_small" formatted="false">Óra után (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Rendszer alapértelmezett</string>
     <string name="fourg_lte_lte">LTE ikon kényszerítése</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Csúsztassa az ujját a képernyő tetejére az előtérbeli alkalmazás leállításához</string>
     <string name="gesture_nav_left_swipe_up_title">Csúsztassa felfelé a műveletet a Navbar bal oldaláról</string>
     <string name="gesture_nav_right_swipe_up_title">Csúsztassa felfelé a műveletet a Navbar jobb oldaláról</string>
-    <string name="gesture_nav_left_swipe_up_percent">Balra felfelé csúsztatható terület szélessége (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Jobbra csúsztatva felfelé a terület szélessége (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Balra felfelé csúsztatható terület szélessége (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Jobbra csúsztatva felfelé a terület szélessége (%)</string>
     <string name="gesture_nav_two_finger_title">Kétujjas felfelé húzás</string>
     <string name="gesture_nav_swipe_up_height">Csúsztatás felfelé műveletek minimális indítómagasság</string>
     <string name="none">Egyik sem</string>

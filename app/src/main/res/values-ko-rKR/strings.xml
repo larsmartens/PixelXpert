@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">요일 표시</string>
     <string name="sbc_advanced_cat">고급 설정 (위 설정보다 우선 적용됩니다!)</string>
     <string name="sbc_custom_date_before">시계 앞 커스텀 문구</string>
-    <string name="sbc_date_small">크기 줄이기 (70%)</string>
+    <string name="sbc_date_small" formatted="false">크기 줄이기 (70%)</string>
     <string name="sbc_custom_date_after">시계 뒤 커스텀 문구</string>
     <string name="sbc_header">상태 표시줄 시계 개인 설정</string>
     <string name="sbc_clock_color_category">색상 설정</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">가운데</string>
     <string name="clock_right">오른쪽</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">시계 크기의 100%</string>
-    <string name="am_pm_small">시계 크기의 70%</string>
+    <string name="am_pm_normal" formatted="false">시계 크기의 100%</string>
+    <string name="am_pm_small" formatted="false">시계 크기의 70%</string>
     <!-- Date position -->
-    <string name="date_before">시계 앞 (100%)</string>
-    <string name="date_before_small">시계 앞 (70%)</string>
-    <string name="date_after">시계 뒤 (100%)</string>
-    <string name="date_after_small">시계 뒤 (70%)</string>
+    <string name="date_before" formatted="false">시계 앞 (100%)</string>
+    <string name="date_before_small" formatted="false">시계 앞 (70%)</string>
+    <string name="date_after" formatted="false">시계 뒤 (100%)</string>
+    <string name="date_after_small" formatted="false">시계 뒤 (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">시스템 기본값</string>
     <string name="fourg_lte_lte">LTE 아이콘 강제 설정</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">화면 상단까지 스와이프하여 현재 앱 종료</string>
     <string name="gesture_nav_left_swipe_up_title">네비게이션 바 왼쪽 영역에서 쓸어올림</string>
     <string name="gesture_nav_right_swipe_up_title">네비게이션 바 오른쪽 영역에서 쓸어올림</string>
-    <string name="gesture_nav_left_swipe_up_percent">왼쪽 제스쳐 인식 영역 너비 (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">오른쪽 제스쳐 인식 영역 너비 (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">왼쪽 제스쳐 인식 영역 너비 (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">오른쪽 제스쳐 인식 영역 너비 (%)</string>
     <string name="gesture_nav_two_finger_title">두 손가락을 사용해 쓸어올림</string>
     <string name="gesture_nav_swipe_up_height">쓸어올림 제스쳐 작동을 위한 최소 높이</string>
     <string name="none">없음</string>

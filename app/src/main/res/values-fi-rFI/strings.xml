@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Näytä viikonpäivä kellon kanssa</string>
     <string name="sbc_advanced_cat">Lisäasetukset (korvaa yllä olevan asetuksen!)</string>
     <string name="sbc_custom_date_before">Mukautettu teksti ennen kelloa</string>
-    <string name="sbc_date_small">Pienempi koko (70 %)</string>
+    <string name="sbc_date_small" formatted="false">Pienempi koko (70 %)</string>
     <string name="sbc_custom_date_after">Mukautettu teksti kellon jälkeen</string>
     <string name="sbc_header">Tilapalkin kellon mukauttaminen</string>
     <string name="sbc_clock_color_category">Värivaihtoehdot</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Keskusta</string>
     <string name="clock_right">Oikein</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100 % kellon koko</string>
-    <string name="am_pm_small">70% kellon koosta</string>
+    <string name="am_pm_normal" formatted="false">100 % kellon koko</string>
+    <string name="am_pm_small" formatted="false">70% kellon koosta</string>
     <!-- Date position -->
-    <string name="date_before">Ennen kelloa (100 %)</string>
-    <string name="date_before_small">Ennen kelloa (70 %)</string>
-    <string name="date_after">Kellon jälkeen (100 %)</string>
-    <string name="date_after_small">Kellon jälkeen (70 %)</string>
+    <string name="date_before" formatted="false">Ennen kelloa (100 %)</string>
+    <string name="date_before_small" formatted="false">Ennen kelloa (70 %)</string>
+    <string name="date_after" formatted="false">Kellon jälkeen (100 %)</string>
+    <string name="date_after_small" formatted="false">Kellon jälkeen (70 %)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Järjestelmän oletusarvo</string>
     <string name="fourg_lte_lte">Pakota LTE-kuvake</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Pyyhkäise näytön yläosaan tappaaksesi etualan sovelluksen</string>
     <string name="gesture_nav_left_swipe_up_title">Pyyhkäise ylöspäin navigointipalkin vasemmalta puolelta</string>
     <string name="gesture_nav_right_swipe_up_title">Pyyhkäise ylös toimintoa navigointipalkin oikealta puolelta</string>
-    <string name="gesture_nav_left_swipe_up_percent">Vasemmalle pyyhkäisy ylös alueen leveys (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Pyyhkäise oikealle ylös alueen leveys (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Vasemmalle pyyhkäisy ylös alueen leveys (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Pyyhkäise oikealle ylös alueen leveys (%)</string>
     <string name="gesture_nav_two_finger_title">Kahden sormen pyyhkäisy ylös</string>
     <string name="gesture_nav_swipe_up_height">Pyyhkäisy ylös -toimintojen liipaisimen vähimmäiskorkeus</string>
     <string name="none">Ei mitään</string>

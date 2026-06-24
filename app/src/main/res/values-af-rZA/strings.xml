@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Wys dag van die week met horlosie</string>
     <string name="sbc_advanced_cat">Gevorderd (sal bogenoemde instelling vervang!)</string>
     <string name="sbc_custom_date_before">Pasgemaakte teks voor klok</string>
-    <string name="sbc_date_small">Kleiner grootte (70%)</string>
+    <string name="sbc_date_small" formatted="false">Kleiner grootte (70%)</string>
     <string name="sbc_custom_date_after">Pasgemaakte teks na klok</string>
     <string name="sbc_header">Statusbalk klok aanpassing</string>
     <string name="sbc_clock_color_category">Kleur opsies</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Sentrum</string>
     <string name="clock_right">Reg</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% grootte van die horlosie</string>
-    <string name="am_pm_small">70% grootte van die horlosie</string>
+    <string name="am_pm_normal" formatted="false">100% grootte van die horlosie</string>
+    <string name="am_pm_small" formatted="false">70% grootte van die horlosie</string>
     <!-- Date position -->
-    <string name="date_before">Voor klok (100%)</string>
-    <string name="date_before_small">Voor klok (70%)</string>
-    <string name="date_after">Na klok (100%)</string>
-    <string name="date_after_small">Na klok (70%)</string>
+    <string name="date_before" formatted="false">Voor klok (100%)</string>
+    <string name="date_before_small" formatted="false">Voor klok (70%)</string>
+    <string name="date_after" formatted="false">Na klok (100%)</string>
+    <string name="date_after_small" formatted="false">Na klok (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Stelsel verstek</string>
     <string name="fourg_lte_lte">Dwing LTE-ikoon</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Swiep na bokant van die skerm om die voorgrond-app dood te maak</string>
     <string name="gesture_nav_left_swipe_up_title">Swiep op aksie van links van Navbar</string>
     <string name="gesture_nav_right_swipe_up_title">Swiep aksie op van regs van Navbar</string>
-    <string name="gesture_nav_left_swipe_up_percent">Links swiep area breedte (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Regs swiep area breedte (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Links swiep area breedte (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Regs swiep area breedte (%)</string>
     <string name="gesture_nav_two_finger_title">Twee-vinger-swiep-aksie</string>
     <string name="gesture_nav_swipe_up_height">Swiep-op-aksies minimum snellerhoogte</string>
     <string name="none">Geen</string>

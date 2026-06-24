@@ -123,7 +123,7 @@
     <string name="sbc_day_of_week_options">Mostrar fecha junto al reloj</string>
     <string name="sbc_advanced_cat">Opciones avanzadas de fecha (anula la opción anterior)</string>
     <string name="sbc_custom_date_before">Formato de fecha personalizado antes del reloj</string>
-    <string name="sbc_date_small">Tamaño más pequeño (70%)</string>
+    <string name="sbc_date_small" formatted="false">Tamaño más pequeño (70%)</string>
     <string name="sbc_custom_date_after">Formato de fecha personalizado después del reloj</string>
     <string name="sbc_header">Personalizar el reloj</string>
     <string name="sbc_clock_color_category">Opciones de color</string>
@@ -371,13 +371,13 @@
     <string name="clock_center">Centro</string>
     <string name="clock_right">Derecha</string>
     <!-- AM/PM style -->
-    <string name="am_pm_normal">100% del tamaño del reloj</string>
-    <string name="am_pm_small">70% del tamaño del reloj</string>
+    <string name="am_pm_normal" formatted="false">100% del tamaño del reloj</string>
+    <string name="am_pm_small" formatted="false">70% del tamaño del reloj</string>
     <!-- Date position -->
-    <string name="date_before">Antes del reloj (100%)</string>
-    <string name="date_before_small">Antes del reloj (70%)</string>
-    <string name="date_after">Después del reloj (100%)</string>
-    <string name="date_after_small">Después del reloj (70%)</string>
+    <string name="date_before" formatted="false">Antes del reloj (100%)</string>
+    <string name="date_before_small" formatted="false">Antes del reloj (70%)</string>
+    <string name="date_after" formatted="false">Después del reloj (100%)</string>
+    <string name="date_after_small" formatted="false">Después del reloj (70%)</string>
     <!-- 4G | LTE -->
     <string name="fourg_lte_default">Predeterminado por el sistema</string>
     <string name="fourg_lte_lte">Forzar icono LTE</string>
@@ -446,8 +446,8 @@
     <string name="gesture_nav_long_swipe_fc_title">Deslice hacia la parte superior de la pantalla para eliminar la aplicación en primer plano</string>
     <string name="gesture_nav_left_swipe_up_title">Acción de deslizar hacia arriba desde la izquierda de la barra de navegación</string>
     <string name="gesture_nav_right_swipe_up_title">Acción de deslizar hacia arriba desde la derecha de la barra de navegación</string>
-    <string name="gesture_nav_left_swipe_up_percent">Ancho del área de deslizamiento hacia arriba a la izquierda (%)</string>
-    <string name="gesture_nav_right_swipe_up_percent">Ancho del área de deslizamiento hacia la derecha (%)</string>
+    <string name="gesture_nav_left_swipe_up_percent" formatted="false">Ancho del área de deslizamiento hacia arriba a la izquierda (%)</string>
+    <string name="gesture_nav_right_swipe_up_percent" formatted="false">Ancho del área de deslizamiento hacia la derecha (%)</string>
     <string name="gesture_nav_two_finger_title">Acción de deslizar hacia arriba con dos dedos</string>
     <string name="gesture_nav_swipe_up_height">Altura mínima de activación de las acciones de deslizar hacia arriba</string>
     <string name="none">Ninguno</string>
