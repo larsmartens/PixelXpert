@@ -37,8 +37,8 @@ workRuntime = "2.11.2"
 kotlin = "2.2.21"
 ksp = "2.3.6"
 hilt = "2.59.2"
-lsposed-api = "101.0.1"
-lsposed-service = "101.0.0"
+lsposed-api = "102.0.0"
+lsposed-service = "102.0.0"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
