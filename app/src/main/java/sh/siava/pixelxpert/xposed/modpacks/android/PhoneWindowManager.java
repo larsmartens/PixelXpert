@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import io.github.libxposed.api.XposedModuleInterface;
-import sh.siava.pixelxpert.xposed.Constants;
+import sh.siava.pixelxpert.Constants;
 import sh.siava.pixelxpert.xposed.XPrefs;
 import sh.siava.pixelxpert.xposed.annotations.FrameworkModPack;
 import sh.siava.pixelxpert.xposed.XposedModPack;
@@ -189,11 +189,11 @@ public class PhoneWindowManager extends XposedModPack {
 		}
 
 		try {
-			ReflectedClass PhoneWindowManagerClass = ReflectedClass.of("com.android.server.policy.PhoneWindowManager");
+			ReflectedClass PhoneWindowManagerClass = ReflectedClass.ofIfPossible("com.android.server.policy.PhoneWindowManager");
 
 			PhoneWindowManagerClass
 					.before("onDefaultDisplayFocusChangedLw")
-					.run(param -> {
+					.runSafe(param -> {
 						if (param.args[0] == null) return;
 						if (!appProfileSwitchEnabled || userHandleList.size() <= 1) return;
 
@@ -226,7 +226,7 @@ public class PhoneWindowManager extends XposedModPack {
 
 			PhoneWindowManagerClass
 					.after("enableScreen")
-					.run(param -> windowMan = param.thisObject);
+					.runSafe(param -> windowMan = param.thisObject);
 		} catch (Throwable ignored) {
 		}
 	}

@@ -115,29 +115,29 @@ public class TaskbarActivator extends XposedModPack {
 	@SuppressLint("DiscouragedApi")
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass DeviceProfileBuilderClass = ReflectedClass.of("com.android.launcher3.DeviceProfile$Builder");
-		ReflectedClass TaskbarActivityContextClass = ReflectedClass.of("com.android.launcher3.taskbar.TaskbarActivityContext");
-//		ReflectedClass LauncherModelClass = ReflectedClass.of("com.android.launcher3.LauncherModel");
-//		ReflectedClass LauncherModelFactoryClass = ReflectedClass.of("com.android.launcher3.LauncherModel_Factory");
-//		ReflectedClass BaseActivityClass = ReflectedClass.of("com.android.launcher3.BaseActivity");
-		ReflectedClass DisplayControllerInfoClass = ReflectedClass.of("com.android.launcher3.display.LauncherDisplayInfo");
-		ReflectedClass StateControllerClass = ReflectedClass.of("com.android.launcher3.taskbar.TaskbarLauncherStateController");
-		ReflectedClass AbstractNavButtonLayoutterClass = ReflectedClass.of("com.android.launcher3.taskbar.navbutton.AbstractNavButtonLayoutter");
-		ReflectedClass RecentAppsControllerClass = ReflectedClass.of("com.android.launcher3.taskbar.TaskbarRecentAppsController");
-		ReflectedClass QuickSwitchStateClass = ReflectedClass.of("com.android.launcher3.uioverrides.states.QuickSwitchState");
-		ReflectedClass TaskbarUiControllerClass = ReflectedClass.of("com.android.launcher3.taskbar.FallbackTaskbarUIController");
-		ReflectedClass TaskbarProfileClass = ReflectedClass.of("com.android.launcher3.deviceprofile.TaskbarProfile");
-		ReflectedClass TaskbarOverlayDragLayerClass = ReflectedClass.of("com.android.launcher3.taskbar.overlay.TaskbarOverlayDragLayer");
-		ReflectedClass KeyboardQuickSwitchControllerClass = ReflectedClass.of("com.android.launcher3.taskbar.KeyboardQuickSwitchController");
-		ReflectedClass TaskbarViewClass = ReflectedClass.of("com.android.launcher3.taskbar.TaskbarView");
-		TopTaskTrackerClass = ReflectedClass.of("com.android.quickstep.TopTaskTracker");
+		ReflectedClass DeviceProfileBuilderClass = ReflectedClass.ofIfPossible("com.android.launcher3.DeviceProfile$Builder");
+		ReflectedClass TaskbarActivityContextClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.TaskbarActivityContext");
+//		ReflectedClass LauncherModelClass = ReflectedClass.ofIfPossible("com.android.launcher3.LauncherModel");
+//		ReflectedClass LauncherModelFactoryClass = ReflectedClass.ofIfPossible("com.android.launcher3.LauncherModel_Factory");
+//		ReflectedClass BaseActivityClass = ReflectedClass.ofIfPossible("com.android.launcher3.BaseActivity");
+		ReflectedClass DisplayControllerInfoClass = ReflectedClass.ofIfPossible("com.android.launcher3.display.LauncherDisplayInfo");
+		ReflectedClass StateControllerClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.TaskbarLauncherStateController");
+		ReflectedClass AbstractNavButtonLayoutterClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.navbutton.AbstractNavButtonLayoutter");
+		ReflectedClass RecentAppsControllerClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.TaskbarRecentAppsController");
+		ReflectedClass QuickSwitchStateClass = ReflectedClass.ofIfPossible("com.android.launcher3.uioverrides.states.QuickSwitchState");
+		ReflectedClass TaskbarUiControllerClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.FallbackTaskbarUIController");
+		ReflectedClass TaskbarProfileClass = ReflectedClass.ofIfPossible("com.android.launcher3.deviceprofile.TaskbarProfile");
+		ReflectedClass TaskbarOverlayDragLayerClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.overlay.TaskbarOverlayDragLayer");
+		ReflectedClass KeyboardQuickSwitchControllerClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.KeyboardQuickSwitchController");
+		ReflectedClass TaskbarViewClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.TaskbarView");
+		TopTaskTrackerClass = ReflectedClass.ofIfPossible("com.android.quickstep.TopTaskTracker");
 		ReflectedClass DevicePropertiesClass = ReflectedClass.ofIfPossible("com.android.launcher3.deviceprofile.DeviceProperties");
 		ReflectedClass TaskbarConfigurationClass = ReflectedClass.ofIfPossible("com.android.launcher3.deviceprofile.TaskbarConfiguration");
 
 		//3 button nav order on A15+
 		AbstractNavButtonLayoutterClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if(!ThreeButtonLayoutMod) return;
 
 					ViewGroup navButtonContainer = (ViewGroup) getObjectField(param.thisObject, "navButtonContainer");
@@ -150,7 +150,7 @@ public class TaskbarActivator extends XposedModPack {
 		//enable taskbar
 		DisplayControllerInfoClass
 				.before("isTablet")
-				.run(param -> {
+				.runSafe(param -> {
 					if (taskbarMode == TASKBAR_DEFAULT) return;
 
 					param.setResult(taskbarMode == TASKBAR_ON);
@@ -159,7 +159,7 @@ public class TaskbarActivator extends XposedModPack {
 		//enable taskbar
 		TaskbarConfigurationClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if(taskbarMode == TASKBAR_ON) {
 						setObjectField(param.thisObject, "isTaskbarPresent", true);
 					}
@@ -168,7 +168,7 @@ public class TaskbarActivator extends XposedModPack {
 		//enable taskbar
 		DevicePropertiesClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if(taskbarMode == TASKBAR_ON) {
 						setObjectField(param.thisObject, "isPhone", false);
 					}
@@ -184,7 +184,7 @@ public class TaskbarActivator extends XposedModPack {
 					ReflectedClass.of(
 									getObjectField(instance, "mTaskbarInsetsComputer").getClass())
 							.before("onComputeInternalInsets")
-							.run(param -> {
+							.runSafe(param -> {
 								//doesn't seem to reach its end at all. may for desktop mode?
 //								onComputeInternalInsets(instance, param.args[0]);
 								param.setResult(null);
@@ -194,7 +194,7 @@ public class TaskbarActivator extends XposedModPack {
 		//workaround of taskbar recents overflow falsely showing "no recent items"
 		KeyboardQuickSwitchControllerClass
 				.before("processLoadedTasks")
-				.run(param -> {
+				.runSafe(param -> {
 							 if(TaskbarAsRecents)
 						        param.args[0] = false;
 				});
@@ -202,7 +202,7 @@ public class TaskbarActivator extends XposedModPack {
 		//temp workaround of launcher crash bug on split tasks
 		TaskbarViewClass
 				.before("updateRecents")
-				.run(param -> {
+				.runSafe(param -> {
 					@SuppressWarnings("unchecked")
 					List<Object> recents = (List<Object>) param.args[1];
 					param.args[1] = recents.stream().filter(t -> !t.getClass().getName().contains("Split")).toList();
@@ -210,7 +210,7 @@ public class TaskbarActivator extends XposedModPack {
 
 		KeyboardQuickSwitchControllerClass
 				.before("openQuickSwitchView")
-				.run(param -> {
+				.runSafe(param -> {
 					@SuppressWarnings("unchecked")
 					HashSet<Object> exclusionList = (HashSet<Object>) param.args[1];
 					if(notInHomeScreen())
@@ -222,7 +222,7 @@ public class TaskbarActivator extends XposedModPack {
 		//show on home screen
 		StateControllerClass
 				.before("isInLauncher")
-				.run(param -> {
+				.runSafe(param -> {
 					if (TaskbarOnLauncher) {
 						param.setResult(false);
 					}
@@ -231,7 +231,7 @@ public class TaskbarActivator extends XposedModPack {
 		//show on home screen
 		QuickSwitchStateClass
 				.before("isTaskbarStashed")
-				.run(param -> {
+				.runSafe(param -> {
 					if (TaskbarOnLauncher) {
 						param.setResult(false);
 					}
@@ -240,7 +240,7 @@ public class TaskbarActivator extends XposedModPack {
 		//show on home screen
 		TaskbarUiControllerClass
 				.before("isIn3pHomeOrRecents")
-				.run(param -> {
+				.runSafe(param -> {
 					if (TaskbarOnLauncher) {
 						param.setResult(false);
 					}
@@ -254,14 +254,14 @@ public class TaskbarActivator extends XposedModPack {
 			}
 		};
 
-		TaskbarActivityContextClass.after("getLeftCornerRadius").run(cornerRadiusConsumer);
-		TaskbarActivityContextClass.after("getRightCornerRadius").run(cornerRadiusConsumer);
+		TaskbarActivityContextClass.after("getLeftCornerRadius").runSafe(cornerRadiusConsumer);
+		TaskbarActivityContextClass.after("getRightCornerRadius").runSafe(cornerRadiusConsumer);
 		//endregion
 
 		//region recentbar
 		DeviceProfileBuilderClass
 				.after("build")
-				.run(param -> {
+				.runSafe(param -> {
 					if (taskbarMode == TASKBAR_DEFAULT) return;
 
 					boolean taskbarEnabled = taskbarMode == TASKBAR_ON;
@@ -274,7 +274,7 @@ public class TaskbarActivator extends XposedModPack {
 
 		TaskbarProfileClass
 				.after("getHeight")
-				.run(param -> {
+				.runSafe(param -> {
 					if(taskbarMode == TASKBAR_ON && taskbarHeightOverride != 1f)
 					{
 						param.setResult(Math.round((int)param.getResult() * taskbarHeightOverride));
@@ -283,7 +283,7 @@ public class TaskbarActivator extends XposedModPack {
 
 		RecentAppsControllerClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if (GoogleRecents || (taskbarMode == TASKBAR_ON && TaskbarAsRecents)) { //on 16+ we use the builtin recent tasks
 						//noinspection OptionalGetWithoutIsPresent
 						RecentAppsControllerClass.findMethods(
@@ -295,13 +295,13 @@ public class TaskbarActivator extends XposedModPack {
 		@SuppressWarnings("OptionalGetWithoutIsPresent") Method reloadRecentTasksIfNeeded = RecentAppsControllerClass
 				           .findMethods(Pattern.compile(".*reloadRecentTasksIfNeeded.*")).stream().findFirst().get();
 
-		RecentAppsControllerClass.before("isReplacingPredictions").run(param -> {
+		RecentAppsControllerClass.before("isReplacingPredictions").runSafe(param -> {
 			if(TaskbarAsRecents && taskbarMode == TASKBAR_ON)
 				param.setResult(true);
 		});
 		RecentAppsControllerClass
 				.before("onRecentsOrHotseatChanged")
-				.run(param -> {
+				.runSafe(param -> {
 					if(taskbarMode == TASKBAR_ON && TaskbarAsRecents) {
 						List<?> allRecentTasks = (List<?>) getObjectField(param.thisObject, "allRecentTasks");
 

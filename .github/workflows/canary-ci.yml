@@ -1,0 +1,87 @@
+name: Canary CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [canary]
+  push:
+    branches: [canary]
+
+jobs:
+  gradle:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: assembleDebug
+            command: ./gradlew assembleDebug
+          - name: assembleRelease
+            command: ./gradlew assembleRelease
+          - name: lint
+            command: ./gradlew lint
+          - name: dependency validation
+            command: ./gradlew app:dependencies --configuration debugRuntimeClasspath
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Prepare Gradle
+        run: chmod +x gradlew
+
+      - name: Run ${{ matrix.name }}
+        run: ${{ matrix.command }}
+
+  zip-integrity:
+    name: zip integrity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Build debug APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Generate module zip
+        run: |
+          mkdir -p output
+          cp app/build/outputs/apk/debug/PixelXpert.apk MagiskModBase/system/priv-app/PixelXpert/PixelXpert.apk
+          (cd MagiskModBase && zip -r ../output/PixelXpert.zip *)
+
+      - name: Validate module zip
+        run: |
+          unzip -t output/PixelXpert.zip
+          unzip -l output/PixelXpert.zip | tee zip-contents.txt
+          grep -q 'customize.sh' zip-contents.txt
+          grep -q 'service.sh' zip-contents.txt
+          grep -q 'module.prop' zip-contents.txt
+          grep -q 'system/priv-app/PixelXpert/PixelXpert.apk' zip-contents.txt
+
+      - name: Upload module zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: PixelXpert-zip-integrity
+          path: output/PixelXpert.zip

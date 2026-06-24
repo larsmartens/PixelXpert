@@ -42,22 +42,22 @@ public class PXSettingsLauncher extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass HomepagePreferenceClass = ReflectedClass.of("com.android.settings.widget.HomepagePreference");
-		ReflectedClass TopLevelSettingsClass = ReflectedClass.of("com.android.settings.homepage.TopLevelSettings");
-		ReflectedClass OnPreferenceClickListenerInterface = ReflectedClass.of("androidx.preference.Preference$OnPreferenceClickListener");
+		ReflectedClass HomepagePreferenceClass = ReflectedClass.ofIfPossible("com.android.settings.widget.HomepagePreference");
+		ReflectedClass TopLevelSettingsClass = ReflectedClass.ofIfPossible("com.android.settings.homepage.TopLevelSettings");
+		ReflectedClass OnPreferenceClickListenerInterface = ReflectedClass.ofIfPossible("androidx.preference.Preference$OnPreferenceClickListener");
 
 		ReflectedClass PreferenceCategoryClass = ReflectedClass.ofIfPossible("androidx.preference.PreferenceCategory");
 		ReflectedClass PreferenceManagerClass = ReflectedClass.ofIfPossible("androidx.preference.PreferenceManager");
 
 		try { //A16 expressive theme needs a different icon of PX
-			ReflectedClass SettingsThemeHelperClass = ReflectedClass.of("com.android.settingslib.widget.SettingsThemeHelper");
+			ReflectedClass SettingsThemeHelperClass = ReflectedClass.ofIfPossible("com.android.settingslib.widget.SettingsThemeHelper");
 			mExpressiveTheme = (boolean) SettingsThemeHelperClass.callStaticMethod("isExpressiveTheme", mContext);
 		}
 		catch (Throwable ignored){}
 
 		TopLevelSettingsClass
 				.after("getPreferenceScreenResId")
-				.run(param -> {
+				.runSafe(param -> {
 					@SuppressLint("DiscouragedApi")
 					int oldResName = mContext.getResources().getIdentifier("top_level_settings", "xml", mContext.getPackageName());
 
@@ -68,7 +68,7 @@ public class PXSettingsLauncher extends XposedModPack {
 
 		TopLevelSettingsClass
 				.before("onCreateAdapter")
-				.run(param -> {
+				.runSafe(param -> {
 					if (PXInSettings) {
 						Object PXPreference = HomepagePreferenceClass.getClazz().getConstructor(Context.class).newInstance(mContext);
 

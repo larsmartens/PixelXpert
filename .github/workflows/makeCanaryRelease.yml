@@ -1,6 +1,7 @@
 name: Make Canary Release
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'canary'
@@ -31,7 +32,7 @@ jobs:
       run: chmod +x .github/*.sh
 
     - name: Changelog Generation
-      run: .github/extractChanges.sh
+      run: .github/extractCanaryChanges.sh
 
     - name: Version Bump
       run: .github/bumpVersion.sh ${{ github.run_id }}

@@ -35,18 +35,18 @@ public class NotificationManager extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass HeadsUpManagerClass = ReflectedClass.of("com.android.systemui.statusbar.notification.headsup.HeadsUpManagerImpl");
+		ReflectedClass HeadsUpManagerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.notification.headsup.HeadsUpManagerImpl");
 
 		HeadsUpManagerClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					HeadsUpManager = param.thisObject;
 					applyDurations();
 				});
 
 		ReflectedClass.of(StatusBarNotification.class)
 				.after("isNonDismissable")
-				.run(param -> {
+				.runSafe(param -> {
 					if(DisableOngoingNotifDismiss) {
 						param.setResult((boolean) param.getResult() || ((StatusBarNotification) param.thisObject).isOngoing());
 					}

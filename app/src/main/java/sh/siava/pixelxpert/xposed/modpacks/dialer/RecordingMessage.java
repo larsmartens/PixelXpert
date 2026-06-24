@@ -39,7 +39,7 @@ public class RecordingMessage extends XposedModPack {
 
 		ReflectedClass.of(Resources.class)
 				.before("getString")
-				.run(param -> {
+				.runSafe(param -> {
 					if (removeRecodingMessage
 							&& (param.args[0].equals(call_recording_starting_voice) || param.args[0].equals(call_recording_ending_voice))) {
 						param.setResult("");

@@ -60,14 +60,14 @@ public class BatteryDataProvider extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass BatteryStatusClass = ReflectedClass.of("com.android.settingslib.fuelgauge.BatteryStatus");
-		ReflectedClass BatteryControllerImplClass = ReflectedClass.of("com.android.systemui.statusbar.policy.BatteryControllerImpl");
+		ReflectedClass BatteryStatusClass = ReflectedClass.ofIfPossible("com.android.settingslib.fuelgauge.BatteryStatus");
+		ReflectedClass BatteryControllerImplClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.policy.BatteryControllerImpl");
 
 		//once an intent is received, it's either battery level change, powersave change, or demo mode. we don't expect demo
 		// intents normally. So it's safe to assume we'll need to update battery anyway
 		BatteryControllerImplClass
 				.after("onReceive")
-				.run(param -> {
+				.runSafe(param -> {
 					mCurrentLevel = getIntField(param.thisObject, "mLevel");
 					mCharging = getBooleanField(param.thisObject, "mPluggedIn")
 							|| getBooleanField(param.thisObject, "mCharging")
@@ -87,7 +87,7 @@ public class BatteryDataProvider extends XposedModPack {
 		//old way. removed in new versions. must go away
 		BatteryStatusClass
 				.before("getChargingSpeed")
-				.run(param -> {
+				.runSafe(param -> {
 					if(FastChargingWattage > USB_5_WATT)
 					{
 						int maxChargingWattage = (int) getObjectField(param.thisObject, "maxChargingWattage") / MILLION;
@@ -97,7 +97,7 @@ public class BatteryDataProvider extends XposedModPack {
 				});
 
 		BatteryStatusClass
-				.before("calculateChargingSpeed").run(param -> {
+				.before("calculateChargingSpeed").runSafe(param -> {
 					if(FastChargingWattage <= USB_5_WATT)
 						return; //it's default value
 
@@ -120,7 +120,7 @@ public class BatteryDataProvider extends XposedModPack {
 
 		BatteryStatusClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 
 					if (param.args.length > 0 && (param.args[0] instanceof Intent batteryIntent)) {
 						int current = batteryIntent.getIntExtra(EXTRA_MAX_CHARGING_CURRENT, -1);

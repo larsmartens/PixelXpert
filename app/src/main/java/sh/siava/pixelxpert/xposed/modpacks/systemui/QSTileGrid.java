@@ -89,10 +89,10 @@ public class QSTileGrid extends XposedModPack {
 
 		PaginatedGridLayoutClass
 				.before("TileGrid")
-				.run(param ->
+				.runSafe(param ->
 						QSRowsHooks[0] = ReflectedClass.of(Resources.class)
 								.before("getInteger")
-								.run(param1 -> {
+								.runSafe(param1 -> {
 									if(param1.args[0].equals(mContext.getResources().getIdentifier("quick_settings_paginated_grid_num_rows", "integer", mContext.getPackageName()))) {
 										boolean isLandscape = mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 
@@ -110,7 +110,7 @@ public class QSTileGrid extends XposedModPack {
 		//region expressive compose tile label size
 		CommonTileKtClass
 				.before("TileLabel")
-				.run(param -> {
+				.runSafe(param -> {
 					Object spanStyle = getObjectField(param.args[2], "spanStyle");
 
 					if(Boolean.valueOf(true).equals(getAdditionalInstanceField(param.args[2], "Scaled")))
@@ -128,7 +128,7 @@ public class QSTileGrid extends XposedModPack {
 
 		PaginatedGridLayoutClass
 				.after("TileGrid")
-				.run(param -> {
+				.runSafe(param -> {
 					try {
 						QSRowsHooks[0].forEach(XposedInterface.HookHandle::unhook);
 					}
@@ -141,7 +141,7 @@ public class QSTileGrid extends XposedModPack {
 		//region expressive compose UI cols
 		QSColumnsRepositoryClass
 				.beforeConstruction()
-				.run(param ->
+				.runSafe(param ->
 						param.args[0] = new FakeIntegerResource(mContext) {
 							@Override
 							public int getInteger(int id) {
@@ -163,7 +163,7 @@ public class QSTileGrid extends XposedModPack {
 		//region expressive compose UI QQS rows
 		QuickQuickSettingsRowRepositoryClass
 				.beforeConstruction()
-				.run(param ->
+				.runSafe(param ->
 					param.args[0] = new FakeIntegerResource(mContext) {
 						@Override
 						public int getInteger(int id) {

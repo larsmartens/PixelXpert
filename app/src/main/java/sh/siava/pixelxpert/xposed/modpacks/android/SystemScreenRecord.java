@@ -30,11 +30,11 @@ public class SystemScreenRecord extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		try {
-			ReflectedClass DisplayManagerServiceClass = ReflectedClass.of("com.android.server.display.DisplayManagerService");
+			ReflectedClass DisplayManagerServiceClass = ReflectedClass.ofIfPossible("com.android.server.display.DisplayManagerService");
 
 			DisplayManagerServiceClass
 					.before("canProjectSecureVideo")
-					.run(param -> {
+					.runSafe(param -> {
 						try {
 							if (InsecureScreenRecord && (boolean) callMethod(param.thisObject, "validatePackageName",
 									Binder.getCallingUid(),

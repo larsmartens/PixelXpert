@@ -74,7 +74,7 @@ public class StatusbarGestures extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		ReflectedClass NotificationPanelViewControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.NotificationPanelViewController"); //Pre 17QPR1
-		ReflectedClass PhoneStatusBarViewClass = ReflectedClass.of("com.android.systemui.statusbar.phone.PhoneStatusBarView");
+		ReflectedClass PhoneStatusBarViewClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.PhoneStatusBarView");
 
 		//17QPR1
 		ReflectedClass ShadeInteractorSceneContainerImplClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.domain.interactor.ShadeInteractorSceneContainerImpl");
@@ -82,17 +82,17 @@ public class StatusbarGestures extends XposedModPack {
 
 		ShadeSurfaceImplClass
 				.before("onStatusBarLongPress")
-				.run(this::onStatusBarLongPress);
+				.runSafe(this::onStatusBarLongPress);
 
 		ShadeInteractorSceneContainerImplClass
 				.afterConstruction()
-				.run(param -> ShadeInteractorSceneContainerImpl = param.thisObject);
+				.runSafe(param -> ShadeInteractorSceneContainerImpl = param.thisObject);
 
 		mGestureDetector = new GestureDetector(mContext, getPullDownLPListener());
 
 		PhoneStatusBarViewClass
 				.after("onTouchEvent")
-				.run(param -> {
+				.runSafe(param -> {
 					if (!oneFingerPulldownEnabled) return;
 
 					MotionEvent event =
@@ -109,16 +109,16 @@ public class StatusbarGestures extends XposedModPack {
 
 		NotificationPanelViewControllerClass //Pre 17QPR1
 				.before("onStatusBarLongPress")
-				.run(this::onStatusBarLongPress);
+				.runSafe(this::onStatusBarLongPress);
 
 		NotificationPanelViewControllerClass //Pre 17QPR1
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					NotificationPanelViewController = param.thisObject;
 					Object mTouchHandler = getObjectField(param.thisObject, "mTouchHandler");
 					ReflectedClass.of(mTouchHandler.getClass())
 							.before("onTouchEvent")
-							.run(param2 -> {
+							.runSafe(param2 -> {
 								MotionEvent motionEvent = (MotionEvent) param2.args[0];
 
 								if (oneFingerPullupEnabled

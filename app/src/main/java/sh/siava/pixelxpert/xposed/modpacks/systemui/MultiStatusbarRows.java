@@ -46,7 +46,7 @@ public class MultiStatusbarRows extends XposedModPack {
 
 		IconManagerClass
 				.beforeConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if (!systemIconsMultiRow) return;
 
 					try {

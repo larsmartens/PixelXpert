@@ -89,13 +89,13 @@ public class CustomNavGestures extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass OtherActivityInputConsumerClass = ReflectedClass.of("com.android.quickstep.inputconsumers.OtherActivityInputConsumer"); //When apps are open
+		ReflectedClass OtherActivityInputConsumerClass = ReflectedClass.ofIfPossible("com.android.quickstep.inputconsumers.OtherActivityInputConsumer"); //When apps are open
 		ReflectedClass LauncherInputConsumerClass = ReflectedClass.ofIfPossible("com.android.quickstep.inputconsumers.LauncherInputConsumer"); //When on Home screen and Recents
 		if(LauncherInputConsumerClass.getClazz() == null)
 		{
 			LauncherInputConsumerClass = ReflectedClass.ofIfPossible("com.android.quickstep.inputconsumers.OverviewInputConsumer");
 		}
-		ReflectedClass SystemUiProxyClass = ReflectedClass.of("com.android.quickstep.SystemUiProxy");
+		ReflectedClass SystemUiProxyClass = ReflectedClass.ofIfPossible("com.android.quickstep.SystemUiProxy");
 
 		//noinspection DataFlowIssue
 		Rect displayBounds = SystemUtils.WindowManager().getMaximumWindowMetrics().getBounds();
@@ -104,15 +104,15 @@ public class CustomNavGestures extends XposedModPack {
 
 		SystemUiProxyClass
 				.afterConstruction()
-				.run(param -> mSystemUIProxy = param.thisObject);
+				.runSafe(param -> mSystemUIProxy = param.thisObject);
 
 		OtherActivityInputConsumerClass
 				.before("onMotionEvent")
-				.run(param -> onMotionEvent(param, false));
+				.runSafe(param -> onMotionEvent(param, false));
 
 		LauncherInputConsumerClass
 				.before("onMotionEvent")
-				.run(param -> onMotionEvent(param, true));
+				.runSafe(param -> onMotionEvent(param, true));
 	}
 
 	private void onMotionEvent(HookHelper.RunParam param, boolean isOverViewListener) {
@@ -337,7 +337,7 @@ public class CustomNavGestures extends XposedModPack {
 
 	private void takeScreenshot() {
 		try {
-			ReflectedClass ScreenshotRequestBuilderClass = ReflectedClass.of("com.android.internal.util.ScreenshotRequest$Builder");
+			ReflectedClass ScreenshotRequestBuilderClass = ReflectedClass.ofIfPossible("com.android.internal.util.ScreenshotRequest$Builder");
 
 			Object screenshotRequestBuilder = ScreenshotRequestBuilderClass
 					.getClazz()

@@ -50,17 +50,17 @@ public class GestureNavbarManager extends XposedModPack {
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		ReflectedClass EdgeBackGestureHandlerClass = ReflectedClass.ofIfPossible("com.android.systemui.navigationbar.gestural.EdgeBackGestureHandler");
 		ReflectedClass NavigationBarEdgePanelClass = ReflectedClass.ofIfPossible("com.android.systemui.navigationbar.gestural.NavigationBarEdgePanel");
-		ReflectedClass BackPanelControllerClass = ReflectedClass.of("com.android.systemui.navigationbar.gestural.BackPanelController");
+		ReflectedClass BackPanelControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.navigationbar.gestural.BackPanelController");
 
 		//region back gesture
 		//A16 QPR2 - The class doesn't have a visible constructor anymore, thus replacement method
 		EdgeBackGestureHandlerClass
 				.before("updateIsEnabled")
-				.run(param -> EdgeBackGestureHandler = param.thisObject);
+				.runSafe(param -> EdgeBackGestureHandler = param.thisObject);
 
 		BackPanelControllerClass
 				.before("onMotionEvent")
-				.run(param -> {
+				.runSafe(param -> {
 					MotionEvent ev = (MotionEvent) param.args[0];
 
 					if(ev.getActionMasked() == ACTION_DOWN) //down action is enough. once gesture is refused it won't accept further actions
@@ -79,7 +79,7 @@ public class GestureNavbarManager extends XposedModPack {
 		//Android 13
 		NavigationBarEdgePanelClass
 				.before("onMotionEvent")
-				.run(param -> {
+				.runSafe(param -> {
 					MotionEvent event = (MotionEvent) param.args[0];
 					if(event.getAction() == ACTION_DOWN)
 					{

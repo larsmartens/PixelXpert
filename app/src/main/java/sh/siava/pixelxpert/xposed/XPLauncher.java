@@ -140,12 +140,24 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 	}
 
 	private void waitForXprefsLoad(PackageReadyParam PRParam) {
+		// Poll until the remote preference provider answers. This used to sleep a full second per
+		// attempt, which added up to ~1s to startup (blocking app processes that call this
+		// synchronously) even when prefs were ready almost immediately. Poll on a tight interval
+		// instead, and give up after a bounded time rather than spinning forever.
+		final int pollIntervalMs = 50;
+		final int maxWaitMs = 5000;
+		int waited = 0;
 		while (true) {
 			try {
 				Xprefs.getBoolean("LoadTestBooleanValue", false);
 				break;
 			} catch (Throwable ignored) {
-				SystemUtils.threadSleep(1000);
+				if (waited >= maxWaitMs) {
+					Logger.log("PixelXpert: timed out waiting for preferences in " + PRParam.getPackageName());
+					return;
+				}
+				SystemUtils.threadSleep(pollIntervalMs);
+				waited += pollIntervalMs;
 			}
 		}
 

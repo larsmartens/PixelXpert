@@ -603,4 +603,10 @@
     <string name="watts">Watts</string>
     <string name="fast_charging_threshold_title">Fast charging threshold</string>
 
+    <string name="trace_capture_tile_title">Capture system trace</string>
+    <string name="trace_capture_started">Capturing system trace…</string>
+    <string name="trace_capture_done">System trace saved: %1$s</string>
+    <string name="trace_capture_failed">System trace failed: %1$s</string>
+    <string name="trace_capture_unavailable">System tracing is not available on this device</string>
+
 </resources>

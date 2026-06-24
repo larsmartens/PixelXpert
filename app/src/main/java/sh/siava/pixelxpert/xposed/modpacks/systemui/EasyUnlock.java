@@ -38,13 +38,13 @@ public class EasyUnlock extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass KeyguardAbsKeyInputViewControllerClass = ReflectedClass.of("com.android.keyguard.KeyguardAbsKeyInputViewController");
-		ReflectedClass LockscreenCredentialClass = ReflectedClass.of("com.android.internal.widget.LockscreenCredential");
-		ReflectedClass StatusBarKeyguardViewManagerClass = ReflectedClass.of("com.android.systemui.statusbar.phone.StatusBarKeyguardViewManager");
+		ReflectedClass KeyguardAbsKeyInputViewControllerClass = ReflectedClass.ofIfPossible("com.android.keyguard.KeyguardAbsKeyInputViewController");
+		ReflectedClass LockscreenCredentialClass = ReflectedClass.ofIfPossible("com.android.internal.widget.LockscreenCredential");
+		ReflectedClass StatusBarKeyguardViewManagerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.StatusBarKeyguardViewManager");
 
 		StatusBarKeyguardViewManagerClass
 				.before("onDozingChanged")
-				.run(param -> {
+				.runSafe(param -> {
 					//noinspection ConstantValue
 					if(WakeUpToSecurityInput && param.args[0].equals(false) && (!getBooleanField(getObjectField(param.thisObject, "mKeyguardStateController"), "mCanDismissLockScreen")))//waking up
 					{
@@ -54,7 +54,7 @@ public class EasyUnlock extends XposedModPack {
 
 		KeyguardAbsKeyInputViewControllerClass
 				.after("onUserInput")
-				.run(param -> {
+				.runSafe(param -> {
 					if (!easyUnlockEnabled) return;
 
 					int passwordLen = (int) callMethod(getObjectField(getObjectField(param.thisObject, "mPasswordEntry"), "mText"), "length");
@@ -113,7 +113,7 @@ public class EasyUnlock extends XposedModPack {
 
 		KeyguardAbsKeyInputViewControllerClass
 				.after("onPasswordChecked")
-				.run(param -> {
+				.runSafe(param -> {
 					if (!easyUnlockEnabled) return;
 
 					boolean successful = (boolean) param.args[1];

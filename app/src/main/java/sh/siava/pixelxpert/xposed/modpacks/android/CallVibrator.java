@@ -40,11 +40,11 @@ public class CallVibrator extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		try {
-			ReflectedClass InCallControllerClass = ReflectedClass.of("com.android.server.telecom.InCallController");
+			ReflectedClass InCallControllerClass = ReflectedClass.ofIfPossible("com.android.server.telecom.InCallController");
 
 			InCallControllerClass
 					.before("onCallStateChanged")
-					.run(param -> {
+					.runSafe(param -> {
 						try {
 							int oldState = (int) param.args[1];
 							int newState = (int) param.args[2];

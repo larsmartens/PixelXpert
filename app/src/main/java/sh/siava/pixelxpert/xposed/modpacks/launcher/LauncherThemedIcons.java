@@ -49,8 +49,8 @@ public class LauncherThemedIcons extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass BaseIconFactoryClass = ReflectedClass.of("com.android.launcher3.icons.BaseIconFactory");
-		ReflectedClass LauncherAppStateClass = ReflectedClass.of("com.android.launcher3.LauncherAppState");
+		ReflectedClass BaseIconFactoryClass = ReflectedClass.ofIfPossible("com.android.launcher3.icons.BaseIconFactory");
+		ReflectedClass LauncherAppStateClass = ReflectedClass.ofIfPossible("com.android.launcher3.LauncherAppState");
 
 		if(findFieldIfExists(BaseIconFactoryClass.getClazz(), "mIconBitmapSize") == null)
 		{
@@ -63,15 +63,15 @@ public class LauncherThemedIcons extends XposedModPack {
 
 		LauncherAppStateClass
 				.afterConstruction()
-				.run(param -> LAS = param.thisObject);
+				.runSafe(param -> LAS = param.thisObject);
 
 		BaseIconFactoryClass
 				.afterConstruction()
-				.run(param -> mIconBitmapSize = getIntField(param.thisObject, "mIconBitmapSize"));
+				.runSafe(param -> mIconBitmapSize = getIntField(param.thisObject, "mIconBitmapSize"));
 
 		ReflectedClass.of(AdaptiveIconDrawable.class)
 				.after("getMonochrome")
-				.run(param -> {
+				.runSafe(param -> {
 					try {
 						if(param.getResult() == null && ForceThemedLauncherIcons)
 						{

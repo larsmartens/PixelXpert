@@ -101,6 +101,17 @@
 		</service>
 
 		<service
+			android:name=".service.tileServices.TraceCaptureTileService"
+			android:exported="true"
+			android:icon="@drawable/ic_trace_capture"
+			android:label="@string/trace_capture_tile_title"
+			android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+			<intent-filter>
+				<action android:name="android.service.quicksettings.action.QS_TILE" />
+			</intent-filter>
+		</service>
+
+		<service
 			android:name=".service.PixelXpertProxy"
 			android:exported="true"
 			tools:ignore="ExportedService" />

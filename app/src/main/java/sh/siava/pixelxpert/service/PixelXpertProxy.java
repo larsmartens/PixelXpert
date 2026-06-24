@@ -1,7 +1,5 @@
 package sh.siava.pixelxpert.service;
 
-import static sh.siava.pixelxpert.Constants.AI_METHOD_MLKIT;
-import static sh.siava.pixelxpert.Constants.AI_METHOD_PYTORCH;
 
 import android.app.Service;
 import android.content.Context;
@@ -22,7 +20,6 @@ import sh.siava.pixelxpert.IPixelXpertProxy;
 import sh.siava.pixelxpert.PixelXpert;
 import sh.siava.pixelxpert.R;
 import sh.siava.pixelxpert.Constants;
-import sh.siava.pixelxpert.utils.PyTorchSegmentor;
 import sh.siava.pixelxpert.utils.MLKitSegmentor;
 
 public class PixelXpertProxy extends Service {
@@ -80,15 +77,10 @@ public class PixelXpertProxy extends Service {
 				PixelXpert.get().tryConnectRootService();
 			}
 
-			switch (method)
-			{
-				case AI_METHOD_MLKIT:
-					return MLKitSegmentor.extractSubject(PixelXpert.get(), input);
-				case AI_METHOD_PYTORCH:
-					return PyTorchSegmentor.extractSubject(PixelXpert.get(), input);
-			}
-
-			return null;
+			// MLKit is the only segmentor (the PyTorch backend was dropped: its native libraries are
+			// not 16 KB-page aligned and so cannot load on Android 15+/17 devices). The method argument
+			// is kept for AIDL compatibility but ignored.
+			return MLKitSegmentor.extractSubject(PixelXpert.get(), input);
 		}
 
 		private void ensureEnvironment() throws RemoteException {

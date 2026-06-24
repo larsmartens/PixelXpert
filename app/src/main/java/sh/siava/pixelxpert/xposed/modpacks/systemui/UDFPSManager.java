@@ -50,14 +50,14 @@ public class UDFPSManager extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) {
-		ReflectedClass DeviceEntryIconViewClass = ReflectedClass.of("com.android.systemui.keyguard.ui.view.DeviceEntryIconView");
-		ReflectedClass DeviceEntryIconViewModelClass = ReflectedClass.of("com.android.systemui.keyguard.ui.viewmodel.DeviceEntryIconViewModel");
+		ReflectedClass DeviceEntryIconViewClass = ReflectedClass.ofIfPossible("com.android.systemui.keyguard.ui.view.DeviceEntryIconView");
+		ReflectedClass DeviceEntryIconViewModelClass = ReflectedClass.ofIfPossible("com.android.systemui.keyguard.ui.viewmodel.DeviceEntryIconViewModel");
 
-		ReadonlyStateFlowClass = ReflectedClass.of("kotlinx.coroutines.flow.ReadonlyStateFlow");
+		ReadonlyStateFlowClass = ReflectedClass.ofIfPossible("kotlinx.coroutines.flow.ReadonlyStateFlow");
 
 		DeviceEntryIconViewModelClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if((transparentBG && !transparentFG)) {
 						try {
 							setObjectField(param.thisObject, "useBackgroundProtection", ReadonlyStateFlowClass.getClazz().getConstructors()[0].newInstance(getStateFlowImplOf(false)));
@@ -67,7 +67,7 @@ public class UDFPSManager extends XposedModPack {
 
 		DeviceEntryIconViewClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					mDeviceEntryIconView = (View) param.thisObject;
 
 					setUDFPSGraphics(false);

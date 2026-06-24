@@ -45,13 +45,13 @@ public class PowerMenu extends XposedModPack {
 
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-		ReflectedClass GlobalActionsDialogLiteClass = ReflectedClass.of("com.android.systemui.globalactions.GlobalActionsDialogLite");
-		ReflectedClass PowerOptionsAction = ReflectedClass.of("com.android.systemui.globalactions.GlobalActionsDialogLite$PowerOptionsAction");
-		mLongPressActionInterface = ReflectedClass.of("com.android.systemui.globalactions.GlobalActionsDialogLite$LongPressAction");
+		ReflectedClass GlobalActionsDialogLiteClass = ReflectedClass.ofIfPossible("com.android.systemui.globalactions.GlobalActionsDialogLite");
+		ReflectedClass PowerOptionsAction = ReflectedClass.ofIfPossible("com.android.systemui.globalactions.GlobalActionsDialogLite$PowerOptionsAction");
+		mLongPressActionInterface = ReflectedClass.ofIfPossible("com.android.systemui.globalactions.GlobalActionsDialogLite$LongPressAction");
 
 		PowerOptionsAction
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if(!advancedPowerMenu) return;
 
 					setObjectField(param.thisObject, "mMessageResId", 0);
@@ -60,7 +60,7 @@ public class PowerMenu extends XposedModPack {
 
 		GlobalActionsDialogLiteClass
 				.after("createActionItems")
-				.run(param -> {
+				.runSafe(param -> {
 					if(!advancedPowerMenu) return;
 
 

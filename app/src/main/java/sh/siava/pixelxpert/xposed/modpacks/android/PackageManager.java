@@ -8,8 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import sh.siava.pixelxpert.xposed.utils.Scheduler;
 
 import io.github.libxposed.api.XposedModuleInterface;
 import sh.siava.pixelxpert.BuildConfig;
@@ -46,13 +45,7 @@ public class PackageManager extends XposedModPack {
 			if (Key.length == 0) {
 				disablePMMods();
 			} else if (Key[0].equals(ALLOW_SIGNATURE_PREF) || Key[0].equals(ALLOW_DOWNGRADE_PREF)) {
-				new Timer().schedule(new TimerTask() {
-										 @Override
-										 public void run() {
-											 disablePMMods();
-										 }
-									 },
-						AUTO_DISABLE_MINUTES * 60000);
+				Scheduler.scheduleOnce(this::disablePMMods, AUTO_DISABLE_MINUTES * 60000L);
 			}
 		}
 	}
@@ -67,16 +60,16 @@ public class PackageManager extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		try {
-			ReflectedClass InstallPackageHelperClass = ReflectedClass.of("com.android.server.pm.InstallPackageHelper");
-			ReflectedClass PackageManagerServiceUtilsClass = ReflectedClass.of("com.android.server.pm.PackageManagerServiceUtils");
-			ReflectedClass SigningDetailsClass = ReflectedClass.of("android.content.pm.SigningDetails");
+			ReflectedClass InstallPackageHelperClass = ReflectedClass.ofIfPossible("com.android.server.pm.InstallPackageHelper");
+			ReflectedClass PackageManagerServiceUtilsClass = ReflectedClass.ofIfPossible("com.android.server.pm.PackageManagerServiceUtils");
+			ReflectedClass SigningDetailsClass = ReflectedClass.ofIfPossible("android.content.pm.SigningDetails");
 
 			try {
-				ReflectedClass ActivityManagerServiceClass = ReflectedClass.of("com.android.server.am.ActivityManagerService");
+				ReflectedClass ActivityManagerServiceClass = ReflectedClass.ofIfPossible("com.android.server.am.ActivityManagerService");
 
 				ActivityManagerServiceClass
 						.before("checkBroadcastFromSystem")
-						.run(param -> {
+						.runSafe(param -> {
 							String action = ((Intent) param.args[0]).getAction();
 
 							//noinspection DataFlowIssue
@@ -88,7 +81,7 @@ public class PackageManager extends XposedModPack {
 				//Granting pixel launcher permission to force stop apps
 				ActivityManagerServiceClass
 						.before("checkCallingPermission")
-						.run(param -> {
+						.runSafe(param -> {
 							try {
 								if ("android.permission.FORCE_STOP_PACKAGES".equals(param.args[0])) {
 									if (Constants.LAUNCHER_PACKAGE.equals(
@@ -108,7 +101,7 @@ public class PackageManager extends XposedModPack {
 
 			PackageManagerServiceUtilsClass
 					.before("checkDowngrade")
-					.run(param -> {
+					.runSafe(param -> {
 						if (PM_AllowDowngrade) {
 							param.setResult(null);
 						}
@@ -116,7 +109,7 @@ public class PackageManager extends XposedModPack {
 
 			SigningDetailsClass
 					.before("checkCapability")
-					.run(param -> {
+					.runSafe(param -> {
 						if (PM_AllowMismatchedSignature && !param.args[1].equals(PERMISSION)) {
 							param.setResult(true);
 						}
@@ -124,7 +117,7 @@ public class PackageManager extends XposedModPack {
 
 			PackageManagerServiceUtilsClass
 					.before("verifySignatures")
-					.run(param -> {
+					.runSafe(param -> {
 						try {
 							if (PM_AllowMismatchedSignature &&
 									callMethod(
@@ -139,7 +132,7 @@ public class PackageManager extends XposedModPack {
 
 			InstallPackageHelperClass
 					.before("doesSignatureMatchForPermissions")
-					.run(param -> {
+					.runSafe(param -> {
 						try {
 							if (PM_AllowMismatchedSignature
 									&& callMethod(param.args[1], "getPackageName").equals(param.args[0])

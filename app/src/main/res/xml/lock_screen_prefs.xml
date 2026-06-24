@@ -22,15 +22,6 @@
 			android:title="@string/depth_wallpaper_title"
 			app:iconSpaceReserved="false" />
 
-		<sh.siava.pixelxpert.ui.preferences.MaterialListPreference
-			android:defaultValue="0"
-			android:entries="@array/segmentor_ai_model_names"
-			android:entryValues="@array/segmentor_ai_model_codes"
-			android:key="SegmentorAI"
-			android:summary="%s"
-			android:title="@string/depth_wallpaper_ai_model_title"
-			app:iconSpaceReserved="false" />
-
 		<sh.siava.pixelxpert.ui.preferences.MaterialRangeSliderPreference
 			android:key="DWOpacity"
 			android:title="@string/depth_wallpaper_opacity_title"

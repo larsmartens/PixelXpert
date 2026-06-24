@@ -36,12 +36,12 @@ public class HotSpotController extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		try {
-			ReflectedClass SoftApConfiguration = ReflectedClass.of("android.net.wifi.SoftApConfiguration");
+			ReflectedClass SoftApConfiguration = ReflectedClass.ofIfPossible("android.net.wifi.SoftApConfiguration");
 
 
 			SoftApConfiguration
 					.afterConstruction()
-					.run(param -> {
+					.runSafe(param -> {
 						setObjectField(param.thisObject, "mHiddenSsid", hotSpotHideSSID);
 
 						if (hotspotDisableApproval) {

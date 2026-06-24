@@ -56,8 +56,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executor;
 
 import javax.security.auth.callback.Callback;
@@ -69,6 +67,7 @@ import sh.siava.pixelxpert.Constants;
 import sh.siava.pixelxpert.xposed.XposedModPack;
 import sh.siava.pixelxpert.xposed.annotations.SystemUIModPack;
 import sh.siava.pixelxpert.xposed.utils.NetworkTraffic;
+import sh.siava.pixelxpert.xposed.utils.Scheduler;
 import sh.siava.pixelxpert.xposed.utils.ShyLinearLayout;
 import sh.siava.pixelxpert.xposed.utils.StringFormatter;
 import sh.siava.pixelxpert.xposed.utils.StringFormatter.FormattedStringCallback;
@@ -460,27 +459,27 @@ public class StatusbarMods extends XposedModPack {
 		mContext.registerReceiver(mAppProfileSwitchReceiver, filter, Context.RECEIVER_EXPORTED);
 
 		//region needed classes
-		ReflectedClass ClockClass = ReflectedClass.of("com.android.systemui.statusbar.policy.Clock");
-		ReflectedClass PhoneStatusBarViewClass = ReflectedClass.of("com.android.systemui.statusbar.phone.PhoneStatusBarView");
-		ReflectedClass NotificationIconContainerClass = ReflectedClass.of("com.android.systemui.statusbar.phone.NotificationIconContainer");
-		ReflectedClass TunerServiceImplClass = ReflectedClass.of("com.android.systemui.tuner.TunerServiceImpl");
-		ReflectedClass ConnectivityCallbackHandlerClass = ReflectedClass.of("com.android.systemui.statusbar.connectivity.CallbackHandler");
+		ReflectedClass ClockClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.policy.Clock");
+		ReflectedClass PhoneStatusBarViewClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.PhoneStatusBarView");
+		ReflectedClass NotificationIconContainerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.NotificationIconContainer");
+		ReflectedClass TunerServiceImplClass = ReflectedClass.ofIfPossible("com.android.systemui.tuner.TunerServiceImpl");
+		ReflectedClass ConnectivityCallbackHandlerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.connectivity.CallbackHandler");
 		ReflectedClass NotificationIconContainerAlwaysOnDisplayViewModelClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.notification.icon.ui.viewmodel.NotificationIconContainerAlwaysOnDisplayViewModel");
 		ReflectedClass NotificationIconContainerStatusBarViewModelClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.notification.icon.ui.viewmodel.NotificationIconContainerStatusBarViewModel");
-		StatusBarIconClass = ReflectedClass.of("com.android.internal.statusbar.StatusBarIcon");
-		StatusBarIconHolderClass = ReflectedClass.of("com.android.systemui.statusbar.phone.StatusBarIconHolder");
-		ReflectedClass PrivacyItemClass = ReflectedClass.of("com.android.systemui.privacy.PrivacyItem");
-		ReflectedClass PhoneStatusBarViewControllerClass = ReflectedClass.of("com.android.systemui.statusbar.phone.PhoneStatusBarViewController");
-		ReflectedClass KeyguardStateControllerImplClass = ReflectedClass.of("com.android.systemui.statusbar.policy.KeyguardStateControllerImpl");
-		ReflectedClass StatusBarIconControllerImplClass = ReflectedClass.of("com.android.systemui.statusbar.phone.ui.StatusBarIconControllerImpl");
-		ReflectedClass ShadeHeaderControllerClass = ReflectedClass.of("com.android.systemui.shade.ShadeHeaderController");
-		ReflectedClass ActivityStarterImplClass = ReflectedClass.of("com.android.systemui.statusbar.phone.ActivityStarterImpl");
+		StatusBarIconClass = ReflectedClass.ofIfPossible("com.android.internal.statusbar.StatusBarIcon");
+		StatusBarIconHolderClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.StatusBarIconHolder");
+		ReflectedClass PrivacyItemClass = ReflectedClass.ofIfPossible("com.android.systemui.privacy.PrivacyItem");
+		ReflectedClass PhoneStatusBarViewControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.PhoneStatusBarViewController");
+		ReflectedClass KeyguardStateControllerImplClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.policy.KeyguardStateControllerImpl");
+		ReflectedClass StatusBarIconControllerImplClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.ui.StatusBarIconControllerImpl");
+		ReflectedClass ShadeHeaderControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.ShadeHeaderController");
+		ReflectedClass ActivityStarterImplClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.ActivityStarterImpl");
 		//endregion
 
 
 		KeyguardStateControllerImplClass
 				.after("notifyKeyguardState")
-				.run(param -> {
+				.runSafe(param -> {
 					Object mKeyguardUpdateMonitor = getObjectField(param.thisObject, "mKeyguardUpdateMonitor");
 					boolean keyguardShowing = (boolean) getObjectField(mKeyguardUpdateMonitor, "mKeyguardShowing");
 					for (ClockVisibilityCallback c : clockVisibilityCallbacks)
@@ -493,21 +492,21 @@ public class StatusbarMods extends XposedModPack {
 
 		StatusBarIconControllerImplClass
 				.afterConstruction()
-				.run(param -> mStatusBarIconController = param.thisObject);
+				.runSafe(param -> mStatusBarIconController = param.thisObject);
 
 
 		if (NotificationIconContainerAlwaysOnDisplayViewModelClass.getClazz() != null) //Viewbinder implementation of the notification icon container
 		{
 			NotificationIconContainerAlwaysOnDisplayViewModelClass
 					.afterConstruction()
-					.run(param -> {
+					.runSafe(param -> {
 						AODNIC = param.thisObject;
 						setObjectField(AODNIC, "maxIcons", NotificationAODIconLimit);
 					});
 
 			NotificationIconContainerStatusBarViewModelClass
 					.afterConstruction()
-					.run(param -> {
+					.runSafe(param -> {
 						SBNIC = param.thisObject;
 						setObjectField(SBNIC, "maxIcons", NotificationIconLimit);
 					});
@@ -522,16 +521,16 @@ public class StatusbarMods extends XposedModPack {
 		//region combined signal icons
 		TunerServiceImplClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					mTunerService = param.thisObject;
 					ReflectedClass.of(getObjectField(param.thisObject, "mObserver").getClass())
 							.after("onChange")
-							.run(param2 -> wifiVisibleChanged());
+							.runSafe(param2 -> wifiVisibleChanged());
 				});
 
 		TunerServiceImplClass
 				.after("addTunable")
-				.run(param -> {
+				.runSafe(param -> {
 					if (param.args[1].getClass().equals(String[].class)
 							&& Arrays.asList((String[]) param.args[1]).contains(ICON_HIDE_LIST)) {
 						wifiVisibleChanged();
@@ -542,7 +541,7 @@ public class StatusbarMods extends XposedModPack {
 
 		ConnectivityCallbackHandlerClass
 				.after("setWifiIndicators")
-				.run(param -> {
+				.runSafe(param -> {
 					boolean wifiVisible = getBooleanField(getObjectField(param.args[0], "statusIcon"), "visible");
 					if (wifiVisible != mWifiVisible) {
 						mWifiVisible = wifiVisible;
@@ -556,7 +555,7 @@ public class StatusbarMods extends XposedModPack {
 		//region privacy chip
 		PrivacyItemClass //A16 //qpr2b2 has removed the constructor, but it does do a distinct thing before using them. (Sunglass + roll emoji goes here)
 				.before("hashCode")
-				.run(param -> {
+				.runSafe(param -> {
 					if(HidePrivacyChip)
 					{
 						setObjectField(param.thisObject, "paused", true);
@@ -567,11 +566,11 @@ public class StatusbarMods extends XposedModPack {
 		//region SB Padding
 		PhoneStatusBarViewClass
 				.afterConstruction()
-				.run(param -> mPhoneStatusbarView = (FrameLayout) param.thisObject);
+				.runSafe(param -> mPhoneStatusbarView = (FrameLayout) param.thisObject);
 
 		PhoneStatusBarViewClass
 				.after("updateStatusBarHeight")
-				.run(param -> {
+				.runSafe(param -> {
 					@SuppressLint("DiscouragedApi")
 					View sbContentsView = ((View) param.thisObject).findViewById(idOf("status_bar_contents"));
 
@@ -596,30 +595,27 @@ public class StatusbarMods extends XposedModPack {
 		//bypassing the max icon limit during measurement
 		NotificationIconContainerClass
 				.before("onMeasure")
-				.run(param -> setObjectField(param.thisObject, "mIsStaticLayout", false));
+				.runSafe(param -> setObjectField(param.thisObject, "mIsStaticLayout", false));
 
 		NotificationIconContainerClass
 				.after("onMeasure")
-				.run(param -> setObjectField(param.thisObject, "mIsStaticLayout", true));
+				.runSafe(param -> setObjectField(param.thisObject, "mIsStaticLayout", true));
 
 		//endregion
 
 		//update statusbar
 		PhoneStatusBarViewClass
 				.after("onConfigurationChanged")
-				.run(param -> new Timer().schedule(new TimerTask() {
-					@Override
-					public void run() {
-						if (BatteryBarView.hasInstance()) {
-							BatteryBarView.getInstance().post(() -> refreshBatteryBar(BatteryBarView.getInstance()));
-						}
+				.runSafe(param -> Scheduler.scheduleOnce(() -> {
+					if (BatteryBarView.hasInstance()) {
+						BatteryBarView.getInstance().post(() -> refreshBatteryBar(BatteryBarView.getInstance()));
 					}
 				}, 2000));
 
 		//stealing a working activity starter
 		ActivityStarterImplClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					if(mActivityStarter == null)
 						mActivityStarter = param.thisObject;
 				});
@@ -628,7 +624,7 @@ public class StatusbarMods extends XposedModPack {
 
 		ShadeHeaderControllerClass
 				.after("onInit")
-				.run(param -> {
+				.runSafe(param -> {
 					View mView = (View) getObjectField(param.thisObject, "mView");
 
 					mView.findViewById(idOf("clock")).setOnClickListener(clickListener);
@@ -641,7 +637,7 @@ public class StatusbarMods extends XposedModPack {
 		//modding clock, adding additional objects,
 		PhoneStatusBarViewControllerClass
 				.after("onViewAttached")
-				.run(param -> {
+				.runSafe(param -> {
 					mClockView = mPhoneStatusbarView.findViewById(idOf("clock"));
 					updateClockColor();
 
@@ -682,14 +678,14 @@ public class StatusbarMods extends XposedModPack {
 		//clock mods
 		ClockClass
 				.before("getSmallTime")
-				.run(param -> {
+				.runSafe(param -> {
 					setObjectField(param.thisObject, "mAmPmStyle", AM_PM_STYLE_GONE);
 					setObjectField(param.thisObject, "mShowSeconds", mShowSeconds);
 				});
 
 		ClockClass
 				.after("getSmallTime")
-				.run(param -> {
+				.runSafe(param -> {
 					if (param.thisObject != mClockView)
 						return; //We don't want custom format in QS header. do we?
 
@@ -721,7 +717,7 @@ public class StatusbarMods extends XposedModPack {
 		//using clock colors for network traffic and battery bar
 		ClockClass
 				.after("onDarkChanged")
-				.run(param -> {
+				.runSafe(param -> {
 					if (param.thisObject != mClockView)
 						return; //We don't want colors of QS header. only statusbar
 
@@ -732,14 +728,14 @@ public class StatusbarMods extends XposedModPack {
 				});
 
 		//region mobile roaming
-		ReflectedClass MobileIconsInteractorImplClass = ReflectedClass.of("com.android.systemui.statusbar.pipeline.mobile.domain.interactor.MobileIconsInteractorImpl");
+		ReflectedClass MobileIconsInteractorImplClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.pipeline.mobile.domain.interactor.MobileIconsInteractorImpl");
 
 		//we must use the classes defined in the apk. using our own will fail
-		ReflectedClass ReadonlyStateFlowClass = ReflectedClass.of("kotlinx.coroutines.flow.ReadonlyStateFlow");
+		ReflectedClass ReadonlyStateFlowClass = ReflectedClass.ofIfPossible("kotlinx.coroutines.flow.ReadonlyStateFlow");
 
 		MobileIconsInteractorImplClass
 				.after("getMobileConnectionInteractorForSubId")
-				.run(param -> {
+				.runSafe(param -> {
 					if (HideRoamingState) {
 						setObjectField(param.getResult(), "isRoaming", ReadonlyStateFlowClass.getClazz().getConstructors()[0].newInstance(getStateFlowImplOf(false)));
 					}

@@ -193,7 +193,6 @@ public class PreferenceHelper {
 			case "UpdateWifiOnly":
 				return instance.mPreferences.getBoolean("AutoUpdate", true);
 
-			case "SegmentorAI":
 			case "DWOpacity":
 			case "DWonAOD":
 				return instance.mPreferences.getBoolean("DWallpaperEnabled", false);

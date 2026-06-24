@@ -15,11 +15,16 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import de.robv.android.xposed.XposedHelpers;
 import io.github.libxposed.api.XposedInterface;
+import sh.siava.pixelxpert.xposed.utils.toolkit.Logger;
 
 /** @noinspection unused*/
 public class ReflectedClass
@@ -29,6 +34,8 @@ public class ReflectedClass
 	private static ClassLoader frameworkClassloader = null;
 	private static XposedInterface defaultXposedInterface;
 	private static final boolean FLAG_DEBUG_HOOKS = false;
+	// Number of failures from a single hook site before it self-unhooks (runtime quarantine).
+	private static final int SAFE_HOOK_FAILURE_THRESHOLD = 5;
 	Class<?> clazz;
 	public ReflectedClass(Class<?> clazz)
 	{
@@ -39,14 +46,30 @@ public class ReflectedClass
 		return new ReflectedClass(clazz);
 	}
 
+	// Resolved classes are cached by name + classloader. Statics are per-process, so a name resolves
+	// to the same class for a given loader; this avoids repeated classloader scans on hot paths
+	// (e.g. classes resolved inside hook callbacks).
+	private static final Map<String, Class<?>> classCache = new ConcurrentHashMap<>();
+
+	private static String cacheKey(String name, ClassLoader loader)
+	{
+		return name + "@" + (loader == null ? "0" : Integer.toHexString(System.identityHashCode(loader)));
+	}
+
 	public static ReflectedClass of(String name, ClassLoader loader) {
+		Class<?> cached = classCache.get(cacheKey(name, loader));
+		if(cached != null) return new ReflectedClass(cached);
+
+		Class<?> result;
 		try {
-			return new ReflectedClass(findClass(name, loader));
+			result = findClass(name, loader);
 		}
 		catch (Throwable ignored)
 		{
-			return new ReflectedClass(findClass(name, frameworkClassloader));
+			result = findClass(name, frameworkClassloader);
 		}
+		if(result != null) classCache.put(cacheKey(name, loader), result);
+		return new ReflectedClass(result);
 	}
 
 	public static ReflectedClass of(String name) {
@@ -115,11 +138,15 @@ public class ReflectedClass
 
 	public static ReflectedClass ofIfPossible(String name, ClassLoader loader)
 	{
+		Class<?> cached = classCache.get(cacheKey(name, loader));
+		if(cached != null) return new ReflectedClass(cached);
+
 		Class<?> result = findClassIfExists(name, loader);
 		if(result == null && frameworkClassloader != null)
 		{
 			result = findClassIfExists(name, frameworkClassloader);
 		}
+		if(result != null) classCache.put(cacheKey(name, loader), result);
 		return new ReflectedClass(result);
 	}
 
@@ -177,6 +204,43 @@ public class ReflectedClass
 		return findMethods(clazz, namePattern);
 	}
 	
+	/**
+	 * Wraps a hook callback so that any {@link Throwable} it raises is caught and logged instead of
+	 * propagating into the host (SystemUI/framework) call frame. After repeated failures the hook
+	 * self-unhooks, quarantining a callback that is broken on the running Android build (e.g. a field
+	 * renamed in a new Android version) without disabling the rest of the module.
+	 */
+	private static ReflectionConsumer wrapSafe(String siteId, ReflectionConsumer consumer,
+			AtomicReference<Set<XposedInterface.HookHandle>> handlesRef, AtomicInteger failures)
+	{
+		return param -> {
+			try
+			{
+				consumer.run(param);
+				// Reset on success so only *consecutive* failures (a genuinely broken hook, e.g. a
+				// field renamed on a newer build) trip the threshold; rare transient failures don't.
+				if(failures.get() != 0) failures.set(0);
+			}
+			catch (Throwable t)
+			{
+				int count = failures.incrementAndGet();
+				Logger.logHook(siteId, t);
+				if(count >= SAFE_HOOK_FAILURE_THRESHOLD)
+				{
+					Set<XposedInterface.HookHandle> handles = handlesRef.get();
+					if(handles != null)
+					{
+						for(XposedInterface.HookHandle handle : handles)
+						{
+							try { handle.unhook(); } catch (Throwable ignored) {}
+						}
+						log("Quarantined failing hook after " + count + " consecutive errors: " + siteId);
+					}
+				}
+			}
+		};
+	}
+
 	private static class MethodData
 	{
 		String methodName;
@@ -189,6 +253,29 @@ public class ReflectedClass
 			this.methodName = name;
 			this.isConstructor = isConstructor;
 			this.method = method;
+		}
+
+		/** Builds a stable, human-readable id for this hook site (calling modpack -> hooked target). */
+		protected String siteLabel()
+		{
+			String target = (clazz != null ? clazz.getName() : "?")
+					+ (isConstructor ? ".<init>" : ("." + (method != null ? method.getName() : methodName)));
+			return callerLabel() + " -> " + target;
+		}
+
+		private static String callerLabel()
+		{
+			StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+			for(StackTraceElement element : stack)
+			{
+				String className = element.getClassName();
+				if(!className.equals(Thread.class.getName())
+						&& !className.startsWith("sh.siava.pixelxpert.xposed.utils.reflection."))
+				{
+					return element.getClassName() + ":" + element.getLineNumber();
+				}
+			}
+			return "unknown";
 		}
 
 		protected Set<XposedInterface.HookHandle> runBefore(XposedInterface xposedInterface, ReflectionConsumer consumer)
@@ -353,6 +440,27 @@ public class ReflectedClass
 		{
 			return runBefore(xposedInterface, consumer, log);
 		}
+
+		/**
+		 * Same as {@link #run(ReflectionConsumer)} but fail-safe: exceptions inside the callback are
+		 * caught/logged instead of reaching the host process, and the hook self-disables after repeated
+		 * failures. Prefer this for hooks that touch version-fragile Android internals.
+		 */
+		public Set<XposedInterface.HookHandle> runSafe(ReflectionConsumer consumer)
+		{
+			return runSafe(defaultXposedInterface, consumer);
+		}
+
+		public Set<XposedInterface.HookHandle> runSafe(XposedInterface xposedInterface, ReflectionConsumer consumer)
+		{
+			if(clazz == null) return new ArraySet<>();
+			String siteId = siteLabel();
+			AtomicReference<Set<XposedInterface.HookHandle>> handlesRef = new AtomicReference<>();
+			AtomicInteger failures = new AtomicInteger();
+			Set<XposedInterface.HookHandle> handles = runBefore(xposedInterface, wrapSafe(siteId, consumer, handlesRef, failures), false);
+			handlesRef.set(handles);
+			return handles;
+		}
 	}
 
 	public class BeforeMethodDatas
@@ -374,6 +482,18 @@ public class ReflectedClass
 			datas.forEach(data -> unhooks.addAll(data.run(xposedInterface, consumer)));
 			return unhooks;
 		}
+
+		public Set<XposedInterface.HookHandle> runSafe(ReflectionConsumer consumer)
+		{
+			return runSafe(defaultXposedInterface, consumer);
+		}
+
+		public Set<XposedInterface.HookHandle> runSafe(XposedInterface xposedInterface, ReflectionConsumer consumer)
+		{
+			Set<XposedInterface.HookHandle> unhooks = new ArraySet<>();
+			datas.forEach(data -> unhooks.addAll(data.runSafe(xposedInterface, consumer)));
+			return unhooks;
+		}
 	}
 
 	public class AfterMethodDatas
@@ -393,6 +513,18 @@ public class ReflectedClass
 		{
 			Set<XposedInterface.HookHandle> unhooks = new ArraySet<>();
 			datas.forEach(data -> unhooks.addAll(data.run(xposedInterface, consumer)));
+			return unhooks;
+		}
+
+		public Set<XposedInterface.HookHandle> runSafe(ReflectionConsumer consumer)
+		{
+			return runSafe(defaultXposedInterface, consumer);
+		}
+
+		public Set<XposedInterface.HookHandle> runSafe(XposedInterface xposedInterface, ReflectionConsumer consumer)
+		{
+			Set<XposedInterface.HookHandle> unhooks = new ArraySet<>();
+			datas.forEach(data -> unhooks.addAll(data.runSafe(xposedInterface, consumer)));
 			return unhooks;
 		}
 	}
@@ -438,6 +570,27 @@ public class ReflectedClass
 		public Set<XposedInterface.HookHandle> run(XposedInterface xposedInterface, ReflectionConsumer consumer, boolean log)
 		{
 			return runAfter(xposedInterface, consumer, log);
+		}
+
+		/**
+		 * Same as {@link #run(ReflectionConsumer)} but fail-safe: exceptions inside the callback are
+		 * caught/logged instead of reaching the host process, and the hook self-disables after repeated
+		 * failures. Prefer this for hooks that touch version-fragile Android internals.
+		 */
+		public Set<XposedInterface.HookHandle> runSafe(ReflectionConsumer consumer)
+		{
+			return runSafe(defaultXposedInterface, consumer);
+		}
+
+		public Set<XposedInterface.HookHandle> runSafe(XposedInterface xposedInterface, ReflectionConsumer consumer)
+		{
+			if(clazz == null) return new ArraySet<>();
+			String siteId = siteLabel();
+			AtomicReference<Set<XposedInterface.HookHandle>> handlesRef = new AtomicReference<>();
+			AtomicInteger failures = new AtomicInteger();
+			Set<XposedInterface.HookHandle> handles = runAfter(xposedInterface, wrapSafe(siteId, consumer, handlesRef, failures), false);
+			handlesRef.set(handles);
+			return handles;
 		}
 	}
 

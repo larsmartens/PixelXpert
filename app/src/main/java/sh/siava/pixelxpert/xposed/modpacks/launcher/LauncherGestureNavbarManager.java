@@ -63,15 +63,15 @@ public class LauncherGestureNavbarManager extends XposedModPack {
 	@Override
 	public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
 		ReflectedClass StashedHandleViewClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.StashedHandleView");
-		ReflectedClass TaskbarActivityContextClass = ReflectedClass.of("com.android.launcher3.taskbar.TaskbarActivityContext");
+		ReflectedClass TaskbarActivityContextClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.TaskbarActivityContext");
 
 		mIsHooked = true;
 
-//		ReflectedClass StashedHandleViewControllerClass = ReflectedClass.of("com.android.launcher3.taskbar.StashedHandleViewController"); //almost not usable anymore due to intense R8
+//		ReflectedClass StashedHandleViewControllerClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.StashedHandleViewController"); //almost not usable anymore due to intense R8
 
 		TaskbarActivityContextClass
 				.after("init")
-				.run(param ->
+				.runSafe(param ->
 						{
 							Object mControllers = getObjectField(param.thisObject, "mControllers");
 							Object stashedHandleViewController = getObjectField(mControllers, "stashedHandleViewController");
@@ -93,7 +93,7 @@ public class LauncherGestureNavbarManager extends XposedModPack {
 
 		StashedHandleViewClass
 				.afterConstruction()
-				.run(param -> {
+				.runSafe(param -> {
 					mStashedHandleLightColor = (int) getObjectField(param.thisObject, "mStashedHandleLightColor");
 					mStashedHandleDarkColor = (int) getObjectField(param.thisObject, "mStashedHandleDarkColor");
 				});
@@ -101,7 +101,7 @@ public class LauncherGestureNavbarManager extends XposedModPack {
 
 		StashedHandleViewClass
 				.before("updateHandleColor")
-				.run(param -> {
+				.runSafe(param -> {
 					if (navPillColorAccent || mColorReplaced) {
 						setObjectField(param.thisObject, "mStashedHandleLightColor", (navPillColorAccent) ? mContext.getResources().getColor(android.R.color.system_accent1_200, mContext.getTheme()) : mStashedHandleLightColor);
 						setObjectField(param.thisObject, "mStashedHandleDarkColor", (navPillColorAccent) ? mContext.getResources().getColor(android.R.color.system_accent1_600, mContext.getTheme()) : mStashedHandleDarkColor);
