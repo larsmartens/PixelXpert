@@ -8,6 +8,43 @@ on:
     branches: [canary]
 
 jobs:
+  static-module-guards:
+    name: static module guards
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Check shell scripts
+        run: |
+          bash -n MagiskModBase/customize.sh
+          bash -n MagiskModBase/service.sh
+          bash -n .github/*.sh
+
+      - name: Guard rollback marker
+        run: |
+          if grep -En 'rm[[:space:]][^#[:cntrl:]]*disable' MagiskModBase/*.sh; then
+            echo "Module scripts must not remove the durable disable rollback marker"
+            exit 1
+          fi
+
+      - name: Guard canonical owner URLs
+        run: |
+          if git grep -n 'lars[-]martens' -- .; then
+            echo "Found stale project-owned URL for the retired owner"
+            exit 1
+          fi
+
+      - name: Guard fork checkout source
+        run: |
+          if git grep -n 'git[[:space:]]clone[[:space:]]https://github[.]com/siavash79/PixelXpert' -- .github/workflows; then
+            echo "Fork workflows must build the checked-out fork/ref, not clone upstream"
+            exit 1
+          fi
+
   gradle:
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
