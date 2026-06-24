@@ -8,7 +8,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Switch App Profile</string>
     <string name="hide_default">Hide (Default)</string>
-    <string name="percent_of_default_size">% of default size</string>
+    <string name="percent_of_default_size" formatted="false">% of default size</string>
     <string name="overlay_none_title">(Default)</string>
     <string name="general_section">General options</string>
     <string name="general_on">On</string>
@@ -320,7 +320,7 @@
     <string name="clear_all_reposition_title">Add an accessible clear-all button to recents page</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Volume steps (0 to 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Volume steps (0 to 100%)</string>
 
     <string name="display_resolution_switch_title">Modify display resolution</string>
     <string name="display_resolution_switch_summary">Before enabling this, make sure to reset all display size/dpi changes to default</string>

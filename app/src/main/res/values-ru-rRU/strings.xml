@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Нажмите для настройки</string>
     <string name="app_switch_tile_title">Сменить профиль приложения</string>
     <string name="hide_default">Скрыть (по умолчанию)</string>
-    <string name="percent_of_default_size">% от стандартного размера</string>
+    <string name="percent_of_default_size" formatted="false">% от стандартного размера</string>
     <string name="overlay_none_title">(по умолчанию)</string>
     <string name="general_section">General options</string>
     <string name="general_on">Вкл</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Добавить кнопку для очистки приложений внизу панель задач</string>
     <string name="force_themed_icons_title">Автоматическия генерация недостающих тематических значков</string>
     <string name="force_themed_icons_summary">Только Pixel лаунчер</string>
-    <string name="volume_button_step_title">Шаг громкости (от 0 до 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Шаг громкости (от 0 до 100%)</string>
     <string name="display_resolution_switch_title">Изменить разрешение экрана</string>
     <string name="display_resolution_switch_summary">Перед включением убедитесь, что все изменения размера экрана/dpi были сброшены до значений умолчанию</string>
     <string name="display_resolution_title">Разрешение диплея</string>

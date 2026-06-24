@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Van app-profiel wisselen</string>
     <string name="hide_default">Verbergen (standaard)</string>
-    <string name="percent_of_default_size">% van standaardgrootte</string>
+    <string name="percent_of_default_size" formatted="false">% van standaardgrootte</string>
     <string name="overlay_none_title">(standaard)</string>
     <string name="general_section">Algemene optie</string>
     <string name="general_on">Aan</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Voeg een toegankelijke \'Alles wissen\'-knop toe aan de recentspagina</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Volumestappen (0 tot 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Volumestappen (0 tot 100%)</string>
     <string name="display_resolution_switch_title">Weergaveresolutie wijzigen</string>
     <string name="display_resolution_switch_summary">Voordat u dit inschakelt, zorg ervoor dat alle instellingen voor grootte/dpi-weergave worden hersteld naar de standaardwaarde</string>
     <string name="display_resolution_title">Schermresolutie</string>

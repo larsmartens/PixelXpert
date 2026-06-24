@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Toca para ajustar</string>
     <string name="app_switch_tile_title">Cambiar perfil de aplicación</string>
     <string name="hide_default">No mostrar (por defecto)</string>
-    <string name="percent_of_default_size">% del tamaño por defecto</string>
+    <string name="percent_of_default_size" formatted="false">% del tamaño por defecto</string>
     <string name="overlay_none_title">(Por defecto)</string>
     <string name="general_section">Opciones generales</string>
     <string name="general_on">Activado</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Agregar un botón de borrar todo en aplicaciones recientes</string>
     <string name="force_themed_icons_title">Autogenerar iconos temáticos faltantes</string>
     <string name="force_themed_icons_summary">Sólo lanzador Pixel</string>
-    <string name="volume_button_step_title">Pasos de volumen (0 a 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Pasos de volumen (0 a 100%)</string>
     <string name="display_resolution_switch_title">Modificar resolución de pantalla</string>
     <string name="display_resolution_switch_summary">Antes de activar esto, asegúrese de reiniciar todos los cambios de tamaño de pantalla/dpi por defecto</string>
     <string name="display_resolution_title">Resolución de pantalla</string>

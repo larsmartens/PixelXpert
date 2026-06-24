@@ -38,10 +38,8 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
-import dagger.hilt.android.EntryPointAccessors;
 import sh.siava.pixelxpert.PixelXpert;
 import sh.siava.pixelxpert.R;
-import sh.siava.pixelxpert.di.StateManagerEntryPoint;
 import sh.siava.pixelxpert.ui.fragments.iconpack.IconPackFragment;
 import sh.siava.pixelxpert.ui.misc.StateManager;
 
@@ -164,9 +162,7 @@ public class MiscUtils {
 		SharedPreferences prefs = PixelXpert.get().getDefaultPreferences();
 		Context applicationContext = activity.getApplicationContext();
 
-		StateManager stateManager = EntryPointAccessors
-				.fromApplication(applicationContext, StateManagerEntryPoint.class)
-				.getStateManager();
+		StateManager stateManager = StateManager.getInstance();
 
 		if (itemID == android.R.id.home) {
 			navController.navigateUp();

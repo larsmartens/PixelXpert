@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Nhấn để điều chỉnh</string>
     <string name="app_switch_tile_title">Chuyển hồ sơ ứng dụng</string>
     <string name="hide_default">Ẩn (Mặc định)</string>
-    <string name="percent_of_default_size">% kích thước mặc định</string>
+    <string name="percent_of_default_size" formatted="false">% kích thước mặc định</string>
     <string name="overlay_none_title">(Mặc định)</string>
     <string name="general_section">Các tùy chỉnh chung</string>
     <string name="general_on">Bật</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Thêm nút \"Xóa tất cả\" vào cuối trang ứng dụng gần đây</string>
     <string name="force_themed_icons_title">Tự động tổ chức các biểu tượng theo chủ đề bị thiếu</string>
     <string name="force_themed_icons_summary">Chỉ cho Pixel launcher</string>
-    <string name="volume_button_step_title">Tăng mức âm lượng (0 đến 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Tăng mức âm lượng (0 đến 100%)</string>
     <string name="display_resolution_switch_title">Tinh chỉnh độ phân giải màn hình</string>
     <string name="display_resolution_switch_summary">Trước khi kích hoạt, hãy chắc chắn đã lại tất cả các thay đổi về kích cỡ/dpi về mặc định</string>
     <string name="display_resolution_title">Độ phân giải màn hình</string>

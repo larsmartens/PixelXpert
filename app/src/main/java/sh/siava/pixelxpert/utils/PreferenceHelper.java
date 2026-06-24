@@ -14,11 +14,9 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 
-import dagger.hilt.android.EntryPointAccessors;
 import sh.siava.pixelxpert.BuildConfig;
 import sh.siava.pixelxpert.PixelXpert;
 import sh.siava.pixelxpert.R;
-import sh.siava.pixelxpert.di.StateManagerEntryPoint;
 import sh.siava.pixelxpert.ui.misc.StateManager;
 import sh.siava.pixelxpert.ui.preferences.MaterialPrimarySwitchPreference;
 import sh.siava.rangesliderpreference.RangeSliderPreference;
@@ -41,9 +39,7 @@ public class PreferenceHelper {
 	public static void checkIfRequiresSystemUIRestart(Context context, String key) {
 		if (context == null || key == null) return;
 
-		StateManager stateManager = EntryPointAccessors
-				.fromApplication(context.getApplicationContext(), StateManagerEntryPoint.class)
-				.getStateManager();
+		StateManager stateManager = StateManager.getInstance();
 
 		switch (key) {
 			// SystemUI restart

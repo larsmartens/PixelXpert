@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">تبديل ملفك الشخصي </string>
     <string name="hide_default">إخفاء (افتراضي)</string>
-    <string name="percent_of_default_size">٪ من الحجم الافتراضي</string>
+    <string name="percent_of_default_size" formatted="false">٪ من الحجم الافتراضي</string>
     <string name="overlay_none_title">(إفتراضي)</string>
     <string name="general_section">خيارات عامة</string>
     <string name="general_on">تشغيل</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">إضافة زر واضح الوصول إلى صفحة التطبيقات الأخيرة</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">درجات الصوت (0 إلى 100%)</string>
+    <string name="volume_button_step_title" formatted="false">درجات الصوت (0 إلى 100%)</string>
     <string name="display_resolution_switch_title">تعديل دقة العرض</string>
     <string name="display_resolution_switch_summary">قبل تمكين هذا، تحقق من إعادة ضبط جميع تغييرات حجم العرض / dpi إلى الافتراضي</string>
     <string name="display_resolution_title">عرض الدقة</string>

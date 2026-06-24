@@ -29,14 +29,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import dagger.hilt.android.HiltAndroidApp;
 import io.github.libxposed.service.XposedService;
 import io.github.libxposed.service.XposedServiceHelper;
 import sh.siava.pixelxpert.service.RootProvider;
 import sh.siava.pixelxpert.utils.ExtendedSharedPreferences;
 import sh.siava.pixelxpert.utils.PreferenceXMLParser;
 
-@HiltAndroidApp
 public class PixelXpert extends Application {
 
 	/** @noinspection unused*/

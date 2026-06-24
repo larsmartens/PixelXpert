@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Εναλλαγή προφίλ εφαρμογής</string>
     <string name="hide_default">Απόκρυψη (Προεπιλογή)</string>
-    <string name="percent_of_default_size">% του προεπιλεγμένου μεγέθους</string>
+    <string name="percent_of_default_size" formatted="false">% του προεπιλεγμένου μεγέθους</string>
     <string name="overlay_none_title">(Προκαθορισμένο)</string>
     <string name="general_section">Γενικές επιλογές</string>
     <string name="general_on">Επί</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Προσθέστε ένα προσβάσιμο κουμπί διαγραφής όλων στη σελίδα πρόσφατων</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Βήματα έντασης (0 έως 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Βήματα έντασης (0 έως 100%)</string>
     <string name="display_resolution_switch_title">Τροποποίηση ανάλυσης οθόνης</string>
     <string name="display_resolution_switch_summary">Πριν ενεργοποιήσετε αυτό, βεβαιωθείτε ότι επαναφέρετε όλα τα μεγέθη οθόνης/dpi αλλαγές στην προεπιλογή</string>
     <string name="display_resolution_title">Ανάλυση της οθόνης</string>

@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Vaihda sovellusprofiilia</string>
     <string name="hide_default">Piilota (oletus)</string>
-    <string name="percent_of_default_size">% oletuskoosta</string>
+    <string name="percent_of_default_size" formatted="false">% oletuskoosta</string>
     <string name="overlay_none_title">(oletus)</string>
     <string name="general_section">Yleiset vaihtoehdot</string>
     <string name="general_on">Päällä</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Lisää käytettävissä oleva tyhjennä kaikki -painike viimeisimmät sivulle</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Äänenvoimakkuuden portaat (0–100 %)</string>
+    <string name="volume_button_step_title" formatted="false">Äänenvoimakkuuden portaat (0–100 %)</string>
     <string name="display_resolution_switch_title">Muokkaa näytön resoluutiota</string>
     <string name="display_resolution_switch_summary">Ennen kuin otat tämän käyttöön, varmista, että nollaa kaikki näytön koko/dpi muutokset oletusarvoihin</string>
     <string name="display_resolution_title">Näytön resoluutio</string>

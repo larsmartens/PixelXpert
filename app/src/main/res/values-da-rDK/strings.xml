@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Skift appprofil</string>
     <string name="hide_default">Skjul (standard)</string>
-    <string name="percent_of_default_size">% af standardstørrelsen</string>
+    <string name="percent_of_default_size" formatted="false">% af standardstørrelsen</string>
     <string name="overlay_none_title">(Standard)</string>
     <string name="general_section">Generelle muligheder</string>
     <string name="general_on">På</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Føj en tilgængelig knap til at rydde alt til siden for seneste nyheder</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Lydstyrketrin (0 til 100 %)</string>
+    <string name="volume_button_step_title" formatted="false">Lydstyrketrin (0 til 100 %)</string>
     <string name="display_resolution_switch_title">Ændr skærmopløsning</string>
     <string name="display_resolution_switch_summary">Før du aktiverer dette, skal du sørge for at nulstille alle visningsstørrelse/dpi ændringer til standard</string>
     <string name="display_resolution_title">Skærmopløsning</string>

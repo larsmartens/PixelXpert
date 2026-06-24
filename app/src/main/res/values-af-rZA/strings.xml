@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Wissel App-profiel</string>
     <string name="hide_default">Versteek (verstek)</string>
-    <string name="percent_of_default_size">% van verstekgrootte</string>
+    <string name="percent_of_default_size" formatted="false">% van verstekgrootte</string>
     <string name="overlay_none_title">(Verstek)</string>
     <string name="general_section">Algemene opsies</string>
     <string name="general_on">Aan</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Voeg \'n toeganklike skoon-alles-knoppie by onlangse bladsy</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Volumestappe (0 tot 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Volumestappe (0 tot 100%)</string>
     <string name="display_resolution_switch_title">Modify display resolution</string>
     <string name="display_resolution_switch_summary">Before enabling this, make sure to reset all display size/dpi changes to default</string>
     <string name="display_resolution_title">Vertoon resolusie</string>

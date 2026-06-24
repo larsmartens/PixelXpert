@@ -6,8 +6,6 @@ import java.util.Properties
 
 plugins {
 	alias(libs.plugins.android.application)
-	alias(libs.plugins.devtools.ksp)
-	alias(libs.plugins.hilt.android)
 }
 
 kotlin {
@@ -184,10 +182,6 @@ dependencies {
 
 	implementation(libs.androidx.ui)
 	implementation(libs.androidx.localbroadcastmanager)
-
-	implementation(libs.hilt.android)
-	annotationProcessor(libs.hilt.android.compiler)
-	ksp(libs.hilt.android.compiler)
 
 	compileOnly(libs.lsposed.api)
 	implementation(libs.lsposed.service)

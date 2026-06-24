@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Промените профил апликације</string>
     <string name="hide_default">Сакриј (подразумевано)</string>
-    <string name="percent_of_default_size">% подразумеване величине</string>
+    <string name="percent_of_default_size" formatted="false">% подразумеване величине</string>
     <string name="overlay_none_title">Подразумевано</string>
     <string name="general_section">Опште</string>
     <string name="general_on">Укључено</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Додајте доступно дугме за брисање свега на страницу са најновијим информацијама</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Кораци јачине звука (0 до 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Кораци јачине звука (0 до 100%)</string>
     <string name="display_resolution_switch_title">Modify display resolution</string>
     <string name="display_resolution_switch_summary">Before enabling this, make sure to reset all display size/dpi changes to default</string>
     <string name="display_resolution_title">Резолуција екрана</string>

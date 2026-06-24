@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">タップして調整</string>
     <string name="app_switch_tile_title">アプリプロファイルを切り替える</string>
     <string name="hide_default">隠す (既定)</string>
-    <string name="percent_of_default_size">% 大きくする</string>
+    <string name="percent_of_default_size" formatted="false">% 大きくする</string>
     <string name="overlay_none_title">(既定)</string>
     <string name="general_section">一般設定</string>
     <string name="general_on">ON</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Add an accessible clear-all button to recents page</string>
     <string name="force_themed_icons_title">不足しているテーマアイコンを自動生成</string>
     <string name="force_themed_icons_summary">Pixel launcher のみ</string>
-    <string name="volume_button_step_title">ボリュームステップ (0から100%)</string>
+    <string name="volume_button_step_title" formatted="false">ボリュームステップ (0から100%)</string>
     <string name="display_resolution_switch_title">ディスプレイの解像度を変更</string>
     <string name="display_resolution_switch_summary">これを有効にする前に、すべての表示サイズ/dpiの変更をデフォルトに設定してください</string>
     <string name="display_resolution_title">画面の解像度</string>

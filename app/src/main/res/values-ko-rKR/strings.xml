@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">탭하여 조절</string>
     <string name="app_switch_tile_title">앱 프로필 바꾸기</string>
     <string name="hide_default">숨김 (기본값)</string>
-    <string name="percent_of_default_size">% (기본값 대비)</string>
+    <string name="percent_of_default_size" formatted="false">% (기본값 대비)</string>
     <string name="overlay_none_title">(기본값)</string>
     <string name="general_section">일반 설정</string>
     <string name="general_on">켜짐</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">최근 앱 화면에 모두 삭제 버튼 추가</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">볼륨 단계 (0에서 100%까지)</string>
+    <string name="volume_button_step_title" formatted="false">볼륨 단계 (0에서 100%까지)</string>
     <string name="display_resolution_switch_title">Modify display resolution</string>
     <string name="display_resolution_switch_summary">Before enabling this, make sure to reset all display size/dpi changes to default</string>
     <string name="display_resolution_title">화면 해상도</string>

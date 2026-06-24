@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Zmień profil aplikacji</string>
     <string name="hide_default">Ukryj (domyślnie)</string>
-    <string name="percent_of_default_size">% domyślnego rozmiaru</string>
+    <string name="percent_of_default_size" formatted="false">% domyślnego rozmiaru</string>
     <string name="overlay_none_title">(Domyślna)</string>
     <string name="general_section">Opcje ogólne</string>
     <string name="general_on">Na</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Dodaj dostępny przycisk czyszczenia wszystkiego do strony ostatnich</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Kroki głośności (0 do 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Kroki głośności (0 do 100%)</string>
     <string name="display_resolution_switch_title">Modyfikuj rozdzielczość ekranu</string>
     <string name="display_resolution_switch_summary">Przed włączeniem tej opcji upewnij się, że wszystkie zmiany rozmiaru wyświetlacza/dpi do domyślnych</string>
     <string name="display_resolution_title">Rozdzielczość wyświetlacza</string>

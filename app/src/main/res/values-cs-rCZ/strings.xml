@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Přepnout profil aplikace</string>
     <string name="hide_default">Skrýt (výchozí)</string>
-    <string name="percent_of_default_size">% výchozí velikosti</string>
+    <string name="percent_of_default_size" formatted="false">% výchozí velikosti</string>
     <string name="overlay_none_title">(Výchozí)</string>
     <string name="general_section">Obecné možnosti</string>
     <string name="general_on">Na</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Přidejte dostupné tlačítko pro vymazání všeho na stránku s posledními</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Kroky hlasitosti (0 až 100 %)</string>
+    <string name="volume_button_step_title" formatted="false">Kroky hlasitosti (0 až 100 %)</string>
     <string name="display_resolution_switch_title">Upravit rozlišení displeje</string>
     <string name="display_resolution_switch_summary">Před povolením se ujistěte, že resetujete všechny změny velikosti displeje/dpi na výchozí nastavení</string>
     <string name="display_resolution_title">Rozlišení displeje</string>

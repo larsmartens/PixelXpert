@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tryck för att justera</string>
     <string name="app_switch_tile_title">Byt appprofil</string>
     <string name="hide_default">Dölj (standard)</string>
-    <string name="percent_of_default_size">% av standardstorleken</string>
+    <string name="percent_of_default_size" formatted="false">% av standardstorleken</string>
     <string name="overlay_none_title">(Standard)</string>
     <string name="general_section">Generella val</string>
     <string name="general_on">På</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Lägg till en tillgänglig rensa-allt-knapp på sidan Senaste</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Volymsteg (0 till 100 %)</string>
+    <string name="volume_button_step_title" formatted="false">Volymsteg (0 till 100 %)</string>
     <string name="display_resolution_switch_title">Ändra skärmupplösning</string>
     <string name="display_resolution_switch_summary">Innan du aktiverar detta, se till att återställa alla visningsstorlek/dpi ändringar till standard</string>
     <string name="display_resolution_title">Skärmupplösning</string>

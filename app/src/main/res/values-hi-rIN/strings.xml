@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">ऐप प्रोफ़ाइल स्विच करें</string>
     <string name="hide_default">छुपाएं (डिफ़ॉल्ट)</string>
-    <string name="percent_of_default_size">% डिफ़ॉल्ट आकार का</string>
+    <string name="percent_of_default_size" formatted="false">% डिफ़ॉल्ट आकार का</string>
     <string name="overlay_none_title">(डिफ़ॉल्ट)</string>
     <string name="general_section">आम विकल्प</string>
     <string name="general_on">चालू</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">हालिया बार के नीचे \'सभी साफ़ करें\' पेस्ट करें</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">वॉल्यूम चरण (0 से 100%)</string>
+    <string name="volume_button_step_title" formatted="false">वॉल्यूम चरण (0 से 100%)</string>
     <string name="display_resolution_switch_title">Modify display resolution</string>
     <string name="display_resolution_switch_summary">Before enabling this, make sure to reset all display size/dpi changes to default</string>
     <string name="display_resolution_title">स्क्रीन रेजोल्यूशन</string>

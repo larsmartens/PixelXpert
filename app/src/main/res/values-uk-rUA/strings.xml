@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Торкніться для налаштування</string>
     <string name="app_switch_tile_title">Змінити профіль програми</string>
     <string name="hide_default">Сховати (За замовчуванням)</string>
-    <string name="percent_of_default_size">% від звичайного розміру</string>
+    <string name="percent_of_default_size" formatted="false">% від звичайного розміру</string>
     <string name="overlay_none_title">(За замовчуванням)</string>
     <string name="general_section">Основні налаштування</string>
     <string name="general_on">Увімк</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Додайте доступну кнопку очищення всього на сторінку останніх</string>
     <string name="force_themed_icons_title">Автогенерування відсутніх тематичних іконок</string>
     <string name="force_themed_icons_summary">Тільки для Pixel Launcher</string>
-    <string name="volume_button_step_title">Кроки гучності (від 0 до 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Кроки гучності (від 0 до 100%)</string>
     <string name="display_resolution_switch_title">Змінити роздільну здатність дисплею</string>
     <string name="display_resolution_switch_summary">Перш ніж увімкнути це, переконайтеся, що скинули зміни всіх розмірів/dpi до типових</string>
     <string name="display_resolution_title">Роздільна здатність дисплея</string>

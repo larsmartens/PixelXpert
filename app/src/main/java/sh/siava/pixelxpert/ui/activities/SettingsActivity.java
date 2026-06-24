@@ -48,9 +48,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
 import sh.siava.pixelxpert.BuildConfig;
 import sh.siava.pixelxpert.PixelXpert;
 import sh.siava.pixelxpert.R;
@@ -68,7 +65,6 @@ import sh.siava.pixelxpert.utils.PrefManager;
 import sh.siava.pixelxpert.utils.PreferenceHelper;
 import sh.siava.pixelxpert.xposed.modpacks.android.TargetOptimizer;
 
-@AndroidEntryPoint
 public class SettingsActivity extends BaseActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, SearchPreferenceResultListener {
 
 	private SettingsActivityBinding binding;
@@ -77,8 +73,7 @@ public class SettingsActivity extends BaseActivity implements PreferenceFragment
 	private NavController navControllerDetails;
 	private final boolean isTabletDevice = DisplayUtils.isTablet();
 
-	@Inject
-	StateManager stateManager;
+	private final StateManager stateManager = StateManager.getInstance();
 
 	private final BroadcastReceiver updateCheckReceiver = new BroadcastReceiver() {
 		@Override

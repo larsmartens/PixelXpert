@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">點擊以調整</string>
     <string name="app_switch_tile_title">Switch App Profile</string>
     <string name="hide_default">隱藏 (預設)</string>
-    <string name="percent_of_default_size">% 預設</string>
+    <string name="percent_of_default_size" formatted="false">% 預設</string>
     <string name="overlay_none_title">(預設)</string>
     <string name="general_section">常規選項</string>
     <string name="general_on">已開啟</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">在最近任務右側「清除所有」按鈕</string>
     <string name="force_themed_icons_title">自動生成缺少的主題圖示</string>
     <string name="force_themed_icons_summary">僅 Pixel 啟動器</string>
-    <string name="volume_button_step_title">音量步進 (0至100%)</string>
+    <string name="volume_button_step_title" formatted="false">音量步進 (0至100%)</string>
     <string name="display_resolution_switch_title">修改顯示分辨率</string>
     <string name="display_resolution_switch_summary">啟用此功能之前，請確保將所有顯示尺寸/dpi 變更重設為預設值</string>
     <string name="display_resolution_title">顯示解析度</string>

@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Atinge pentru a regla</string>
     <string name="app_switch_tile_title">Schimbă profilul aplicației</string>
     <string name="hide_default">Ascuns (implicit)</string>
-    <string name="percent_of_default_size">% din dimensiunea implicită</string>
+    <string name="percent_of_default_size" formatted="false">% din dimensiunea implicită</string>
     <string name="overlay_none_title">(Implicit)</string>
     <string name="general_section">Opțiuni generale</string>
     <string name="general_on">Pornit</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Adăugați un buton accesibil de ștergere toate la pagina de recente</string>
     <string name="force_themed_icons_title">Generează automat pictogramele tematice lipsă</string>
     <string name="force_themed_icons_summary">Doar lansator Pixel</string>
-    <string name="volume_button_step_title">Pași volum (0 la 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Pași volum (0 la 100%)</string>
     <string name="display_resolution_switch_title">Modifică rezoluția afișajului</string>
     <string name="display_resolution_switch_summary">Înainte de a activa, asigură-te că resetezi toate modificările dimensiunii afișajului/dpi la cele implicite</string>
     <string name="display_resolution_title">Rezoluție afișaj</string>

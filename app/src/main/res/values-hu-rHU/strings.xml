@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Tap to adjust</string>
     <string name="app_switch_tile_title">Alkalmazás profil váltás</string>
     <string name="hide_default">Elrejtés (alapértelmezett)</string>
-    <string name="percent_of_default_size">az alapértelmezett méret %-a</string>
+    <string name="percent_of_default_size" formatted="false">az alapértelmezett méret %-a</string>
     <string name="overlay_none_title">(Alapértelmezett)</string>
     <string name="general_section">Általános opciók</string>
     <string name="general_on">Be</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Adjon hozzá egy hozzáférhető, minden törlése gombot a legutóbbi oldalhoz</string>
     <string name="force_themed_icons_title">Auto-generate missing themed icons</string>
     <string name="force_themed_icons_summary">Pixel launcher only</string>
-    <string name="volume_button_step_title">Hangerő lépések (0-100%)</string>
+    <string name="volume_button_step_title" formatted="false">Hangerő lépések (0-100%)</string>
     <string name="display_resolution_switch_title">Képernyő felbontás módosítása</string>
     <string name="display_resolution_switch_summary">Mielőtt engedélyeznéd ezt, győződj meg róla, hogy minden képernyő méret/dpi változásokat az eredeti értékekre visszaállítottál</string>
     <string name="display_resolution_title">Kijelző felbontása</string>

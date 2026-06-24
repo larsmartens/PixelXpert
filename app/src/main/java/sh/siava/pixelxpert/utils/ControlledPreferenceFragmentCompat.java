@@ -27,10 +27,8 @@ import com.google.android.material.appbar.AppBarLayout;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import dagger.hilt.android.EntryPointAccessors;
 import sh.siava.pixelxpert.PixelXpert;
 import sh.siava.pixelxpert.R;
-import sh.siava.pixelxpert.di.StateManagerEntryPoint;
 import sh.siava.pixelxpert.ui.misc.StateManager;
 
 public abstract class ControlledPreferenceFragmentCompat extends PreferenceFragmentCompat {
@@ -88,9 +86,7 @@ public abstract class ControlledPreferenceFragmentCompat extends PreferenceFragm
 			}
 		}
 
-		this.stateManager = EntryPointAccessors
-				.fromApplication(PixelXpert.get(), StateManagerEntryPoint.class)
-				.getStateManager();
+		this.stateManager = StateManager.getInstance();
 
 		RecyclerView recyclerView = view.findViewById(androidx.preference.R.id.recycler_view);
 

@@ -7,7 +7,7 @@
     <string name="sliding_tile_subtitle">Berühren zum Anpassen</string>
     <string name="app_switch_tile_title">App-Profil wechseln</string>
     <string name="hide_default">Verstecken (Standard)</string>
-    <string name="percent_of_default_size">% von der Standard Größe</string>
+    <string name="percent_of_default_size" formatted="false">% von der Standard Größe</string>
     <string name="overlay_none_title">(Standard)</string>
     <string name="general_section">Allgemeine Optionen</string>
     <string name="general_on">Ein</string>
@@ -299,7 +299,7 @@
     <string name="clear_all_reposition_title">Fügen Sie \'alles löschen\' unten auf die Recents-Leiste</string>
     <string name="force_themed_icons_title">Fehlende Icons automatisch generieren</string>
     <string name="force_themed_icons_summary">Nur Pixel Launcher</string>
-    <string name="volume_button_step_title">Lautstärkeschritte (0 bis 100%)</string>
+    <string name="volume_button_step_title" formatted="false">Lautstärkeschritte (0 bis 100%)</string>
     <string name="display_resolution_switch_title">Bildschirmauflösung ändern</string>
     <string name="display_resolution_switch_summary">Bevor Sie dies aktivieren, stellen Sie sicher, dass alle Displaygrößen/dpi-Änderungen auf Standard zurückgesetzt wurden</string>
     <string name="display_resolution_title">Bildschirmauflösung</string>
