@@ -1,0 +1,68 @@
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    target-branch: "canary"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 8
+    groups:
+      android-toolchain:
+        patterns:
+          - "com.android.tools.build:*"
+          - "com.android.application"
+          - "org.jetbrains.kotlin*"
+          - "com.google.devtools.ksp"
+          - "com.google.dagger*"
+      androidx:
+        patterns:
+          - "androidx.*"
+      root-stack:
+        patterns:
+          - "com.github.topjohnwu.libsu:*"
+          - "io.github.libxposed:*"
+          - "com.crossbowffs.remotepreferences:*"
+      ui:
+        patterns:
+          - "com.google.android.material:*"
+          - "com.airbnb.android:lottie"
+          - "com.jaredrummler:colorpicker"
+          - "com.github.mfathi91:persian-date-time"
+          - "com.lyft.kronos:kronos-android"
+      google-services:
+        patterns:
+          - "com.google.android.gms:*"
+          - "com.google.code.gson:gson"
+      utilities:
+        patterns:
+          - "org.apache.commons:*"
+          - "org.objenesis:*"
+          - "com.squareup:javapoet"
+          - "com.github.amitshekhariitbhu:PRDownloader"
+    ignore:
+      - dependency-name: "com.github.mukeshsolanki:MarkdownView-Android"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "canary"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:30"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 4
+    groups:
+      actions:
+        patterns:
+          - "*"
+    labels:
+      - "dependencies"
