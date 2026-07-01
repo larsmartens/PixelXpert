@@ -32,6 +32,7 @@ public class RootProvider extends RootService {
 	static final String LSPD_DB_DEFAULT_PATH = "/data/adb/lspd/config/modules_config.db";
 	static final String SQLITE_BIN = "/data/adb/modules/PixelXpert/sqlite3";
 	static final String MODULE_PATH = "/data/adb/modules/PixelXpert";
+	static final String MODULE_APK_PATH = "/system/priv-app/PixelXpert/PixelXpert.apk";
 	static final String MAGISK_PACKAGE = "com.topjohnwu.magisk";
 	static final String APATCH_PACKAGE = "me.bmax.apatch";
 	static final String LSPOSED_PACKAGE = "org.lsposed.manager";
@@ -88,6 +89,7 @@ public class RootProvider extends RootService {
 	{
 		int mLSPosedMID = -1;
 		private boolean mLSPosedEnabled = false;
+		private Boolean mLegacyLSPosedSchema = null;
 
 
 		@Override
@@ -106,7 +108,7 @@ public class RootProvider extends RootService {
 
 				return "1".equals(
 						runLSposedSQLiteQuery(
-								String.format("select count(*) from scope where mid = %s and user_id = 0 and app_pkg_name = '%s'", mLSPosedMID, packageName)
+								scopeCountQuery(packageName)
 						).get(0));
 			}
 			catch (Throwable ignored) {
@@ -143,7 +145,7 @@ public class RootProvider extends RootService {
 			}
 
 			runLSposedSQLiteQuery(
-					String.format("insert into scope (mid, app_pkg_name, user_id) values (%s, '%s', 0)", mLSPosedMID, packageName));
+					scopeInsertQuery(packageName));
 
 			return checkLSPosedDB(packageName);
 		}
@@ -225,25 +227,82 @@ public class RootProvider extends RootService {
 		}
 
 		private void enableModuleLSPosed() {
-			runLSposedSQLiteQuery(String.format("update modules set enabled = 1 where mid = %s", mLSPosedMID));
+			if (usesLegacyLSPosedSchema()) {
+				runLSposedSQLiteQuery(String.format("update modules set enabled = 1 where mid = %s", mLSPosedMID));
+			} else {
+				runLSposedSQLiteQuery(
+						String.format("insert or replace into modules (module_pkg_name, apk_path) values ('%s','%s')",
+								sql(BuildConfig.APPLICATION_ID), MODULE_APK_PATH));
+				runLSposedSQLiteQuery(
+						String.format("insert or replace into modules_state (module_pkg_name, user_id, enabled, scope_request_blocked) values ('%s',0,1,0)",
+								sql(BuildConfig.APPLICATION_ID)));
+				mLSPosedEnabled = true;
+			}
 		}
 
 		private void getModuleMID()
 		{
-			mLSPosedMID = Integer.parseInt(
-					runLSposedSQLiteQuery(
-							String.format("select mid from modules where module_pkg_name = '%s'", BuildConfig.APPLICATION_ID)
-					).get(0));
+			if (usesLegacyLSPosedSchema()) {
+				mLSPosedMID = Integer.parseInt(
+						queryScalar(
+								String.format("select mid from modules where module_pkg_name = '%s'", sql(BuildConfig.APPLICATION_ID))
+						));
 
-			mLSPosedEnabled = "1".equals(
-					runLSposedSQLiteQuery(
-							String.format("select enabled from modules where mid = %s", mLSPosedMID)
-					).get(0));
+				mLSPosedEnabled = "1".equals(
+						queryScalar(
+								String.format("select enabled from modules where mid = %s", mLSPosedMID)
+						));
+			} else {
+				mLSPosedMID = -1;
+				mLSPosedEnabled = "1".equals(
+						queryScalar(
+								String.format("select enabled from modules_state where module_pkg_name = '%s' and user_id = 0", sql(BuildConfig.APPLICATION_ID))
+						));
+			}
 		}
 
 		private List<String> runLSposedSQLiteQuery(String command)
 		{
 			return Shell.cmd(String.format("%s %s \"%s\"", SQLITE_BIN, lspdDbPath(), command)).exec().getOut();
+		}
+
+		private String queryScalar(String command) {
+			List<String> result = runLSposedSQLiteQuery(command);
+			return result.isEmpty() ? "" : result.get(0).trim();
+		}
+
+		private boolean usesLegacyLSPosedSchema() {
+			if (mLegacyLSPosedSchema != null) {
+				return mLegacyLSPosedSchema;
+			}
+
+			String moduleTable = String.join("\n", runLSposedSQLiteQuery("PRAGMA table_info(modules);"));
+			mLegacyLSPosedSchema = moduleTable.contains("|mid|");
+			return mLegacyLSPosedSchema;
+		}
+
+		private String scopeCountQuery(String packageName) {
+			if (usesLegacyLSPosedSchema()) {
+				return String.format("select count(*) from scope where mid = %s and user_id = 0 and app_pkg_name = '%s'",
+						mLSPosedMID, sql(packageName));
+			}
+
+			return String.format("select count(*) from scope where module_pkg_name = '%s' and user_id = 0 and app_pkg_name = '%s'",
+					sql(BuildConfig.APPLICATION_ID), sql(packageName));
+		}
+
+		private String scopeInsertQuery(String packageName) {
+			if (usesLegacyLSPosedSchema()) {
+				return String.format("insert into scope (mid, app_pkg_name, user_id) values (%s, '%s', 0)",
+						mLSPosedMID, sql(packageName));
+			}
+
+			return String.format("insert or ignore into scope (module_pkg_name, app_pkg_name, user_id) values ('%s', '%s', 0)",
+					sql(BuildConfig.APPLICATION_ID), sql(packageName));
+		}
+
+		private String sql(String value) {
+			return value.replace("'", "''");
 		}
 
 		private void appendEnvironmentSummary(StringBuilder report) {
@@ -288,12 +347,15 @@ public class RootProvider extends RootService {
 		private void appendLSPosedState(StringBuilder report) {
 			try {
 				getModuleMID();
-				appendLine(report, "PixelXpert module id: " + mLSPosedMID);
+				appendLine(report, "LSPosed schema: " + (usesLegacyLSPosedSchema() ? "legacy mid" : "module_pkg_name"));
+				if (usesLegacyLSPosedSchema()) {
+					appendLine(report, "PixelXpert module id: " + mLSPosedMID);
+				}
 				appendLine(report, "PixelXpert module enabled: " + mLSPosedEnabled);
 				appendSQLiteQuery(report, "LSPosed tables", ".tables");
-				appendSQLiteQuery(report, "scope system", String.format("select count(*) from scope where mid = %s and user_id = 0 and app_pkg_name = 'system'", mLSPosedMID));
-				appendSQLiteQuery(report, "scope SystemUI", String.format("select count(*) from scope where mid = %s and user_id = 0 and app_pkg_name = '%s'", mLSPosedMID, Constants.SYSTEM_UI_PACKAGE));
-				appendSQLiteQuery(report, "scope Launcher", String.format("select count(*) from scope where mid = %s and user_id = 0 and app_pkg_name = '%s'", mLSPosedMID, Constants.LAUNCHER_PACKAGE));
+				appendSQLiteQuery(report, "scope system", scopeCountQuery("system"));
+				appendSQLiteQuery(report, "scope SystemUI", scopeCountQuery(Constants.SYSTEM_UI_PACKAGE));
+				appendSQLiteQuery(report, "scope Launcher", scopeCountQuery(Constants.LAUNCHER_PACKAGE));
 			} catch (Throwable t) {
 				appendLine(report, "LSPosed/Vector state unavailable: " + t.getClass().getSimpleName() + ": " + String.valueOf(t.getMessage()));
 			}
