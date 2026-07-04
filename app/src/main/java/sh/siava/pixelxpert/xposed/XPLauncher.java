@@ -60,6 +60,8 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 	private static final int PREFS_POLL_INTERVAL_MS = 50;
 	private static final int PREFS_READY_TIMEOUT_MS = 5000;
 	private static final int PREFS_SINGLE_PROBE_TIMEOUT_MS = 250;
+	private static final int BOOT_POLL_INTERVAL_MS = 1000;
+	private static final int BOOT_READY_TIMEOUT_MS = 180000;
 
 	public XPLauncher()
 	{
@@ -141,8 +143,8 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 
 						XPrefs.init(mContext);
 
-						if (isSystemServer) {
-							loadWhenPrefsReady(PRParam);
+						if (isSystemServer || shouldDeferHookLoading(PRParam)) {
+							loadWhenBootAndPrefsReady(PRParam);
 						} else {
 							waitForXprefsLoad(PRParam);
 						}
@@ -156,6 +158,53 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 
 	private void loadWhenPrefsReady(PackageReadyParam PRParam) {
 		CompletableFuture.runAsync(() -> waitForXprefsLoad(PRParam));
+	}
+
+	private void loadWhenBootAndPrefsReady(PackageReadyParam PRParam) {
+		CompletableFuture.runAsync(() -> {
+			if (!awaitBootCompleted(PRParam)) {
+				return;
+			}
+
+			waitForXprefsLoad(PRParam);
+		});
+	}
+
+	private boolean shouldDeferHookLoading(PackageReadyParam PRParam) {
+		return Build.VERSION.SDK_INT >= 37 && !PRParam.getPackageName().equals(APPLICATION_ID);
+	}
+
+	private boolean awaitBootCompleted(PackageReadyParam PRParam) {
+		if (isBootCompleted()) {
+			return true;
+		}
+
+		int waited = 0;
+		while (waited < BOOT_READY_TIMEOUT_MS) {
+			SystemUtils.threadSleep(BOOT_POLL_INTERVAL_MS);
+			waited += BOOT_POLL_INTERVAL_MS;
+
+			if (isBootCompleted()) {
+				Logger.log("PixelXpert: boot completed, loading deferred hooks for " + PRParam.getPackageName());
+				return true;
+			}
+		}
+
+		Logger.log("PixelXpert: timed out waiting for boot completion in " + PRParam.getPackageName());
+		return false;
+	}
+
+	private boolean isBootCompleted() {
+		try {
+			Class<?> systemPropertiesClass = Class.forName("android.os.SystemProperties");
+			Object bootCompleted = systemPropertiesClass
+					.getMethod("get", String.class, String.class)
+					.invoke(null, "sys.boot_completed", "0");
+
+			return "1".equals(bootCompleted);
+		} catch (Throwable ignored) {
+			return false;
+		}
 	}
 
 	private void waitForXprefsLoad(PackageReadyParam PRParam) {
