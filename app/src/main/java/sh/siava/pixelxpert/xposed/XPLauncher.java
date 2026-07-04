@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -93,6 +94,11 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 	@Override
 	public void onPackageReady(@NonNull PackageReadyParam PRParam){
 		ReflectedClass.setDefaultXposedInterface(this);
+
+		if (isSystemServer && Build.VERSION.SDK_INT >= 37) {
+			Logger.log("PixelXpert: skipping system_server hooks on Android 17+ until preferences are boot-safe there");
+			return;
+		}
 
 		hook17BetaAudioManagerSRWorkaround(PRParam);
 
