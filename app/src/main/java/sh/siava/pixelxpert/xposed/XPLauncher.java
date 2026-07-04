@@ -27,7 +27,9 @@ import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import io.github.libxposed.api.XposedModule;
 import io.github.libxposed.api.XposedModuleInterface;
@@ -54,6 +56,9 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 	private static final Queue<ProxyRunnable> proxyQueue = new LinkedList<>();
 	private static boolean TELECOM_SERVER_LOADED = false;
 	public static Resources moduleResources;
+	private static final int PREFS_POLL_INTERVAL_MS = 50;
+	private static final int PREFS_READY_TIMEOUT_MS = 5000;
+	private static final int PREFS_SINGLE_PROBE_TIMEOUT_MS = 250;
 
 	public XPLauncher()
 	{
@@ -106,7 +111,7 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 
 								XPrefs.init(mContext);
 
-								CompletableFuture.runAsync(() -> waitForXprefsLoad(PRParam));
+								loadWhenPrefsReady(PRParam);
 							}
 						} catch (Throwable t) {
 							Logger.log(t);
@@ -130,7 +135,11 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 
 						XPrefs.init(mContext);
 
-						waitForXprefsLoad(PRParam);
+						if (isSystemServer) {
+							loadWhenPrefsReady(PRParam);
+						} else {
+							waitForXprefsLoad(PRParam);
+						}
 					}
 				} catch (Throwable t) {
 					Logger.log(t);
@@ -139,26 +148,13 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 		}
 	}
 
+	private void loadWhenPrefsReady(PackageReadyParam PRParam) {
+		CompletableFuture.runAsync(() -> waitForXprefsLoad(PRParam));
+	}
+
 	private void waitForXprefsLoad(PackageReadyParam PRParam) {
-		// Poll until the remote preference provider answers. This used to sleep a full second per
-		// attempt, which added up to ~1s to startup (blocking app processes that call this
-		// synchronously) even when prefs were ready almost immediately. Poll on a tight interval
-		// instead, and give up after a bounded time rather than spinning forever.
-		final int pollIntervalMs = 50;
-		final int maxWaitMs = 5000;
-		int waited = 0;
-		while (true) {
-			try {
-				Xprefs.getBoolean("LoadTestBooleanValue", false);
-				break;
-			} catch (Throwable ignored) {
-				if (waited >= maxWaitMs) {
-					Logger.log("PixelXpert: timed out waiting for preferences in " + PRParam.getPackageName());
-					return;
-				}
-				SystemUtils.threadSleep(pollIntervalMs);
-				waited += pollIntervalMs;
-			}
+		if (!awaitXprefsReady(PRParam)) {
+			return;
 		}
 
 		Logger.log(String.format("Loading PixelXpert version: %s on %s", BuildConfig.VERSION_NAME, PRParam.getPackageName()));
@@ -168,6 +164,31 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 		}
 
 		onXPrefsReady(PRParam);
+	}
+
+	private boolean awaitXprefsReady(PackageReadyParam PRParam) {
+		int waited = 0;
+		while (waited < PREFS_READY_TIMEOUT_MS) {
+			CompletableFuture<Void> probe = CompletableFuture.runAsync(() -> Xprefs.getBoolean("LoadTestBooleanValue", false));
+			try {
+				probe.get(PREFS_SINGLE_PROBE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+				return true;
+			} catch (TimeoutException e) {
+				probe.cancel(true);
+				Logger.log("PixelXpert: preference provider probe timed out in " + PRParam.getPackageName());
+				return false;
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				Logger.log("PixelXpert: interrupted while waiting for preferences in " + PRParam.getPackageName());
+				return false;
+			} catch (ExecutionException ignored) {
+				SystemUtils.threadSleep(PREFS_POLL_INTERVAL_MS);
+				waited += PREFS_POLL_INTERVAL_MS;
+			}
+		}
+
+		Logger.log("PixelXpert: timed out waiting for preferences in " + PRParam.getPackageName());
+		return false;
 	}
 
 	private void onXPrefsReady(PackageReadyParam PRParam) {
