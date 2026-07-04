@@ -72,6 +72,18 @@ grantRootApps(){
 	grantRootPkg $PKGNAME
 }
 
+getDefaultScopes(){
+	SDK="$(getprop ro.build.version.sdk 2>/dev/null)"
+	if [ "${SDK:-0}" -ge 37 ] 2>/dev/null; then
+		if [ -f "$MODDIR/a17_enable_default_scopes" ]; then
+			echo "com.android.systemui com.google.android.apps.nexuslauncher com.google.android.dialer $PKGNAME"
+		else
+			echo "$PKGNAME"
+		fi
+	else
+		echo "android system com.android.systemui com.google.android.apps.nexuslauncher com.google.android.dialer com.android.phone com.android.settings me.weishu.kernelsu com.rifsxd.ksunext $PKGNAME"
+	fi
+}
 #activate PKGNAME in Lsposed
 activateModuleLSPD()
 {
@@ -116,24 +128,9 @@ activateModuleLSPDOld()
 
 	NEWMID=$(echo $SQLRESULT | xargs)
 
-	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"android\",0);" && runSQL
-	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"system\",0);" && runSQL
-
-	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"com.android.systemui\",0);" && runSQL
-
-	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"com.google.android.apps.nexuslauncher\",0);" && runSQL
-
-	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"com.google.android.dialer\",0);" && runSQL
-
-	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"com.android.phone\",0);" && runSQL
-
-	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"com.android.settings\",0);" && runSQL
-
-	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"me.weishu.kernelsu\",0);" && runSQL
-
-	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"com.rifsxd.ksunext\",0);" && runSQL
-
-	CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"$PKGNAME\",0);" && runSQL
+	for scope in $(getDefaultScopes); do
+		CMD="insert into scope (mid, app_pkg_name, user_id) values ($NEWMID, \"$scope\",0);" && runSQL
+	done
 }
 
 activateModuleLSPDVector()
@@ -143,7 +140,7 @@ activateModuleLSPDVector()
 	CMD="insert or replace into modules (module_pkg_name, apk_path) values (\"$PKGNAME\",\"$PKGPATH\");" && runSQL
 	CMD="insert or replace into modules_state (module_pkg_name, user_id, enabled, scope_request_blocked) values (\"$PKGNAME\",0,1,0);" && runSQL
 
-	for scope in android system com.android.systemui com.google.android.apps.nexuslauncher com.google.android.dialer com.android.phone com.android.settings me.weishu.kernelsu com.rifsxd.ksunext $PKGNAME; do
+	for scope in $(getDefaultScopes); do
 		CMD="insert or ignore into scope (module_pkg_name, app_pkg_name, user_id) values (\"$PKGNAME\", \"$scope\", 0);" && runSQL
 	done
 }

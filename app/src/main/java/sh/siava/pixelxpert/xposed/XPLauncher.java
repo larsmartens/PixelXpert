@@ -34,6 +34,7 @@ import java.util.concurrent.TimeoutException;
 
 import io.github.libxposed.api.XposedModule;
 import io.github.libxposed.api.XposedModuleInterface;
+import sh.siava.pixelxpert.annotations.ModPackData;
 import sh.siava.pixelxpert.BuildConfig;
 import sh.siava.pixelxpert.Constants;
 import sh.siava.pixelxpert.IPixelXpertProxy;
@@ -62,6 +63,8 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 	private static final int PREFS_SINGLE_PROBE_TIMEOUT_MS = 250;
 	private static final int BOOT_POLL_INTERVAL_MS = 1000;
 	private static final int BOOT_READY_TIMEOUT_MS = 180000;
+	private static final String DISABLE_HOOKS_PROPERTY = "persist.pixelxpert.disable_hooks";
+	private static final String ANDROID_17_UNSAFE_SCOPES_PROPERTY = "persist.pixelxpert.a17.unsafe_scopes";
 
 	public XPLauncher()
 	{
@@ -96,6 +99,11 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 	@Override
 	public void onPackageReady(@NonNull PackageReadyParam PRParam){
 		ReflectedClass.setDefaultXposedInterface(this);
+
+		if (areHooksDisabled()) {
+			Logger.log("PixelXpert: hooks disabled by " + DISABLE_HOOKS_PROPERTY);
+			return;
+		}
 
 		if (isSystemServer && Build.VERSION.SDK_INT >= 37) {
 			Logger.log("PixelXpert: skipping system_server hooks on Android 17+ until preferences are boot-safe there");
@@ -269,6 +277,10 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 
 		ModPacks.getModPacks()
 				.forEach(modPackData -> {
+					if (shouldSkipModPackOnAndroid17(PRParam, modPackData)) {
+						return;
+					}
+
 					String partOfProcessName = modPackData.targetsMainProcess ? "" : modPackData.childProcessName;
 
 					if((modPackData.targetPackage.equals(PRParam.getPackageName()) || modPackData.targetPackage.isEmpty() /*common mod packs*/ || (modPackData.targetPackage.equals(Constants.SYSTEM_FRAMEWORK_PACKAGE) && isSystemServer))
@@ -277,7 +289,40 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 						//noinspection unchecked
 						loadModPack((Class<? extends XposedModPack>) modPackData.clazz, PRParam);
 					}
-				});
+					});
+	}
+
+	private boolean shouldSkipModPackOnAndroid17(PackageReadyParam PRParam, ModPackData modPackData) {
+		if (Build.VERSION.SDK_INT < 37 || isPropertyEnabled(ANDROID_17_UNSAFE_SCOPES_PROPERTY)) {
+			return false;
+		}
+
+		if (modPackData.targetPackage.isEmpty()) {
+			return true;
+		}
+
+		if (modPackData.targetPackage.equals(Constants.SYSTEM_FRAMEWORK_PACKAGE)) {
+			return true;
+		}
+
+		return PRParam.getPackageName().equals(Constants.TELECOM_SERVER_PACKAGE);
+	}
+
+	private boolean areHooksDisabled() {
+		return isPropertyEnabled(DISABLE_HOOKS_PROPERTY);
+	}
+
+	private boolean isPropertyEnabled(String propertyName) {
+		try {
+			Class<?> systemPropertiesClass = Class.forName("android.os.SystemProperties");
+			Object value = systemPropertiesClass
+					.getMethod("get", String.class, String.class)
+					.invoke(null, propertyName, "0");
+
+			return "1".equals(value) || "true".equalsIgnoreCase(String.valueOf(value));
+		} catch (Throwable ignored) {
+			return false;
+		}
 	}
 
 	private void loadModPack(Class<? extends XposedModPack> thisClass, PackageReadyParam PRParam) {
