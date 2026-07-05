@@ -87,9 +87,11 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 	}
 
 	private static void hook17BetaAudioManagerSRWorkaround(PackageReadyParam PRParam) {
+		if (Build.VERSION.SDK_INT < 37) return;
+
 		ReflectedClass.of("android.media.AudioManager", PRParam.getClassLoader())
 				.before("requestAudioFocus")
-				.run(instance,param -> {
+				.runSafe(instance,param -> {
 					if(getObjectField(param.thisObject, "mApplicationContext") == null) {
 						setObjectField(param.thisObject, "mApplicationContext", getObjectField(param.thisObject, "mOriginalContext"));
 					}

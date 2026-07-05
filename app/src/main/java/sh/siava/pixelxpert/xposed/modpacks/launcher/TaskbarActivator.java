@@ -285,15 +285,14 @@ public class TaskbarActivator extends XposedModPack {
 				.afterConstruction()
 				.runSafe(param -> {
 					if (GoogleRecents || (taskbarMode == TASKBAR_ON && TaskbarAsRecents)) { //on 16+ we use the builtin recent tasks
-						//noinspection OptionalGetWithoutIsPresent
-						RecentAppsControllerClass.findMethods(
-								Pattern.compile("setCanShowRecentApps")).stream().findFirst().get()
-								.invoke(param.thisObject, true);
+						Method setCanShowRecentApps = findFirstMethod(RecentAppsControllerClass, "setCanShowRecentApps");
+						if (setCanShowRecentApps != null) {
+							setCanShowRecentApps.invoke(param.thisObject, true);
+						}
 					}
 				});
 
-		@SuppressWarnings("OptionalGetWithoutIsPresent") Method reloadRecentTasksIfNeeded = RecentAppsControllerClass
-				           .findMethods(Pattern.compile(".*reloadRecentTasksIfNeeded.*")).stream().findFirst().get();
+		Method reloadRecentTasksIfNeeded = findFirstMethod(RecentAppsControllerClass, ".*reloadRecentTasksIfNeeded.*");
 
 		RecentAppsControllerClass.before("isReplacingPredictions").runSafe(param -> {
 			if(TaskbarAsRecents && taskbarMode == TASKBAR_ON)
@@ -302,7 +301,7 @@ public class TaskbarActivator extends XposedModPack {
 		RecentAppsControllerClass
 				.before("onRecentsOrHotseatChanged")
 				.runSafe(param -> {
-					if(taskbarMode == TASKBAR_ON && TaskbarAsRecents) {
+					if(taskbarMode == TASKBAR_ON && TaskbarAsRecents && reloadRecentTasksIfNeeded != null) {
 						List<?> allRecentTasks = (List<?>) getObjectField(param.thisObject, "allRecentTasks");
 
 						if (allRecentTasks.size() < 2) //there's nothing to show as recent
@@ -348,6 +347,13 @@ public class TaskbarActivator extends XposedModPack {
 						param.setResult(true);
 					}
 				});
+	}
+
+	private Method findFirstMethod(ReflectedClass reflectedClass, String namePattern)
+	{
+		return reflectedClass.findMethods(Pattern.compile(namePattern)).stream()
+				.findFirst()
+				.orElse(null);
 	}
 
 	public int getNumShownHotseatIcons()

@@ -532,6 +532,7 @@ public class ReflectedClass
 	private static Set<Method> findMethods(Class<?> clazz, Pattern namePattern)
 	{
 		Set<Method> result = new ArraySet<>();
+		if(clazz == null) return result;
 
 		Method[] methods = clazz.getDeclaredMethods();
 
@@ -610,7 +611,7 @@ public class ReflectedClass
 	{
 		Set<XposedInterface.HookHandle> unhooks = new ArraySet<>();
 		findMethods(Pattern.compile(".+"))
-				.forEach(method -> unhooks.addAll(before(method).run(xposedInterface, param -> {
+				.forEach(method -> unhooks.addAll(before(method).runSafe(xposedInterface, param -> {
 					unhooks.forEach(XposedInterface.HookHandle::unhook);
 					unhooks.clear();
 					foundCallback.onInstanceCaptured(param.thisObject);
