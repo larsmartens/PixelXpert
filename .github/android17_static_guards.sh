@@ -93,3 +93,11 @@ if [ -n "$unguarded_method_lookup" ]; then
   echo "$unguarded_method_lookup" >&2
   fail "modpack method discovery must fail closed instead of using findFirst().get()"
 fi
+
+xp_launcher_plain_hooks="$(git grep -n -E '^[[:space:]]*[.]run[(](instance|this),' -- \
+  app/src/main/java/sh/siava/pixelxpert/xposed/XPLauncher.java || true)"
+
+if [ -n "$xp_launcher_plain_hooks" ]; then
+  echo "$xp_launcher_plain_hooks" >&2
+  fail "XPLauncher hook registrations must use runSafe"
+fi

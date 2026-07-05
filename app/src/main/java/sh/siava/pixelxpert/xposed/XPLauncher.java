@@ -119,7 +119,7 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 
 			PhoneWindowManagerClass
 					.before("init")
-					.run(instance,param -> {
+					.runSafe(instance,param -> {
 						try {
 							if (mContext == null) {
 								mContext = (Context) param.args[0];
@@ -140,7 +140,7 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 		if(!isSystemServer || PRParam.getPackageName().equals(Constants.TELECOM_SERVER_PACKAGE)) {
 			ReflectedClass.of(Instrumentation.class)
 					.after("newApplication")
-					.run(this, param -> {
+					.runSafe(this, param -> {
 				try {
 					if (mContext == null || (PRParam.getPackageName().equals(Constants.TELECOM_SERVER_PACKAGE) && !TELECOM_SERVER_LOADED)) {
 						if (PRParam.getPackageName().equals(Constants.TELECOM_SERVER_PACKAGE))
