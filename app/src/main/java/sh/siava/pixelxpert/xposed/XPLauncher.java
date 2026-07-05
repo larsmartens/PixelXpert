@@ -60,7 +60,7 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 	public static Resources moduleResources;
 	private static final int PREFS_POLL_INTERVAL_MS = 50;
 	private static final int PREFS_READY_TIMEOUT_MS = 5000;
-	private static final int PREFS_SINGLE_PROBE_TIMEOUT_MS = 250;
+	private static final int PREFS_SINGLE_PROBE_TIMEOUT_MS = 1500;
 	private static final int BOOT_POLL_INTERVAL_MS = 1000;
 	private static final int BOOT_READY_TIMEOUT_MS = 180000;
 	private static final String DISABLE_HOOKS_PROPERTY = "persist.pixelxpert.disable_hooks";
