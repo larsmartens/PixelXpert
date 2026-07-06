@@ -60,7 +60,9 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 	public static Resources moduleResources;
 	private static final int PREFS_POLL_INTERVAL_MS = 50;
 	private static final int PREFS_READY_TIMEOUT_MS = 5000;
+	private static final int DEFERRED_PREFS_READY_TIMEOUT_MS = 15000;
 	private static final int PREFS_SINGLE_PROBE_TIMEOUT_MS = 1500;
+	private static final int DEFERRED_PREFS_SINGLE_PROBE_TIMEOUT_MS = 15000;
 	private static final int BOOT_POLL_INTERVAL_MS = 1000;
 	private static final int BOOT_READY_TIMEOUT_MS = 180000;
 	private static final String DISABLE_HOOKS_PROPERTY = "persist.pixelxpert.disable_hooks";
@@ -232,11 +234,14 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 	}
 
 	private boolean awaitXprefsReady(PackageReadyParam PRParam) {
+		int readyTimeoutMs = getPrefsReadyTimeoutMs(PRParam);
+		int singleProbeTimeoutMs = getPrefsSingleProbeTimeoutMs(PRParam);
 		int waited = 0;
-		while (waited < PREFS_READY_TIMEOUT_MS) {
+		while (waited < readyTimeoutMs) {
 			CompletableFuture<Void> probe = CompletableFuture.runAsync(() -> Xprefs.getBoolean("LoadTestBooleanValue", false));
+			int remainingTimeoutMs = Math.min(singleProbeTimeoutMs, readyTimeoutMs - waited);
 			try {
-				probe.get(PREFS_SINGLE_PROBE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+				probe.get(remainingTimeoutMs, TimeUnit.MILLISECONDS);
 				return true;
 			} catch (TimeoutException e) {
 				probe.cancel(true);
@@ -254,6 +259,14 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 
 		Logger.log("PixelXpert: timed out waiting for preferences in " + PRParam.getPackageName());
 		return false;
+	}
+
+	private int getPrefsReadyTimeoutMs(PackageReadyParam PRParam) {
+		return shouldDeferHookLoading(PRParam) ? DEFERRED_PREFS_READY_TIMEOUT_MS : PREFS_READY_TIMEOUT_MS;
+	}
+
+	private int getPrefsSingleProbeTimeoutMs(PackageReadyParam PRParam) {
+		return shouldDeferHookLoading(PRParam) ? DEFERRED_PREFS_SINGLE_PROBE_TIMEOUT_MS : PREFS_SINGLE_PROBE_TIMEOUT_MS;
 	}
 
 	private void onXPrefsReady(PackageReadyParam PRParam) {
