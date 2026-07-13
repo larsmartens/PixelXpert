@@ -1,12 +1,37 @@
-## Fork Changes
+## Fork Status
 
-This fork tracks upstream `siavash79/PixelXpert` and keeps a small fork-specific layer on top:
+This repository is the public GitHub-linked fork of upstream
+[`siavash79/PixelXpert`](https://github.com/siavash79/PixelXpert):
 
-- update metadata and release links point at the public `larsmartens` fork and `larsmartens/pixelxpert-updates`
-- the canary release workflow republishes fork manifests so in-app and Magisk updates resolve against the fork
-- Settings-side compatibility fixes are carried for cloned-app handling and stale retained package records
-- upstream changes are merged automatically by the scheduled sync workflow and built again when new upstream commits land
-- Android 16 boot stability notes and the fork-specific crash fix workflow are documented in [docs/android16-stability.md](docs/android16-stability.md)
+- Source fork: [`larsmartens/PixelXpert`](https://github.com/larsmartens/PixelXpert)
+- Update manifests: [`larsmartens/pixelxpert-updates`](https://github.com/larsmartens/pixelxpert-updates)
+- Legacy release mirror: [`larsmartens/PixelXpert-fork`](https://github.com/larsmartens/PixelXpert-fork/releases)
+
+The old `larsmartens/PixelXpert-fork` repository was public but not linked as a
+GitHub fork. It is kept as a legacy release mirror until release artifacts are
+republished from the linked fork.
+
+## Fork Changes vs Upstream
+
+This fork keeps a focused compatibility and release layer on top of upstream
+`canary`:
+
+- fork-owned update metadata and canary release workflows for Magisk, KSU, and
+  in-app update paths
+- Android 17/API 37 boot-safety changes, including default data-app mode and
+  optional priv-app mount opt-in
+- KSU-Next, Hybrid-Mount, LSPosed/Vector schema, and managerless LSPosed
+  compatibility improvements
+- exportable root-stack diagnostics covering module layout, LSPosed scope,
+  mount state, Hybrid-Mount state, dropbox pointers, and recent logcat hints
+- system_server/SystemUI stability hardening around preference loading,
+  reflection hooks, hook failures, cloned apps, and stale retained package
+  records
+- CI hardening for fork builds, dependency updates, canary serialization, and
+  module rollback guards
+
+More detail lives in [docs/fork-differences.md](docs/fork-differences.md) and
+[docs/android16-stability.md](docs/android16-stability.md).
 
 ### For Pixel Stock Android 12 and 13 (Up to Nov 2022 - AOSP 13R8):  
 [![Latest Release for A12 & A13 up to Nov 2022](https://img.shields.io/badge/Download-v2.4.1-blue)](https://github.com/larsmartens/PixelXpert-fork/releases/tag/v2.4.1)  
@@ -20,11 +45,14 @@ This fork tracks upstream `siavash79/PixelXpert` and keeps a small fork-specific
 
 ![Downloads - Stable channel](https://img.shields.io/github/downloads/larsmartens/PixelXpert-fork/total?color=red&label=Downloads%20-%20Stable%20Channel)
 
+Download badges currently target the legacy release mirror because that is where
+the existing release assets are published.
+
 
 
 [![Telegram URL](https://img.shields.io/badge/Telegram-Join-2CA5E?style=social&logo=telegram)](https://t.me/PixelXpert_Github)
 
-![Header Image](https://github.com/larsmartens/PixelXpert-fork/blob/canary/.github/PixelXpert_Banner_1280.jpg?raw=true)
+![Header Image](https://github.com/larsmartens/PixelXpert/blob/canary/.github/PixelXpert_Banner_1280.jpg?raw=true)
 
 This is a mixed Xposed+Magisk module, which is made to allow customizations that are not originally designed in AOSP (Android Open Source Project). Please read thorough below before reaching to download links
 <hr>
@@ -48,7 +76,7 @@ PixelXpert is ONLY compatible with pixel stock firmware on Google Pixel devices.
 Here is the compatibility chart according to different android versions and QPRs:
 
 - Android 12/12.1 and 13 (up to Nov 2022): [final version: v2.4.1](https://github.com/larsmartens/PixelXpert-fork/releases/tag/v2.4.1).
-- Android 13 stable QPR3 to Android 16 (June 2022): [final version: v.4.3.0](https://github.com/larsmartens/PixelXpert-fork/releases/tag/v4.3.0).
+- Android 13 stable QPR3 to Android 16 (June 2025): [final version: v.4.3.0](https://github.com/larsmartens/PixelXpert-fork/releases/tag/v4.3.0).
 - Android 16 stable QPR1 and newer: [latest stable version](https://github.com/larsmartens/PixelXpert-fork/releases/latest)
 <hr>
 
@@ -71,7 +99,7 @@ P.S. For KSU, there is an extra step of granting root access to PixelXpert as it
 The module is also released in 2 flavors with different manual download and update procedures. But both can utilize automated updates through magisk manager, or through in-app updater (for canary, updates will not count against the module's download count).
 
 <ins>Stable release:</ins> 
-- Manual Install/Update: through repository's Github release page (link below) AND through in-app updater
+- Manual Install/Update: through repository's GitHub release page (link below) AND through in-app updater
 
 <ins>Canary release:</ins>
 - Manual Install/Update: through repository's Actions page and [telegram channel](https://t.me/PixelXpert_Github) (latest version is available from [here](https://github.com/larsmartens/PixelXpert-fork/releases/tag/canary_builds) also)

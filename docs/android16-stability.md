@@ -1,6 +1,6 @@
-# Android 16 Stability Notes
+# Android 16 and 17 Stability Notes
 
-This fork carries a small Android 16 stability layer on top of upstream `canary`.
+This fork carries an Android 16/17 stability layer on top of upstream `canary`.
 
 ## Root Cause We Hit
 
@@ -19,6 +19,12 @@ The stack showed:
   - uses `CopyOnWriteArrayList` for running modules and preference listeners
 - `6d25d4e5` `fix(reflection): propagate hook throwables to after callbacks`
   - restores throwable handling expected by `AppCloneEnabler`
+- `0dd195c7` `Limit preference wait during Xposed startup`
+  - bounds preference-provider waits in hooked processes
+- Android 17 data-app mode
+  - avoids mounting PixelXpert as a priv-app by default on SDK 37+
+  - leaves `a17_enable_privapp_mount` as the explicit opt-in marker for the
+    historical priv-app mount path
 
 ## Debugging Workflow That Worked
 
@@ -31,12 +37,19 @@ The stack showed:
 
 ## Deployment Notes
 
-- Live APK path:
+- Historical priv-app module APK path:
   - `/data/adb/modules/PixelXpert/system/priv-app/PixelXpert/PixelXpert.apk`
+- Android 17 default package-manager APK path:
+  - `/data/app/.../sh.siava.pixelxpert.../base.apk`
 - Durable rollback control:
   - `/data/adb/modules/PixelXpert/disable`
+- Android 17 default mount marker:
+  - `/data/adb/modules/PixelXpert/skip_mount`
 - Prefer an on-device rollback script in `/data/adb/fork-module-updates/<change-id>/`.
 
 ## Residual Risk
 
-`XPLauncher.waitForXprefsLoad()` still has an unbounded retry loop if the preference provider is unavailable. That was not the active crash, but it is the next hardening target if Android 16 boot reliability regresses again.
+Android framework and SystemUI hooks still carry normal canary risk after Pixel
+monthly platform changes. If boot reliability regresses, compare dropbox
+`system_server_*` entries, LSPosed scope state, app-visible mounts, and package
+manager state before blaming the Zygisk backend.
