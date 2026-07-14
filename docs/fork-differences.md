@@ -9,9 +9,9 @@ This document summarizes the maintained differences between
   `https://github.com/larsmartens/PixelXpert`.
 - Update manifests are published through:
   `https://github.com/larsmartens/pixelxpert-updates`.
-- Existing canary release artifacts are still mirrored from the legacy
-  non-linked repository `larsmartens/PixelXpert-fork` until releases are
-  republished from the linked fork.
+- Current canary release artifacts are published from the canonical linked
+  fork. The legacy `larsmartens/PixelXpert-fork` repository retains historical
+  stable releases.
 - Canary workflows are fork-specific and include release serialization,
   generated changelog handling, fork-owned update metadata, and rollback guard
   checks.

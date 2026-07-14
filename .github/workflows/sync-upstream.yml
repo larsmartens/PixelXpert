@@ -103,7 +103,12 @@ jobs:
               sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert/stable/latestStable.json|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@stable/latestStable.json|g' "$f"
               sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert/canary/latestCanary.json|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@canary/latestCanary.json|g' "$f"
               sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@canary|g' "$f"
-              sed -i 's|github.com/siavash79/PixelXpert|github.com/larsmartens/PixelXpert-fork|g' "$f"
+              case "$f" in
+                latestCanary.json|MagiskModuleUpdate_Xposed.json|MagiskModuleUpdate_Full.json)
+                  sed -i 's|github.com/siavash79/PixelXpert|github.com/larsmartens/PixelXpert|g' "$f"
+                  sed -i 's|github.com/larsmartens/PixelXpert-fork/releases/download/canary_builds/PixelXpert.zip|github.com/larsmartens/PixelXpert/releases/download/canary_builds/PixelXpert.zip|g' "$f"
+                  ;;
+              esac
             fi
           done
 
@@ -164,7 +169,12 @@ jobs:
               sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert/stable/latestStable.json|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@stable/latestStable.json|g' "$f"
               sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert/canary/latestCanary.json|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@canary/latestCanary.json|g' "$f"
               sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@canary|g' "$f"
-              sed -i 's|github.com/siavash79/PixelXpert|github.com/larsmartens/PixelXpert-fork|g' "$f"
+              case "$f" in
+                latestCanary.json|MagiskModuleUpdate_Xposed.json|MagiskModuleUpdate_Full.json)
+                  sed -i 's|github.com/siavash79/PixelXpert|github.com/larsmartens/PixelXpert|g' "$f"
+                  sed -i 's|github.com/larsmartens/PixelXpert-fork/releases/download/canary_builds/PixelXpert.zip|github.com/larsmartens/PixelXpert/releases/download/canary_builds/PixelXpert.zip|g' "$f"
+                  ;;
+              esac
             fi
           done
           sed -i 's|raw.githubusercontent.com/siavash79/PixelXpert|cdn.jsdelivr.net/gh/larsmartens/pixelxpert-updates@canary|g' MagiskModBase/module.prop

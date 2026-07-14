@@ -5,11 +5,11 @@ This repository is the public GitHub-linked fork of upstream
 
 - Source fork: [`larsmartens/PixelXpert`](https://github.com/larsmartens/PixelXpert)
 - Update manifests: [`larsmartens/pixelxpert-updates`](https://github.com/larsmartens/pixelxpert-updates)
-- Legacy release mirror: [`larsmartens/PixelXpert-fork`](https://github.com/larsmartens/PixelXpert-fork/releases)
+- Historical release mirror: [`larsmartens/PixelXpert-fork`](https://github.com/larsmartens/PixelXpert-fork/releases)
 
 The old `larsmartens/PixelXpert-fork` repository was public but not linked as a
-GitHub fork. It is kept as a legacy release mirror until release artifacts are
-republished from the linked fork.
+GitHub fork. It retains historical stable releases; current canary artifacts
+are published from the linked fork.
 
 ## Fork Changes vs Upstream
 
@@ -42,12 +42,12 @@ More detail lives in [docs/fork-differences.md](docs/fork-differences.md) and
 
 ### For Pixel Stock Android 16 QPR1 and newer:  
 [![Latest Release](https://img.shields.io/github/v/release/larsmartens/PixelXpert-fork?color=green&include_prereleases&label=Download%20Latest%20Stable)](https://github.com/larsmartens/PixelXpert-fork/releases/latest)
-[![Latest Canary Release](https://img.shields.io/badge/Download%20Latest-Canary-blue)](https://github.com/larsmartens/PixelXpert-fork/releases/tag/canary_builds)
+[![Latest Canary Release](https://img.shields.io/badge/Download%20Latest-Canary-blue)](https://github.com/larsmartens/PixelXpert/releases/tag/canary_builds)
 
 ![Downloads - Stable channel](https://img.shields.io/github/downloads/larsmartens/PixelXpert-fork/total?color=red&label=Downloads%20-%20Stable%20Channel)
 
-Download badges currently target the legacy release mirror because that is where
-the existing release assets are published.
+Historical stable badges target the legacy release mirror. Current canary builds
+are published from the canonical linked fork.
 
 
 
@@ -103,7 +103,7 @@ The module is also released in 2 flavors with different manual download and upda
 - Manual Install/Update: through repository's GitHub release page (link below) AND through in-app updater
 
 <ins>Canary release:</ins>
-- Manual Install/Update: through repository's Actions page and [telegram channel](https://t.me/PixelXpert_Github) (latest version is available from [here](https://github.com/larsmartens/PixelXpert-fork/releases/tag/canary_builds) also)
+- Manual Install/Update: through repository's Actions page and [telegram channel](https://t.me/PixelXpert_Github) (latest version is available from [here](https://github.com/larsmartens/PixelXpert/releases/tag/canary_builds) also)
 
 *No matter which flavor you're on, you can always switch to the other one with in-app updater
 <hr>

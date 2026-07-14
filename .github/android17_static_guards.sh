@@ -14,6 +14,15 @@ require_grep() {
   grep -Eq "$pattern" "$file" || fail "$message"
 }
 
+require_no_grep() {
+  local pattern="$1"
+  local file="$2"
+  local message="$3"
+
+  grep -Eq "$pattern" "$file" && fail "$message"
+  return 0
+}
+
 require_no_file() {
   local pattern="$1"
   local found
@@ -58,6 +67,13 @@ require_grep 'getMainExecutor[(][)][.]execute' app/src/main/java/sh/siava/pixelx
   "deferred modpack initialization must return to the host main thread"
 require_grep 'never access module preferences' app/src/main/java/sh/siava/pixelxpert/xposed/utils/SystemUIBootstrap.java \
   "SystemUI bootstrap must document its preference-free boot contract"
+
+for manifest in latestCanary.json MagiskModuleUpdate_Xposed.json MagiskModuleUpdate_Full.json; do
+  require_grep 'github[.]com/larsmartens/PixelXpert/releases/download/canary_builds/PixelXpert[.]zip' "$manifest" \
+    "$manifest must download from the canonical fork release"
+  require_no_grep 'github[.]com/larsmartens/PixelXpert-fork/releases/download/canary_builds/PixelXpert[.]zip' "$manifest" \
+    "$manifest must not point at the stale legacy canary release"
+done
 
 for script in MagiskModBase/customize.sh MagiskModBase/service.sh; do
   require_grep 'a17_enable_privapp_mount' "$script" \
