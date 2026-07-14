@@ -1,8 +1,10 @@
 PKGNAME="sh.siava.pixelxpert"
-PKGPATH="/system/priv-app/PixelXpert/PixelXpert.apk"
+PRIV_APK_PATH="/system/priv-app/PixelXpert/PixelXpert.apk"
+PKGPATH="$PRIV_APK_PATH"
 LSPDDBPATH="/data/adb/lspd/config/modules_config.db"
 MAGISKDBPATH="/data/adb/magisk.db"
 MODDIR=${0%/*}
+SDK="$(getprop ro.build.version.sdk 2>/dev/null)"
 
 # Locate the LSPosed/Vector config DB (the manager may live under a renamed directory).
 resolveLspdDb(){
@@ -25,12 +27,60 @@ runSQL(){
 	SQLRESULT=$($SQLITEPATH $DBPATH "$CMD")
 }
 
+isAndroid17(){
+	[ "${SDK:-0}" -ge 37 ] 2>/dev/null
+}
+
+isPrivAppMountEnabled(){
+	[ -f "$MODDIR/a17_enable_privapp_mount" ]
+}
+
+useDataAppMode(){
+	isAndroid17 && ! isPrivAppMountEnabled
+}
+
+resolvePackagePath(){
+	pm path "$PKGNAME" 2>/dev/null | sed 's/package://g' | head -1
+}
+
+installDataApp(){
+	APK="$MODDIR/system/priv-app/PixelXpert/PixelXpert.apk"
+	if [ ! -f "$APK" ]; then
+		echo "! 	Missing staged APK at $APK"
+		return 1
+	fi
+
+	echo "- 	Installing $PKGNAME as a data app for Android 17 boot safety..."
+	if pm install -r "$APK" >/dev/null 2>&1; then
+		PKGPATH="$(resolvePackagePath)"
+		if [ -n "$PKGPATH" ]; then
+			echo "- 	Data app installed at $PKGPATH"
+			return 0
+		fi
+	fi
+
+	echo "! 	Data app install failed; skipping LSPosed activation"
+	return 1
+}
+
 waitForMountedPackage(){
+	if useDataAppMode; then
+		PKGPATH="$(resolvePackagePath)"
+		if [ -n "$PKGPATH" ] && [ -f "$PKGPATH" ]; then
+			echo "- 	Package installed at $PKGPATH"
+			return 0
+		fi
+
+		installDataApp
+		return $?
+	fi
+
 	echo "- 	Waiting for $PKGNAME package mount..."
 	i=0
 	while [ $i -lt 60 ]; do
 		PMPATH=$(pm path $PKGNAME 2>/dev/null | sed 's/package://g' | head -1)
-		if [ "$PMPATH" = "$PKGPATH" ] && [ -f "$PKGPATH" ]; then
+		if [ "$PMPATH" = "$PRIV_APK_PATH" ] && [ -f "$PRIV_APK_PATH" ]; then
+			PKGPATH="$PRIV_APK_PATH"
 			echo "- 	Package mount verified at $PKGPATH"
 			return 0
 		fi
@@ -73,7 +123,6 @@ grantRootApps(){
 }
 
 getDefaultScopes(){
-	SDK="$(getprop ro.build.version.sdk 2>/dev/null)"
 	if [ "${SDK:-0}" -ge 37 ] 2>/dev/null; then
 		if [ -f "$MODDIR/a17_enable_default_scopes" ]; then
 			echo "com.android.systemui com.google.android.apps.nexuslauncher com.google.android.dialer $PKGNAME"
@@ -145,15 +194,21 @@ activateModuleLSPDVector()
 	done
 }
 
-# Self-heal: clear stale flags that a previous failed mount could have left behind, so a transient
-# mount failure doesn't keep our priv-app unmounted (and SystemUI without PixelXpert) on every boot.
-selfHealMount(){
+# Mount policy: Android 17 defaults to data-app mode and skip_mount. Older releases and explicit
+# Android 17 priv-app opt-in keep the historical mounted priv-app behavior.
+configureMountMode(){
+	if useDataAppMode; then
+		touch "$MODDIR/skip_mount" 2>/dev/null
+		rm -f "$MODDIR/mount_error" 2>/dev/null
+		return
+	fi
+
 	for flag in skip_mount mount_error; do
 		[ -f "$MODDIR/$flag" ] && rm -f "$MODDIR/$flag"
 	done
 }
 
-selfHealMount
+configureMountMode
 
 prepareSQL
 

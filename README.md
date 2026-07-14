@@ -20,7 +20,7 @@ This fork keeps a focused compatibility and release layer on top of upstream
   in-app update paths
 - Android 17/API 37 boot-safety changes, including deferred preference-backed
   hooks, early SystemUI lifecycle capture, restricted default LSPosed scope,
-  and verified priv-app mounting
+  and data-app mode with an optional priv-app mount
 - KSU-Next, Hybrid-Mount, LSPosed/Vector schema, and managerless LSPosed
   compatibility improvements
 - exportable root-stack diagnostics covering module layout, LSPosed scope,

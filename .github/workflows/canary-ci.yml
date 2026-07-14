@@ -38,6 +38,13 @@ jobs:
             exit 1
           fi
 
+      - name: Guard Android 17 data-app mount policy
+        run: |
+          grep -q 'a17_enable_privapp_mount' MagiskModBase/customize.sh
+          grep -q 'a17_enable_privapp_mount' MagiskModBase/service.sh
+          grep -q 'touch.*skip_mount' MagiskModBase/customize.sh
+          grep -q 'touch.*skip_mount' MagiskModBase/service.sh
+
       - name: Guard canonical owner URLs
         run: |
           if git grep -n 'lars[-]martens' -- .; then

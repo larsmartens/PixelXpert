@@ -32,7 +32,7 @@ public class RootProvider extends RootService {
 	static final String LSPD_DB_DEFAULT_PATH = "/data/adb/lspd/config/modules_config.db";
 	static final String SQLITE_BIN = "/data/adb/modules/PixelXpert/sqlite3";
 	static final String MODULE_PATH = "/data/adb/modules/PixelXpert";
-	static final String MODULE_APK_PATH = "/system/priv-app/PixelXpert/PixelXpert.apk";
+	static final String PRIV_APP_APK_PATH = "/system/priv-app/PixelXpert/PixelXpert.apk";
 	static final String MAGISK_PACKAGE = "com.topjohnwu.magisk";
 	static final String APATCH_PACKAGE = "me.bmax.apatch";
 	static final String LSPOSED_PACKAGE = "org.lsposed.manager";
@@ -189,6 +189,7 @@ public class RootProvider extends RootService {
 			appendPathStatus(report, "service.sh", MODULE_PATH + "/service.sh");
 			appendPathStatus(report, "customize.sh", MODULE_PATH + "/customize.sh");
 			appendPathStatus(report, "priv-app APK", MODULE_PATH + "/system/priv-app/PixelXpert/PixelXpert.apk");
+			appendLine(report, "installed APK path: " + moduleApkPath());
 			appendFilePreview(report, MODULE_PATH + "/module.prop", 20);
 
 			appendSection(report, "Root Stack Files");
@@ -232,7 +233,7 @@ public class RootProvider extends RootService {
 			} else {
 				runLSposedSQLiteQuery(
 						String.format("insert or replace into modules (module_pkg_name, apk_path) values ('%s','%s')",
-								sql(BuildConfig.APPLICATION_ID), MODULE_APK_PATH));
+								sql(BuildConfig.APPLICATION_ID), sql(moduleApkPath())));
 				runLSposedSQLiteQuery(
 						String.format("insert or replace into modules_state (module_pkg_name, user_id, enabled, scope_request_blocked) values ('%s',0,1,0)",
 								sql(BuildConfig.APPLICATION_ID)));
@@ -303,6 +304,14 @@ public class RootProvider extends RootService {
 
 		private String sql(String value) {
 			return value.replace("'", "''");
+		}
+
+		private String moduleApkPath() {
+			try {
+				return getPackageManager().getApplicationInfo(BuildConfig.APPLICATION_ID, 0).sourceDir;
+			} catch (Throwable ignored) {
+				return PRIV_APP_APK_PATH;
+			}
 		}
 
 		private void appendEnvironmentSummary(StringBuilder report) {

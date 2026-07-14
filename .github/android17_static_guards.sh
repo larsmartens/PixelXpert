@@ -58,8 +58,16 @@ require_grep 'never access module preferences' app/src/main/java/sh/siava/pixelx
   "SystemUI bootstrap must document its preference-free boot contract"
 
 for script in MagiskModBase/customize.sh MagiskModBase/service.sh; do
+  require_grep 'a17_enable_privapp_mount' "$script" \
+    "$script must keep Android 17 priv-app mounting behind an explicit marker"
   require_grep 'a17_enable_default_scopes' "$script" \
     "$script must keep Android 17 broad default scopes behind an explicit marker"
+  require_grep 'touch.*skip_mount|skip_mount.*touch' "$script" \
+    "$script must create skip_mount for Android 17 data-app mode"
+  require_grep 'installDataApp' "$script" \
+    "$script must install the staged APK when Android 17 data-app mode is active"
+  require_grep 'configureMountMode' "$script" \
+    "$script must centralize the Android 17 mount policy"
   require_grep 'getDefaultScopes' "$script" \
     "$script must centralize default LSPosed scope policy"
   require_grep 'echo[[:space:]]+"com[.]android[.]systemui[[:space:]]+[$]PKGNAME"' "$script" \
@@ -67,11 +75,9 @@ for script in MagiskModBase/customize.sh MagiskModBase/service.sh; do
 done
 
 require_grep 'integrateMount' MagiskModBase/customize.sh \
-  "installer must integrate the PixelXpert priv-app with the active mount layer"
-require_grep 'selfHealMount' MagiskModBase/service.sh \
-  "boot service must clear transient mount failure flags"
+  "installer must retain an explicit priv-app mount compatibility path"
 require_grep 'waitForMountedPackage' MagiskModBase/service.sh \
-  "boot service must verify the mounted APK before LSPosed activation"
+  "boot service must verify the installed APK before LSPosed activation"
 
 actual="$(mktemp)"
 expected="$(mktemp)"

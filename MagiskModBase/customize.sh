@@ -1,8 +1,10 @@
 PKGNAME="sh.siava.pixelxpert"
-PKGPATH="/system/priv-app/PixelXpert/PixelXpert.apk"
+PRIV_APK_PATH="/system/priv-app/PixelXpert/PixelXpert.apk"
+PKGPATH="$PRIV_APK_PATH"
 MODID="PixelXpert"
 LSPDDBPATH="/data/adb/lspd/config/modules_config.db"
 MAGISKDBPATH="/data/adb/magisk.db"
+SDK="$(getprop ro.build.version.sdk 2>/dev/null)"
 
 # Locate the LSPosed/Vector config DB. The manager was renamed (LSPosed -> Vector) and may live
 # under a differently named directory, so fall back to a glob instead of a single hardcoded path.
@@ -16,9 +18,63 @@ resolveLspdDb(){
 	return 1
 }
 
-# PixelXpert ships its APK as a system priv-app, so the module's system/ tree must stay mounted for
-# SystemUI to load it. This integrates with the mount layer optimally where possible and otherwise
-# falls back to the root solution's default mounting (which already works for a standard module).
+isAndroid17(){
+	[ "${SDK:-0}" -ge 37 ] 2>/dev/null
+}
+
+isPrivAppMountEnabled(){
+	[ -f "/data/adb/modules/$MODID/a17_enable_privapp_mount" ] || [ -f "/data/adb/modules_update/$MODID/a17_enable_privapp_mount" ]
+}
+
+useDataAppMode(){
+	isAndroid17 && ! isPrivAppMountEnabled
+}
+
+moduleApkPath(){
+	echo "$MODPATH/system/priv-app/PixelXpert/PixelXpert.apk"
+}
+
+resolvePackagePath(){
+	pm path "$PKGNAME" 2>/dev/null | sed 's/package://g' | head -1
+}
+
+installDataApp(){
+	APK="$(moduleApkPath)"
+	if [ ! -f "$APK" ]; then
+		ui_print "! 	Missing staged APK at $APK"
+		return 1
+	fi
+
+	ui_print "- 	Installing $PKGNAME as a data app for Android 17 boot safety..."
+	if pm install -r "$APK" >/dev/null 2>&1; then
+		PKGPATH="$(resolvePackagePath)"
+		if [ -n "$PKGPATH" ]; then
+			ui_print "- 	Data app installed at $PKGPATH"
+			return 0
+		fi
+	fi
+
+	ui_print "! 	Data app install failed; LSPosed activation will be skipped"
+	return 1
+}
+
+configureMountMode(){
+	if useDataAppMode; then
+		for dir in "/data/adb/modules/$MODID" "/data/adb/modules_update/$MODID" "$MODPATH"; do
+			[ -d "$dir" ] || continue
+			touch "$dir/skip_mount" 2>/dev/null
+			rm -f "$dir/mount_error" 2>/dev/null
+		done
+		ui_print "- Android 17 detected: using data-app mode and skip_mount"
+		return
+	fi
+
+	integrateMount
+}
+
+# PixelXpert can still use the historical system priv-app layout on Android 16 and on explicit
+# Android 17 opt-in. This integrates with the mount layer optimally where possible and otherwise
+# falls back to the root solution's default mounting.
 integrateMount(){
 	for dir in "/data/adb/modules/$MODID" "/data/adb/modules_update/$MODID"; do
 		[ -d "$dir" ] || continue
@@ -40,11 +96,23 @@ integrateMount(){
 }
 
 waitForMountedPackage(){
+	if useDataAppMode; then
+		PKGPATH="$(resolvePackagePath)"
+		if [ -n "$PKGPATH" ] && [ -f "$PKGPATH" ]; then
+			ui_print "- 	Package installed at $PKGPATH"
+			return 0
+		fi
+
+		installDataApp
+		return $?
+	fi
+
 	ui_print "- 	Waiting for $PKGNAME package mount..."
 	i=0
 	while [ $i -lt 60 ]; do
 		PMPATH=$(pm path $PKGNAME 2>/dev/null | sed 's/package://g' | head -1)
-		if [ "$PMPATH" = "$PKGPATH" ] && [ -f "$PKGPATH" ]; then
+		if [ "$PMPATH" = "$PRIV_APK_PATH" ] && [ -f "$PRIV_APK_PATH" ]; then
+			PKGPATH="$PRIV_APK_PATH"
 			ui_print "- 	Package mount verified at $PKGPATH"
 			return 0
 		fi
@@ -99,7 +167,6 @@ grantRootApps(){
 }
 
 getDefaultScopes(){
-	SDK="$(getprop ro.build.version.sdk 2>/dev/null)"
 	if [ "${SDK:-0}" -ge 37 ] 2>/dev/null; then
 		if [ -f "/data/adb/modules/$MODID/a17_enable_default_scopes" ] || [ -f "/data/adb/modules_update/$MODID/a17_enable_default_scopes" ]; then
 			echo "com.android.systemui com.google.android.apps.nexuslauncher com.google.android.dialer $PKGNAME"
@@ -189,14 +256,20 @@ testKernelSU()
 		ui_print 'KernelSU / KernelSU-Next found!'
 		ui_print ''
 		ui_print '                CAUTION!:'
-		ui_print 'PixelXpert ships as a system priv-app and must'
-		ui_print 'stay mounted for SystemUI to load it. Before'
-		ui_print 'installing you MUST make sure this module is NOT'
-		ui_print 'unmounted from the system:'
-		ui_print '  - disable "Umount modules by default", and'
-		ui_print '  - on SUSFS, exclude PixelXpert from try_umount.'
-		ui_print 'This also applies with OverlayFS / Hybrid-Mount.'
-		ui_print 'Otherwise, your device may fall into a BOOTLOOP!'
+		if useDataAppMode; then
+			ui_print 'Android 17 data-app mode will be used by default.'
+			ui_print 'The module system/ tree will not be mounted unless'
+			ui_print 'a17_enable_privapp_mount is present.'
+		else
+			ui_print 'PixelXpert will use the system priv-app layout and'
+			ui_print 'must stay mounted for SystemUI to load it. Before'
+			ui_print 'installing you MUST make sure this module is NOT'
+			ui_print 'unmounted from the system:'
+			ui_print '  - disable "Umount modules by default", and'
+			ui_print '  - on SUSFS, exclude PixelXpert from try_umount.'
+			ui_print 'This also applies with OverlayFS / Hybrid-Mount.'
+			ui_print 'Otherwise, your device may fall into a BOOTLOOP!'
+		fi
 		ui_print ''
 		ui_print 'Do you wish to continue?'
 		ui_print 'Volume Up: Continue'
@@ -243,7 +316,7 @@ testKernelSU
 
 prepareSQL
 
-integrateMount
+configureMountMode
 
 ui_print ''
 ui_print ''

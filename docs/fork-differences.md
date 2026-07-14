@@ -19,10 +19,9 @@ This document summarizes the maintained differences between
 ## Android 17 and Root Stack Compatibility
 
 - Targets Android 17/API 37 in the fork build layer.
-- Keeps PixelXpert mounted as a system priv-app, verifies that package manager
-  resolves the mounted APK before LSPosed activation, and clears only transient
-  `skip_mount`/`mount_error` flags. The durable `disable` rollback marker is
-  never removed.
+- Uses data-app mode by default on Android 17 and creates `skip_mount` before
+  activation. The historical mounted priv-app path remains available only with
+  the explicit `a17_enable_privapp_mount` marker.
 - Defaults Android 17 LSPosed scope to SystemUI and PixelXpert itself. Launcher
   and dialer scopes require `a17_enable_default_scopes`; framework and
   system-server hooks remain disabled unless explicitly opted into the unsafe

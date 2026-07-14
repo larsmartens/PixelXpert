@@ -21,9 +21,10 @@ The stack showed:
   - restores throwable handling expected by `AppCloneEnabler`
 - `0dd195c7` `Limit preference wait during Xposed startup`
   - bounds preference-provider waits in hooked processes
-- Android 17 guarded priv-app mode
-  - verifies the mounted APK before LSPosed activation and integrates with
-    Hybrid-Mount when present
+- Android 17 data-app mode
+  - installs the staged APK through package manager and keeps the KSU module's
+    system tree unmounted by default
+  - retains `a17_enable_privapp_mount` as the explicit historical mount opt-in
   - restricts default LSPosed scope to SystemUI and PixelXpert itself
   - defers preference-backed hooks while capturing boot-created SystemUI
     lifecycle objects through a preference-free bootstrap
@@ -41,13 +42,12 @@ The stack showed:
 
 - Historical priv-app module APK path:
   - `/data/adb/modules/PixelXpert/system/priv-app/PixelXpert/PixelXpert.apk`
-- Active package-manager APK path:
-  - `/system/priv-app/PixelXpert/PixelXpert.apk`
+- Android 17 package-manager APK path:
+  - `/data/app/.../sh.siava.pixelxpert.../base.apk`
 - Durable rollback control:
   - `/data/adb/modules/PixelXpert/disable`
-- Transient mount markers cleared by the module service:
+- Android 17 default mount marker:
   - `/data/adb/modules/PixelXpert/skip_mount`
-  - `/data/adb/modules/PixelXpert/mount_error`
 - Prefer an on-device rollback script in `/data/adb/fork-module-updates/<change-id>/`.
 
 ## Residual Risk
