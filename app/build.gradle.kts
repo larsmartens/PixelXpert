@@ -51,6 +51,7 @@ android {
 			keyPassword = keystoreProperties.getProperty("keyPassword")
 			storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
 			storePassword = keystoreProperties.getProperty("storePassword")
+			storeType = keystoreProperties.getProperty("storeType", "PKCS12")
 		}
 	} catch (_: Exception) {
 	}

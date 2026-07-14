@@ -135,6 +135,15 @@ jobs:
         if: steps.release.outputs.should_release == 'true'
         run: .github/bumpVersion.sh ${{ github.run_id }}
 
+      - name: Prepare persistent signing key
+        if: steps.release.outputs.should_release == 'true'
+        env:
+          PIXELXPERT_SIGNING_KEY_BASE64: ${{ secrets.PIXELXPERT_SIGNING_KEY_BASE64 }}
+          PIXELXPERT_SIGNING_STORE_PASSWORD: ${{ secrets.PIXELXPERT_SIGNING_STORE_PASSWORD }}
+          PIXELXPERT_SIGNING_KEY_PASSWORD: ${{ secrets.PIXELXPERT_SIGNING_KEY_PASSWORD }}
+          PIXELXPERT_SIGNING_KEY_ALIAS: ${{ secrets.PIXELXPERT_SIGNING_KEY_ALIAS }}
+        run: .github/prepareSigningKey.sh
+
       - name: Build release APK
         if: steps.release.outputs.should_release == 'true'
         run: ./gradlew assembleDebug

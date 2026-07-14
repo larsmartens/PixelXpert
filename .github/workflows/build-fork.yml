@@ -28,6 +28,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Prepare persistent signing key
+        env:
+          PIXELXPERT_SIGNING_KEY_BASE64: ${{ secrets.PIXELXPERT_SIGNING_KEY_BASE64 }}
+          PIXELXPERT_SIGNING_STORE_PASSWORD: ${{ secrets.PIXELXPERT_SIGNING_STORE_PASSWORD }}
+          PIXELXPERT_SIGNING_KEY_PASSWORD: ${{ secrets.PIXELXPERT_SIGNING_KEY_PASSWORD }}
+          PIXELXPERT_SIGNING_KEY_ALIAS: ${{ secrets.PIXELXPERT_SIGNING_KEY_ALIAS }}
+        run: bash .github/prepareSigningKey.sh
+
       - name: Build debug APK
         run: ./gradlew assembleDebug
 
