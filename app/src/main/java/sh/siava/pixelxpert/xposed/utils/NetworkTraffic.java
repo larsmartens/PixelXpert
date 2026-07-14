@@ -1,13 +1,9 @@
 package sh.siava.pixelxpert.xposed.utils;
 
-import static android.content.Context.RECEIVER_EXPORTED;
 import static android.widget.LinearLayout.VERTICAL;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -42,6 +38,7 @@ import sh.siava.pixelxpert.R;
 import sh.siava.pixelxpert.xposed.XPLauncher;
 import sh.siava.pixelxpert.xposed.modpacks.systemui.StatusbarMods;
 import sh.siava.pixelxpert.xposed.utils.toolkit.ObjectTools;
+import sh.siava.pixelxpert.xposed.utils.toolkit.Logger;
 
 @SuppressLint("ViewConstructor")
 public class NetworkTraffic extends FrameLayout {
@@ -103,29 +100,26 @@ public class NetworkTraffic extends FrameLayout {
 
 	private boolean mViewVisible = true, mTrafficVisible = false;
 	private final ConnectivityManager mConnectivityManager;
+	private boolean networkCallbackRegistered = false;
 
 	private final Handler mTrafficHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(@NonNull Message msg) {
 			long timeDelta = SystemClock.elapsedRealtime() - lastUpdateTime;
+			long refreshMillis = refreshInterval * 1000L;
 
-			if (timeDelta < refreshInterval * 1000L) {
-				if (msg.what != 1) {
-					// we just updated the view, nothing further to do
-					return;
-				}
-				if (timeDelta < 1) {
-					// Can't div by 0 so make sure the value displayed is minimal
-					timeDelta = Long.MAX_VALUE;
-				}
+			if (timeDelta < refreshMillis) {
+				clearHandlerCallbacks();
+				mTrafficHandler.postDelayed(mRunnable, refreshMillis - Math.max(timeDelta, 0));
+				return;
 			}
 			lastUpdateTime = SystemClock.elapsedRealtime();
 
 			// Calculate the data rate from the change in total bytes and time
 			long newTotalRxBytes = TrafficStats.getTotalRxBytes();
 			long newTotalTxBytes = TrafficStats.getTotalTxBytes();
-			long rxData = newTotalRxBytes - totalRxBytes;
-			long txData = newTotalTxBytes - totalTxBytes;
+			long rxData = TrafficSampler.counterDelta(newTotalRxBytes, totalRxBytes);
+			long txData = TrafficSampler.counterDelta(newTotalTxBytes, totalTxBytes);
 
 
 			if (shouldHide(rxData, txData, timeDelta)) {
@@ -163,14 +157,14 @@ public class NetworkTraffic extends FrameLayout {
 		}
 
 		private SpannableStringBuilder formatOutput(long timeDelta, long data, @Nullable @ColorInt Integer textColor) {
-			long speed = (long) (data / (timeDelta / 1000F));
+			long speed = TrafficSampler.bytesPerSecond(data, timeDelta);
 
 			return ObjectTools.getHumanizedBytes(speed, showInBits, .7f, (indicatorMode == MODE_SHOW_RXTX) ? " " : "\n", symbol, textColor);
 		}
 
 		private boolean shouldHide(long rxData, long txData, long timeDelta) {
-			long speedRx = (long) (rxData / (timeDelta / 1000f));
-			long speedTx = (long) (txData / (timeDelta / 1000f));
+			long speedRx = TrafficSampler.bytesPerSecond(rxData, timeDelta);
+			long speedTx = TrafficSampler.bytesPerSecond(txData, timeDelta);
 
 			boolean lowSpeed = switch (indicatorMode) {
 				case MODE_SHOW_RXTX -> (speedRx < autoHideThreshold &&
@@ -221,7 +215,9 @@ public class NetworkTraffic extends FrameLayout {
 			}
 			setVisibility(View.VISIBLE);
 		}
-		catch (Throwable ignored){}
+		catch (Throwable t) {
+			Logger.logHook("NetworkTraffic.makeVisible", t);
+		}
 	}
 
 	private NetworkTraffic(Context context, boolean onStatusbar) {
@@ -298,15 +294,12 @@ public class NetworkTraffic extends FrameLayout {
 		iconT.setPadding(0, (RXonTop) ? iconPadding : 0, 0, (RXonTop) ? 0 : iconPadding);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		if (!mAttached) {
 			mAttached = true;
-			IntentFilter filter = new IntentFilter();
-			filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-			mContext.registerReceiver(mIntentReceiver, filter, null, getHandler(), RECEIVER_EXPORTED);
+			registerNetworkCallback();
 		}
 		update();
 	}
@@ -316,24 +309,52 @@ public class NetworkTraffic extends FrameLayout {
 		super.onDetachedFromWindow();
 		clearHandlerCallbacks();
 		if (mAttached) {
-			mContext.unregisterReceiver(mIntentReceiver);
+			unregisterNetworkCallback();
 			mAttached = false;
 		}
 	}
 
 	private final Runnable mRunnable = () -> mTrafficHandler.sendEmptyMessage(0);
 
-	private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
-		@SuppressWarnings("deprecation")
+	private final ConnectivityManager.NetworkCallback networkCallback =
+			new ConnectivityManager.NetworkCallback() {
 		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			if (action == null) return;
-			if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-				update();
-			}
+		public void onAvailable(@NonNull Network network) {
+			update();
 		}
+
+		@Override
+		public void onLost(@NonNull Network network) {
+			update();
+		}
+
 	};
+
+	@SuppressLint("MissingPermission")
+	private void registerNetworkCallback() {
+		if (mConnectivityManager == null || networkCallbackRegistered) {
+			return;
+		}
+		try {
+			mConnectivityManager.registerDefaultNetworkCallback(networkCallback, mTrafficHandler);
+			networkCallbackRegistered = true;
+		} catch (Throwable t) {
+			Logger.logHook("NetworkTraffic.registerNetworkCallback", t);
+		}
+	}
+
+	private void unregisterNetworkCallback() {
+		if (mConnectivityManager == null || !networkCallbackRegistered) {
+			return;
+		}
+		try {
+			mConnectivityManager.unregisterNetworkCallback(networkCallback);
+		} catch (Throwable t) {
+			Logger.logHook("NetworkTraffic.unregisterNetworkCallback", t);
+		} finally {
+			networkCallbackRegistered = false;
+		}
+	}
 
 	@SuppressLint("MissingPermission")
 	private boolean getConnectAvailable() {
@@ -343,9 +364,11 @@ public class NetworkTraffic extends FrameLayout {
 
 	public void update() {
 		if (mAttached) {
+			clearHandlerCallbacks();
 			totalRxBytes = TrafficStats.getTotalRxBytes();
+			totalTxBytes = TrafficStats.getTotalTxBytes();
 			lastUpdateTime = SystemClock.elapsedRealtime();
-			mTrafficHandler.sendEmptyMessage(1);
+			mTrafficHandler.postDelayed(mRunnable, refreshInterval * 1000L);
 		}
 	}
 

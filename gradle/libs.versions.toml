@@ -35,6 +35,7 @@ transition = "1.7.0"
 uiGeometry = "1.11.3"
 workRuntime = "2.11.2"
 kotlin = "2.4.0"
+junit = "4.13.2"
 ksp = "2.3.9"
 hilt = "2.59.2"
 lsposed-api = "102.0.0"
@@ -81,6 +82,7 @@ prdownloader = { module = "com.github.amitshekhariitbhu:PRDownloader", version.r
 remotepreferences = { module = "com.crossbowffs.remotepreferences:remotepreferences", version.ref = "remotepreferences" }
 lsposed-api = { module = "io.github.libxposed:api", version.ref = "lsposed-api" }
 lsposed-service = { module = "io.github.libxposed:service", version.ref = "lsposed-service" }
+junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

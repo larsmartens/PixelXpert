@@ -104,7 +104,7 @@ getDefaultScopes(){
 		if [ -f "/data/adb/modules/$MODID/a17_enable_default_scopes" ] || [ -f "/data/adb/modules_update/$MODID/a17_enable_default_scopes" ]; then
 			echo "com.android.systemui com.google.android.apps.nexuslauncher com.google.android.dialer $PKGNAME"
 		else
-			echo "$PKGNAME"
+			echo "com.android.systemui $PKGNAME"
 		fi
 	else
 		echo "android system com.android.systemui com.google.android.apps.nexuslauncher com.google.android.dialer com.android.phone com.android.settings me.weishu.kernelsu com.rifsxd.ksunext $PKGNAME"

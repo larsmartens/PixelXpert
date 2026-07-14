@@ -72,8 +72,10 @@ import sh.siava.pixelxpert.xposed.utils.ShyLinearLayout;
 import sh.siava.pixelxpert.xposed.utils.StringFormatter;
 import sh.siava.pixelxpert.xposed.utils.StringFormatter.FormattedStringCallback;
 import sh.siava.pixelxpert.xposed.utils.SystemUtils;
+import sh.siava.pixelxpert.xposed.utils.SystemUIBootstrap;
 import sh.siava.pixelxpert.xposed.utils.batteryStyles.BatteryBarView;
 import sh.siava.pixelxpert.xposed.utils.reflection.ReflectedClass;
+import sh.siava.pixelxpert.xposed.utils.toolkit.Logger;
 import sh.siava.pixelxpert.xposed.utils.toolkit.ResourceTools;
 
 /**
@@ -151,6 +153,9 @@ public class StatusbarMods extends XposedModPack {
 	private LinearLayout mLeftExtraRowContainer;
 	private static float SBPaddingStart = 0, SBPaddingEnd = 0;
 	private FrameLayout mPhoneStatusbarView;
+	private FrameLayout initializedStatusBarView;
+	private final View.OnLayoutChangeListener statusBarLayoutListener =
+			(v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> setHeights();
 
 	//endregion
 
@@ -181,6 +186,7 @@ public class StatusbarMods extends XposedModPack {
 	private static boolean CombineSignalIcons = false;
 	private static boolean HideRoamingState = false;
 	private Object mTunerService;
+	private boolean tunerObserverHookInstalled = false;
 	public static final String ICON_HIDE_LIST = "icon_blacklist";
 	//endregion
 	//region app profile switch
@@ -460,20 +466,12 @@ public class StatusbarMods extends XposedModPack {
 
 		//region needed classes
 		ReflectedClass ClockClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.policy.Clock");
-		ReflectedClass PhoneStatusBarViewClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.PhoneStatusBarView");
 		ReflectedClass NotificationIconContainerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.NotificationIconContainer");
-		ReflectedClass TunerServiceImplClass = ReflectedClass.ofIfPossible("com.android.systemui.tuner.TunerServiceImpl");
 		ReflectedClass ConnectivityCallbackHandlerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.connectivity.CallbackHandler");
-		ReflectedClass NotificationIconContainerAlwaysOnDisplayViewModelClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.notification.icon.ui.viewmodel.NotificationIconContainerAlwaysOnDisplayViewModel");
-		ReflectedClass NotificationIconContainerStatusBarViewModelClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.notification.icon.ui.viewmodel.NotificationIconContainerStatusBarViewModel");
 		StatusBarIconClass = ReflectedClass.ofIfPossible("com.android.internal.statusbar.StatusBarIcon");
 		StatusBarIconHolderClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.StatusBarIconHolder");
 		ReflectedClass PrivacyItemClass = ReflectedClass.ofIfPossible("com.android.systemui.privacy.PrivacyItem");
-		ReflectedClass PhoneStatusBarViewControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.PhoneStatusBarViewController");
 		ReflectedClass KeyguardStateControllerImplClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.policy.KeyguardStateControllerImpl");
-		ReflectedClass StatusBarIconControllerImplClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.ui.StatusBarIconControllerImpl");
-		ReflectedClass ShadeHeaderControllerClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.ShadeHeaderController");
-		ReflectedClass ActivityStarterImplClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.ActivityStarterImpl");
 		//endregion
 
 
@@ -490,28 +488,6 @@ public class StatusbarMods extends XposedModPack {
 					}
 				});
 
-		StatusBarIconControllerImplClass
-				.afterConstruction()
-				.runSafe(param -> mStatusBarIconController = param.thisObject);
-
-
-		if (NotificationIconContainerAlwaysOnDisplayViewModelClass.getClazz() != null) //Viewbinder implementation of the notification icon container
-		{
-			NotificationIconContainerAlwaysOnDisplayViewModelClass
-					.afterConstruction()
-					.runSafe(param -> {
-						AODNIC = param.thisObject;
-						setObjectField(AODNIC, "maxIcons", NotificationAODIconLimit);
-					});
-
-			NotificationIconContainerStatusBarViewModelClass
-					.afterConstruction()
-					.runSafe(param -> {
-						SBNIC = param.thisObject;
-						setObjectField(SBNIC, "maxIcons", NotificationIconLimit);
-					});
-		}
-
 		initSwitchIcon();
 
 		//forcing a refresh on statusbar once the charging chip goes away to avoid layout issues
@@ -519,16 +495,7 @@ public class StatusbarMods extends XposedModPack {
 
 
 		//region combined signal icons
-		TunerServiceImplClass
-				.afterConstruction()
-				.runSafe(param -> {
-					mTunerService = param.thisObject;
-					ReflectedClass.of(getObjectField(param.thisObject, "mObserver").getClass())
-							.after("onChange")
-							.runSafe(param2 -> wifiVisibleChanged());
-				});
-
-		TunerServiceImplClass
+		ReflectedClass.ofIfPossible("com.android.systemui.tuner.TunerServiceImpl")
 				.after("addTunable")
 				.runSafe(param -> {
 					if (param.args[1].getClass().equals(String[].class)
@@ -564,11 +531,7 @@ public class StatusbarMods extends XposedModPack {
 		//endregion
 
 		//region SB Padding
-		PhoneStatusBarViewClass
-				.afterConstruction()
-				.runSafe(param -> mPhoneStatusbarView = (FrameLayout) param.thisObject);
-
-		PhoneStatusBarViewClass
+		ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.PhoneStatusBarView")
 				.after("updateStatusBarHeight")
 				.runSafe(param -> {
 					@SuppressLint("DiscouragedApi")
@@ -604,7 +567,7 @@ public class StatusbarMods extends XposedModPack {
 		//endregion
 
 		//update statusbar
-		PhoneStatusBarViewClass
+		ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.PhoneStatusBarView")
 				.after("onConfigurationChanged")
 				.runSafe(param -> Scheduler.scheduleOnce(() -> {
 					if (BatteryBarView.hasInstance()) {
@@ -612,68 +575,8 @@ public class StatusbarMods extends XposedModPack {
 					}
 				}, 2000));
 
-		//stealing a working activity starter
-		ActivityStarterImplClass
-				.afterConstruction()
-				.runSafe(param -> {
-					if(mActivityStarter == null)
-						mActivityStarter = param.thisObject;
-				});
-
 		final ClickListener clickListener = new ClickListener();
-
-		ShadeHeaderControllerClass
-				.after("onInit")
-				.runSafe(param -> {
-					View mView = (View) getObjectField(param.thisObject, "mView");
-
-					mView.findViewById(idOf("clock")).setOnClickListener(clickListener);
-					mView.findViewById(idOf("clock")).setOnLongClickListener(clickListener);
-
-					mView.findViewById(idOf("date")).setOnClickListener(clickListener);
-					mView.findViewById(idOf("date")).setOnLongClickListener(clickListener);
-				});
-
-		//modding clock, adding additional objects,
-		PhoneStatusBarViewControllerClass
-				.after("onViewAttached")
-				.runSafe(param -> {
-					mClockView = mPhoneStatusbarView.findViewById(idOf("clock"));
-					updateClockColor();
-
-					mPhoneStatusbarView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> setHeights());
-
-					mStatusbarStartSide = mPhoneStatusbarView.findViewById(idOf("status_bar_start_side_except_heads_up"));
-
-					mSystemIconArea = mPhoneStatusbarView.findViewById(idOf("statusIcons"));
-
-					createCenterIconArea();
-
-					makeLeftSplitArea();
-
-					if (BBarEnabled) //in case we got the config but view wasn't ready yet
-					{
-						placeBatteryBar();
-					}
-
-					if (VolteIconEnabled || VowifiIconEnabled) //in case we got the config but context wasn't ready yet
-					{
-						initVoData();
-					}
-
-					if (networkOnSBEnabled) {
-						networkTrafficSB = NetworkTraffic.getInstance(mContext, true);
-						placeNTSB();
-					}
-
-
-					if (mNotificationIconContainer.getChildCount() == 0) {
-						mNotificationContainerContainer.setVisibility(GONE);
-					}
-					setHeights();
-
-					placeClock();
-				});
+		registerBootstrapCallbacks(clickListener);
 
 		//clock mods
 		ClockClass
@@ -741,6 +644,108 @@ public class StatusbarMods extends XposedModPack {
 					}
 				});
 		//endregion
+		}
+
+	private void registerBootstrapCallbacks(ClickListener clickListener) {
+		SystemUIBootstrap.register(SystemUIBootstrap.STATUS_BAR_ICON_CONTROLLER,
+				instance -> runOnMain("statusBarIconController", () -> mStatusBarIconController = instance));
+		SystemUIBootstrap.register(SystemUIBootstrap.AOD_ICON_VIEW_MODEL,
+				instance -> runOnMain("aodIconViewModel", () -> {
+					AODNIC = instance;
+					setObjectField(AODNIC, "maxIcons", NotificationAODIconLimit);
+				}));
+		SystemUIBootstrap.register(SystemUIBootstrap.STATUS_BAR_ICON_VIEW_MODEL,
+				instance -> runOnMain("statusBarIconViewModel", () -> {
+					SBNIC = instance;
+					setObjectField(SBNIC, "maxIcons", NotificationIconLimit);
+				}));
+		SystemUIBootstrap.register(SystemUIBootstrap.TUNER_SERVICE,
+				instance -> runOnMain("tunerService", () -> {
+					mTunerService = instance;
+					if (!tunerObserverHookInstalled) {
+						Object observer = getObjectField(instance, "mObserver");
+						ReflectedClass.of(observer.getClass())
+								.after("onChange")
+								.runSafe(param -> wifiVisibleChanged());
+						tunerObserverHookInstalled = true;
+					}
+					wifiVisibleChanged();
+				}));
+		SystemUIBootstrap.register(SystemUIBootstrap.ACTIVITY_STARTER,
+				instance -> runOnMain("activityStarter", () -> mActivityStarter = instance));
+		SystemUIBootstrap.register(SystemUIBootstrap.SHADE_HEADER_CONTROLLER,
+				instance -> runOnMain("shadeHeaderController", () -> {
+					View view = (View) getObjectField(instance, "mView");
+					View clock = requireView(view, idOf("clock"), "shade header clock");
+					View date = requireView(view, idOf("date"), "shade header date");
+					clock.setOnClickListener(clickListener);
+					clock.setOnLongClickListener(clickListener);
+					date.setOnClickListener(clickListener);
+					date.setOnLongClickListener(clickListener);
+				}));
+		SystemUIBootstrap.register(SystemUIBootstrap.ATTACHED_STATUS_BAR_VIEW,
+				instance -> runOnMain("attachedStatusBarView",
+						() -> attachStatusBarView((FrameLayout) instance)));
+	}
+
+	private void runOnMain(String site, Runnable action) {
+		mContext.getMainExecutor().execute(() -> {
+			try {
+				action.run();
+			} catch (Throwable t) {
+				Logger.logHook("StatusbarMods." + site, t);
+			}
+		});
+	}
+
+	private void attachStatusBarView(FrameLayout statusBarView) {
+		if (initializedStatusBarView == statusBarView) {
+			placeNTSB();
+			setHeights();
+			placeClock();
+			return;
+		}
+
+		if (mPhoneStatusbarView != null) {
+			mPhoneStatusbarView.removeOnLayoutChangeListener(statusBarLayoutListener);
+		}
+		mPhoneStatusbarView = statusBarView;
+		mPhoneStatusbarView.addOnLayoutChangeListener(statusBarLayoutListener);
+
+		mClockView = requireView(mPhoneStatusbarView, idOf("clock"), "status bar clock");
+		mStatusbarStartSide = requireView(mPhoneStatusbarView,
+				idOf("status_bar_start_side_except_heads_up"), "status bar start side");
+		mSystemIconArea = requireView(mPhoneStatusbarView, idOf("statusIcons"), "system icon area");
+		updateClockColor();
+		createCenterIconArea();
+		makeLeftSplitArea();
+
+		if (BBarEnabled) {
+			placeBatteryBar();
+		}
+		if (VolteIconEnabled || VowifiIconEnabled) {
+			initVoData();
+		}
+		if (networkOnSBEnabled) {
+			networkTrafficSB = NetworkTraffic.getInstance(mContext, true);
+			placeNTSB();
+		}
+		if (mNotificationIconContainer.getChildCount() == 0) {
+			mNotificationContainerContainer.setVisibility(GONE);
+		}
+
+		setHeights();
+		placeClock();
+		initializedStatusBarView = statusBarView;
+		Logger.log("PixelXpert: attached delayed status-bar mods to the live SystemUI view");
+	}
+
+	private <T extends View> T requireView(View root, int id, String description) {
+		T view = root.findViewById(id);
+		if (view == null) {
+			throw new IllegalStateException("Missing " + description + " (id=" + id + ")");
+		}
+		return view;
 	}
 
 	private void createCenterIconArea() {
@@ -1030,13 +1035,15 @@ public class StatusbarMods extends XposedModPack {
 		if (networkTrafficSB == null) {
 			return;
 		}
-		try {
-			((ViewGroup) networkTrafficSB.getParent()).removeView(networkTrafficSB);
-		} catch (Exception ignored) {
+		if (networkTrafficSB.getParent() instanceof ViewGroup parent) {
+			parent.removeView(networkTrafficSB);
 		}
 		if (!networkOnSBEnabled) return;
 
 		try {
+			if (mSystemIconArea == null || mStatusbarStartSide == null) {
+				throw new IllegalStateException("Status-bar placement targets are not initialized");
+			}
 			LinearLayout.LayoutParams ntsbLayoutP;
 			switch (networkTrafficPosition) {
 				case POSITION_RIGHT:
@@ -1059,7 +1066,9 @@ public class StatusbarMods extends XposedModPack {
 			ntsbLayoutP = (LinearLayout.LayoutParams) networkTrafficSB.getLayoutParams();
 			ntsbLayoutP.gravity = Gravity.CENTER_VERTICAL;
 			networkTrafficSB.setLayoutParams(ntsbLayoutP);
-		} catch (Throwable ignored) {}
+		} catch (Throwable t) {
+			Logger.logHook("StatusbarMods.placeNTSB", t);
+		}
 	}
 	//endregion
 

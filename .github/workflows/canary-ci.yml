@@ -28,6 +28,9 @@ jobs:
           bash -n MagiskModBase/service.sh
           bash -n .github/*.sh
 
+      - name: Check Android 17 safety invariants
+        run: bash .github/android17_static_guards.sh
+
       - name: Guard rollback marker
         run: |
           if grep -En 'rm[[:space:]][^#[:cntrl:]]*disable' MagiskModBase/*.sh; then
@@ -62,6 +65,8 @@ jobs:
             command: ./gradlew assembleRelease
           - name: lint
             command: ./gradlew lint
+          - name: unit tests
+            command: ./gradlew testDebugUnitTest
           - name: dependency validation
             command: ./gradlew app:dependencies --configuration debugRuntimeClasspath
 

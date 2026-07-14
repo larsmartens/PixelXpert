@@ -185,6 +185,7 @@ dependencies {
 
 	compileOnly(libs.lsposed.api)
 	implementation(libs.lsposed.service)
+	testImplementation(libs.junit)
 
 	//mark-down view for changelog
 	implementation(libs.markdownview.android)

@@ -32,10 +32,10 @@ public class HideNavigationBarInsets extends XposedModPack {
 
     @Override
     public void onPackageLoaded(XposedModuleInterface.PackageReadyParam PRParam) throws Throwable {
-        ReflectedClass TaskbarActivityContextClass = ReflectedClass.of("com.android.launcher3.taskbar.TaskbarActivityContext");
-        TaskbarActivityContextClass
-                .before("notifyUpdateLayoutParams")
-                .run(param -> {
+		ReflectedClass TaskbarActivityContextClass = ReflectedClass.ofIfPossible("com.android.launcher3.taskbar.TaskbarActivityContext");
+		TaskbarActivityContextClass
+				.before("notifyUpdateLayoutParams")
+				.runSafe(param -> {
                     if (!HideNavbarInsets)
                         return;
 

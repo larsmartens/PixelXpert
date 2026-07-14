@@ -41,6 +41,7 @@ import sh.siava.pixelxpert.IPixelXpertProxy;
 import sh.siava.pixelxpert.R;
 import sh.siava.pixelxpert.service.PixelXpertProxy;
 import sh.siava.pixelxpert.xposed.utils.SystemUtils;
+import sh.siava.pixelxpert.xposed.utils.SystemUIBootstrap;
 import sh.siava.pixelxpert.xposed.utils.reflection.ReflectedClass;
 import sh.siava.pixelxpert.xposed.utils.toolkit.Logger;
 
@@ -150,10 +151,14 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 
 						mContext = (Context) param.args[param.args.length - 1];
 
-						moduleResources = mContext.createPackageContext(APPLICATION_ID, CONTEXT_IGNORE_SECURITY)
-								                  .getResources();
+							moduleResources = mContext.createPackageContext(APPLICATION_ID, CONTEXT_IGNORE_SECURITY)
+									                  .getResources();
 
-						XPrefs.init(mContext);
+							if (PRParam.getPackageName().equals(Constants.SYSTEM_UI_PACKAGE)) {
+								SystemUIBootstrap.install(PRParam.getClassLoader());
+							}
+
+							XPrefs.init(mContext);
 
 						if (isSystemServer || shouldDeferHookLoading(PRParam)) {
 							loadWhenBootAndPrefsReady(PRParam);
