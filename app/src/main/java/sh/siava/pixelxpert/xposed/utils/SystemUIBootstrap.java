@@ -22,7 +22,10 @@ public final class SystemUIBootstrap {
 	public static final String ACTIVITY_STARTER = "activity_starter";
 	public static final String AOD_ICON_VIEW_MODEL = "aod_icon_view_model";
 	public static final String ATTACHED_STATUS_BAR_VIEW = "attached_status_bar_view";
+	public static final String EDGE_BACK_GESTURE_HANDLER = "edge_back_gesture_handler";
+	public static final String KEYGUARD_INTERACTOR = "keyguard_interactor";
 	public static final String SHADE_HEADER_CONTROLLER = "shade_header_controller";
+	public static final String SHADE_INTERACTOR = "shade_interactor";
 	public static final String STATUS_BAR_ICON_CONTROLLER = "status_bar_icon_controller";
 	public static final String STATUS_BAR_ICON_VIEW_MODEL = "status_bar_icon_view_model";
 	public static final String TUNER_SERVICE = "tuner_service";
@@ -58,10 +61,20 @@ public final class SystemUIBootstrap {
 		captureAfterConstruction(classLoader,
 				"com.android.systemui.statusbar.phone.ActivityStarterImpl",
 				ACTIVITY_STARTER);
+		captureAfterConstruction(classLoader,
+				"com.android.systemui.keyguard.domain.interactor.KeyguardInteractor",
+				KEYGUARD_INTERACTOR);
+		captureAfterConstruction(classLoader,
+				"com.android.systemui.shade.domain.interactor.ShadeInteractorSceneContainerImpl",
+				SHADE_INTERACTOR);
 		captureAfterMethod(classLoader,
 				"com.android.systemui.shade.ShadeHeaderController",
 				"onInit",
 				SHADE_HEADER_CONTROLLER);
+		captureAfterMethod(classLoader,
+				"com.android.systemui.navigationbar.gestural.EdgeBackGestureHandler",
+				"updateIsEnabled",
+				EDGE_BACK_GESTURE_HANDLER);
 
 		ReflectedClass controllerClass = ReflectedClass.ofIfPossible(
 				"com.android.systemui.statusbar.phone.PhoneStatusBarViewController", classLoader);

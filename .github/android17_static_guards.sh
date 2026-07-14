@@ -54,6 +54,8 @@ require_grep 'runSafe[(]instance,param[[:space:]]*->' app/src/main/java/sh/siava
   "Android 17 audio-focus workaround must use runSafe"
 require_grep 'SystemUIBootstrap[.]install' app/src/main/java/sh/siava/pixelxpert/xposed/XPLauncher.java \
   "SystemUI lifecycle bootstrap must be installed before deferred modpack loading"
+require_grep 'getMainExecutor[(][)][.]execute' app/src/main/java/sh/siava/pixelxpert/xposed/XPLauncher.java \
+  "deferred modpack initialization must return to the host main thread"
 require_grep 'never access module preferences' app/src/main/java/sh/siava/pixelxpert/xposed/utils/SystemUIBootstrap.java \
   "SystemUI bootstrap must document its preference-free boot contract"
 

@@ -16,6 +16,7 @@ import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
@@ -235,7 +236,18 @@ public class XPLauncher extends XposedModule implements ServiceConnection {
 		} catch (Throwable ignored) {
 		}
 
-		onXPrefsReady(PRParam);
+		if (Looper.myLooper() == mContext.getMainLooper()) {
+			onXPrefsReady(PRParam);
+		} else {
+			mContext.getMainExecutor().execute(() -> {
+				try {
+					onXPrefsReady(PRParam);
+				} catch (Throwable t) {
+					Logger.log("PixelXpert: deferred modpack initialization failed in "
+							+ PRParam.getPackageName(), t);
+				}
+			});
+		}
 	}
 
 	private boolean awaitXprefsReady(PackageReadyParam PRParam) {

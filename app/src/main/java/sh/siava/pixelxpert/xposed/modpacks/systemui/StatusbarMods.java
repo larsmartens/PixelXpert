@@ -1039,11 +1039,9 @@ public class StatusbarMods extends XposedModPack {
 			parent.removeView(networkTrafficSB);
 		}
 		if (!networkOnSBEnabled) return;
+		if (mSystemIconArea == null || mStatusbarStartSide == null) return;
 
 		try {
-			if (mSystemIconArea == null || mStatusbarStartSide == null) {
-				throw new IllegalStateException("Status-bar placement targets are not initialized");
-			}
 			LinearLayout.LayoutParams ntsbLayoutP;
 			switch (networkTrafficPosition) {
 				case POSITION_RIGHT:

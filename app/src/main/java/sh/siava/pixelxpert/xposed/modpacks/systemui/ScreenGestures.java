@@ -30,6 +30,7 @@ import io.github.libxposed.api.XposedModuleInterface;
 import sh.siava.pixelxpert.xposed.XposedModPack;
 import sh.siava.pixelxpert.xposed.annotations.SystemUIModPack;
 import sh.siava.pixelxpert.xposed.utils.SystemUtils;
+import sh.siava.pixelxpert.xposed.utils.SystemUIBootstrap;
 import sh.siava.pixelxpert.xposed.utils.reflection.HookHelper;
 import sh.siava.pixelxpert.xposed.utils.reflection.ReflectedClass;
 
@@ -103,14 +104,11 @@ public class ScreenGestures extends XposedModPack {
 
 		//A17QPR1 Scene implementation
 		ReflectedClass SceneWindowRootViewClass = ReflectedClass.ofIfPossible("com.android.systemui.scene.ui.view.SceneWindowRootView");
-		ReflectedClass ShadeInteractorSceneContainerImplClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.domain.interactor.ShadeInteractorSceneContainerImpl");
 		ReflectedClass PulsingGestureListenerClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.PulsingGestureListener");
-		ReflectedClass KeyguardInteractorClass = ReflectedClass.ofIfPossible("com.android.systemui.keyguard.domain.interactor.KeyguardInteractor");
 		ReflectedClass SettingsMenuElementProviderClass = ReflectedClass.ofIfPossible("com.android.systemui.keyguard.ui.composable.elements.SettingsMenuElementProvider");
 
-		ShadeInteractorSceneContainerImplClass //used to know if shade is open or not
-				.afterConstruction()
-				.runSafe(param -> mShadeInteractorSceneContainerImpl = param.thisObject);
+		SystemUIBootstrap.register(SystemUIBootstrap.SHADE_INTERACTOR,
+				instance -> mShadeInteractorSceneContainerImpl = instance);
 
 		PulsingGestureListenerClass //used to detect when a real single tap done on keyguard
 				.before("onSingleTapUp")
@@ -123,9 +121,8 @@ public class ScreenGestures extends XposedModPack {
 						param.setResult(null);
 				});
 
-		KeyguardInteractorClass //used to know if KG is showing
-				.afterConstruction()
-				.runSafe(param -> mKeyguardInteractor = param.thisObject);
+		SystemUIBootstrap.register(SystemUIBootstrap.KEYGUARD_INTERACTOR,
+				instance -> mKeyguardInteractor = instance);
 
 		SceneWindowRootViewClass //gestures on Scene implementation
 				.before("dispatchTouchEvent")

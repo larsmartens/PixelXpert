@@ -243,6 +243,7 @@ public class KeyguardMods extends XposedModPack {
 		DefaultNotificationStackScrollLayoutSectionClass
 				.after("applyConstraints")
 				.runSafe(param -> {
+					if (mComposeKGMiddleCustomTextView == null) return;
 					Object constraintSet = param.args[0];
 
 					callMethod(constraintSet,

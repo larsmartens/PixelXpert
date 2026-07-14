@@ -19,6 +19,7 @@ import sh.siava.pixelxpert.Constants;
 import sh.siava.pixelxpert.xposed.XposedModPack;
 import sh.siava.pixelxpert.xposed.annotations.SystemUIModPack;
 import sh.siava.pixelxpert.xposed.utils.SystemUtils;
+import sh.siava.pixelxpert.xposed.utils.SystemUIBootstrap;
 import sh.siava.pixelxpert.xposed.utils.reflection.HookHelper;
 import sh.siava.pixelxpert.xposed.utils.reflection.ReflectedClass;
 
@@ -77,16 +78,14 @@ public class StatusbarGestures extends XposedModPack {
 		ReflectedClass PhoneStatusBarViewClass = ReflectedClass.ofIfPossible("com.android.systemui.statusbar.phone.PhoneStatusBarView");
 
 		//17QPR1
-		ReflectedClass ShadeInteractorSceneContainerImplClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.domain.interactor.ShadeInteractorSceneContainerImpl");
 		ReflectedClass ShadeSurfaceImplClass = ReflectedClass.ofIfPossible("com.android.systemui.shade.ShadeSurfaceImpl");
 
 		ShadeSurfaceImplClass
 				.before("onStatusBarLongPress")
 				.runSafe(this::onStatusBarLongPress);
 
-		ShadeInteractorSceneContainerImplClass
-				.afterConstruction()
-				.runSafe(param -> ShadeInteractorSceneContainerImpl = param.thisObject);
+		SystemUIBootstrap.register(SystemUIBootstrap.SHADE_INTERACTOR,
+				instance -> ShadeInteractorSceneContainerImpl = instance);
 
 		mGestureDetector = new GestureDetector(mContext, getPullDownLPListener());
 
