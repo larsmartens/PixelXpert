@@ -18,8 +18,9 @@ This fork keeps a focused compatibility and release layer on top of upstream
 
 - fork-owned update metadata and canary release workflows for Magisk, KSU, and
   in-app update paths
-- Android 17/API 37 boot-safety changes, including default data-app mode and
-  optional priv-app mount opt-in
+- Android 17/API 37 boot-safety changes, including deferred preference-backed
+  hooks, early SystemUI lifecycle capture, restricted default LSPosed scope,
+  and verified priv-app mounting
 - KSU-Next, Hybrid-Mount, LSPosed/Vector schema, and managerless LSPosed
   compatibility improvements
 - exportable root-stack diagnostics covering module layout, LSPosed scope,
