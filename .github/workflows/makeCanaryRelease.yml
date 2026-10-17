@@ -1,13 +1,8 @@
 name: Make Canary Release
 
+# Automatic triggers paused at the owner's request on 2026-10-17.
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'canary'
-    paths:
-      - '.github/edit2MakeNewCanary'
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

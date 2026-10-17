@@ -1,12 +1,8 @@
 name: Canary CI
 
+# Automatic triggers paused at the owner's request on 2026-10-17.
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [canary]
-  push:
-    branches: [canary]
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true

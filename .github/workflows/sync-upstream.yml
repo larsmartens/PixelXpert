@@ -1,21 +1,8 @@
 name: Sync Upstream and Release
 
+# Automatic triggers paused at the owner's request on 2026-10-17.
 on:
-  schedule:
-    - cron: '0 6 * * *'  # Daily at 06:00 UTC
   workflow_dispatch:
-  push:
-    branches:
-      - 'canary'
-    paths-ignore:
-      - 'MagiskModBase/module.prop'
-      - 'app/build.gradle.kts'
-      - 'latestVersion.json'
-      - 'latestCanary.json'
-      - 'MagiskModuleUpdate_Xposed.json'
-      - 'MagiskModuleUpdate_Full.json'
-      - 'CanaryChangelog.md'
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
